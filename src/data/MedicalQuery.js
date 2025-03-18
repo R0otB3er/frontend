@@ -1,5 +1,5 @@
-/*this is the data the Medical_report.jsx draws from. will be deprecated once backend is connected*/
-export const MedicalReport = [
+/*this is the data the Medical_query.jsx draws from. will be deprecated once backend is connected*/
+export const MedicalQuery = [
     {
       Record_ID: "234456425",
       Animal_ID: "dsfgdfhds3",
@@ -50,4 +50,4 @@ export const MedicalReport = [
       },
   ];
   
-  export default MedicalReport;
+  export default MedicalQuery;

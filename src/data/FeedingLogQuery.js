@@ -1,4 +1,5 @@
-export const FeedingLogReport = [
+/*this is the data the Adfeedinglog_query.jsx draws from. will be deprecated once backend is connected*/
+export const FeedingLogQuery = [
   {
     img: "/img/giraffe1.jpg",
     Animal_ID: "John4312",
@@ -49,4 +50,4 @@ export const FeedingLogReport = [
   },
 ];
 
-export default FeedingLogReport;
+export default FeedingLogQuery;

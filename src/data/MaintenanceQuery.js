@@ -1,5 +1,5 @@
-/*this is the data the Maintenance_report.jsx draws from. will be deprecated once backend is connected*/
-export const MaintenanceReport = [
+/*this is the data the Maintenance_query.jsx draws from. will be deprecated once backend is connected*/
+export const MaintenanceQuery = [
     {
       Maintenance_ID: "232423423",
       Attraction_ID: "dsfgdfhds3",
@@ -56,5 +56,5 @@ export const MaintenanceReport = [
       },
   ];
   
-  export default MaintenanceReport;
+  export default MaintenanceQuery;
   

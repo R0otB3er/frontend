@@ -6,7 +6,7 @@ import {
   ServerStackIcon,
   RectangleStackIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Adfeedinglog_report, Maintenance_report, Medical_report, Notifications } from "@/pages/dashboard";
+import { Home, Profile, Adfeedinglog_query, Maintenance_query, Medical_query, Adbulkpurchase_query, Signin_query, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 
 const icon = {
@@ -31,21 +31,33 @@ export const routes = [
       },
       {
         icon: <TableCellsIcon {...icon} />,
-        name: "Feeding Log Report",
-        path: "/Feeding_Log_Report",
-        element: <Adfeedinglog_report />,
+        name: "Feeding Log Query",
+        path: "/Feeding_Log_Query",
+        element: <Adfeedinglog_query />,
       },
       {
         icon: <TableCellsIcon {...icon} />,
-        name: "Maintenance Report",
-        path: "/Maintenance_Report",
-        element: <Maintenance_report />,
+        name: "Maintenance Query",
+        path: "/Maintenance_Query",
+        element: <Maintenance_query />,
       },
       {
         icon: <TableCellsIcon {...icon} />,
-        name: "Medical Report",
-        path: "/Medical_Report",
-        element: <Medical_report />,
+        name: "Medical Query",
+        path: "/Medical_Query",
+        element: <Medical_query />,
+      },
+      {
+        icon: <TableCellsIcon {...icon} />,
+        name: "Bulk Purchase Query",
+        path: "/Bulk_Purchase_Query",
+        element: <Adbulkpurchase_query />,
+      },
+      {
+        icon: <TableCellsIcon {...icon} />,
+        name: "Sign-in Query",
+        path: "/Sign_in_Query",
+        element: <Signin_query />,
       },
       {
         icon: <InformationCircleIcon {...icon} />,

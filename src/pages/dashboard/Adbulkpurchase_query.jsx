@@ -5,12 +5,12 @@ import {
   Typography,
   Avatar,
 } from "@material-tailwind/react";
-import { MaintenanceReport } from "@/data";
+import { BulkPurchaseQuery } from "@/data";
 import { useState } from "react";
 import { TrashIcon } from "@heroicons/react/24/solid";
 
-export function Maintenance_report() {
-  const [authorsData, setAuthorsData] = useState(MaintenanceReport);
+export function Adbulkpurchase_query() {
+  const [authorsData, setAuthorsData] = useState(BulkPurchaseQuery);
   const [editingRow, setEditingRow] = useState(null);
   const [errors, setErrors] = useState({});
   const [newRow, setNewRow] = useState(null);
@@ -42,12 +42,9 @@ export function Maintenance_report() {
 
     if (!value.trim()) {
       error = "This field cannot be empty.";
-    } else if (field === "Start_Date" && !/\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+    } else if (field === "Date_purchased" && !/\d{2}\/\d{2}\/\d{4}$/.test(value)) {
       error = "Date must be in MM/DD/YYYY format.";
-    } else if (field === "End_Date" && !/\d{2}\/\d{2}\/\d{4}$/.test(value)) {
-        error = "Date must be in MM/DD/YYYY format.";
-      }
-  
+    } 
 
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -66,9 +63,7 @@ export function Maintenance_report() {
 
     if (!value.trim()) {
         error = "This field cannot be empty.";
-      } else if (field === "Start_Date" && !/\d{2}\/\d{2}\/\d{4}$/.test(value)) {
-        error = "Date must be in MM/DD/YYYY format.";
-      }else if (field === "End_Date" && !/\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+      } else if (field === "Date_purchased" && !/\d{2}\/\d{2}\/\d{4}$/.test(value)) {
         error = "Date must be in MM/DD/YYYY format.";
       }
 
@@ -84,12 +79,12 @@ export function Maintenance_report() {
     if (!newRow) return false; // Prevents crashes
   
     // Check if any required field is empty (excluding image)
-    const requiredFields = ["Maintenance_ID", "Attraction_ID", "Employee_ID", "Start_Date", "End_Date", "Description", "Status"];
+    const requiredFields = ["Merchant_ID", "Item_name", "Bulk_cost", "Amount_of_items", "Date_purchased", "Producer"];
     if (requiredFields.some(field => !newRow[field]?.trim())) return false;
   
     // Validate Feeding Time format
-    if (!/\d{2}\/\d{2}\/\d{4}$/.test(newRow.Start_Date)) return false;
-    if (!/\d{2}\/\d{2}\/\d{4}$/.test(newRow.End_Date)) return false;
+    if (!/\d{2}\/\d{2}\/\d{4}$/.test(newRow.Date_purchased)) return false;
+
 
     return true;
   };
@@ -97,13 +92,12 @@ export function Maintenance_report() {
 
   const handleAddNewRow = () => {
     setNewRow({
-      Maintenance_ID: "",
-      Attraction_ID: "",
-      Employee_ID: "",
-      Start_Date: "",
-      End_Date: "",
-      Description: "",
-      Status: ""
+      Merchant_ID: "",
+      Item_name: "",
+      Bulk_cost: "",
+      Amount_of_items: "",
+      Date_purchased: "",
+      Producer: ""
     });
     setNewErrors({});
   };
@@ -131,14 +125,14 @@ export function Maintenance_report() {
       <Card>
         <CardHeader variant="gradient" color="gray" className="mb-8 p-6">
           <Typography variant="h6" color="white">
-            Maintenance Report
+            Bulk Purchase Query
           </Typography>
         </CardHeader>
         <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
           <table className="w-full min-w-[640px] table-auto">
             <thead>
               <tr>
-                {["Maintenance_ID", "Attraction_ID", "Employee_ID", "Start_Date", "End_Date", "Description", "Status", "Actions"].map((el) => (
+                {["Merchant_ID", "Item_name", "Bulk_cost", "Amount_of_items", "Date_purchased", "Producer", "Actions"].map((el) => (
                   <th key={el} className="border-b border-blue-gray-50 py-3 px-5 text-left">
                     <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
                       {el}
@@ -156,8 +150,8 @@ export function Maintenance_report() {
 
                       <input
                         type="text"
-                        value={newRow.Maintenance_ID}
-                        onChange={(e) => handleNewRowChange(e, "Maintenance_ID")}
+                        value={newRow.Merchant_ID}
+                        onChange={(e) => handleNewRowChange(e, "Merchant_ID")}
                         className="border px-2 py-1 text-xs"
                       />
                     </div>
@@ -165,49 +159,16 @@ export function Maintenance_report() {
                   <td className="py-3 px-5 border-b border-blue-gray-50">
                     <input
                       type="text"
-                      value={newRow.Attraction_ID}
-                      onChange={(e) => handleNewRowChange(e, "Attraction_ID")}
+                      value={newRow.Item_name}
+                      onChange={(e) => handleNewRowChange(e, "Item_name")}
                       className="border px-2 py-1 text-xs"
                     />
                   </td>
                   <td className="py-3 px-5 border-b border-blue-gray-50">
                     <input
                       type="text"
-                      value={newRow.Employee_ID}
-                      onChange={(e) => handleNewRowChange(e, "Employee_ID")}
-                      className="border px-2 py-1 text-xs"
-                    />
-                  </td>
-                  <td className="py-3 px-5 border-b border-blue-gray-50">
-                    <input
-                      type="text"
-                      value={newRow.Start_Date}
-                      onChange={(e) => handleNewRowChange(e, "Start_Date")}
-                      className="border px-2 py-1 text-xs"
-                      placeholder="MM/DD/YYYY"
-                    />
-                    {newErrors.Start_Date && (
-                      <Typography className="text-red-500 text-xs">{newErrors.Start_Date}</Typography>
-                    )}
-                  </td>
-                  <td className="py-3 px-5 border-b border-blue-gray-50">
-                    <input
-                      type="text"
-                      value={newRow.End_Date}
-                      onChange={(e) => handleNewRowChange(e, "End_Date")}
-                      className="border px-2 py-1 text-xs"
-                      placeholder="MM/DD/YYYY"
-                    />
-                    {newErrors.End_Date && (
-                      <Typography className="text-red-500 text-xs">{newErrors.End_Date}</Typography>
-                    )}
-                  </td>
-
-                  <td className="py-3 px-5 border-b border-blue-gray-50">
-                    <input
-                      type="text"
-                      value={newRow.Description}
-                      onChange={(e) => handleNewRowChange(e, "Description")}
+                      value={newRow.Bulk_cost}
+                      onChange={(e) => handleNewRowChange(e, "Bulk_cost")}
                       className="border px-2 py-1 text-xs"
                     />
                   </td>
@@ -215,8 +176,31 @@ export function Maintenance_report() {
                   <td className="py-3 px-5 border-b border-blue-gray-50">
                     <input
                       type="text"
-                      value={newRow.Status}
-                      onChange={(e) => handleNewRowChange(e, "Status")}
+                      value={newRow.Amount_of_items}
+                      onChange={(e) => handleNewRowChange(e, "Amount_of_items")}
+                      className="border px-2 py-1 text-xs"
+                    />
+                  </td>
+
+                  <td className="py-3 px-5 border-b border-blue-gray-50">
+                    <input
+                      type="text"
+                      value={newRow.Date_purchased}
+                      onChange={(e) => handleNewRowChange(e, "Date_purchased")}
+                      className="border px-2 py-1 text-xs"
+                      placeholder="MM/DD/YYYY"
+                    />
+                    {newErrors.Date_purchased && (
+                      <Typography className="text-red-500 text-xs">{newErrors.Date_purchased}</Typography>
+                    )}
+                  </td>
+
+
+                  <td className="py-3 px-5 border-b border-blue-gray-50">
+                    <input
+                      type="text"
+                      value={newRow.Producer}
+                      onChange={(e) => handleNewRowChange(e, "Producer")}
                       className="border px-2 py-1 text-xs"
                     />
                   </td>
@@ -234,7 +218,7 @@ export function Maintenance_report() {
               )}
 
 
-              {authorsData.map(({ Maintenance_ID, Attraction_ID, Employee_ID, Start_Date, End_Date, Description, Status }, index) => {
+              {authorsData.map(({ Merchant_ID, Item_name, Bulk_cost, Amount_of_items, Date_purchased, Producer}, index) => {
                 const className = `py-3 px-5 ${index === authorsData.length - 1 ? "" : "border-b border-blue-gray-50"}`;
                 const hasErrors = errors[index] && Object.values(errors[index]).some((err) => err);
 
@@ -245,16 +229,16 @@ export function Maintenance_report() {
                         <>
                           <input
                             type="text"
-                            value={Maintenance_ID}
-                            onChange={(e) => handleChange(e, index, "Maintenance_ID")}
+                            value={Merchant_ID}
+                            onChange={(e) => handleChange(e, index, "Mechant_ID")}
                             className="border px-2 py-1 text-xs"
                           />
-                          {errors[index]?.Maintenance_ID && (
-                            <Typography className="text-red-500 text-xs">{errors[index].Maintenance_ID}</Typography>
+                          {errors[index]?.Merchant_ID && (
+                            <Typography className="text-red-500 text-xs">{errors[index].Merchant_ID}</Typography>
                           )}
                         </>
                       ) : (
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{Maintenance_ID}</Typography>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">{Merchant_ID}</Typography>
                       )}
                     </td>
                     <td className={className}>
@@ -262,16 +246,16 @@ export function Maintenance_report() {
                         <>
                           <input
                             type="text"
-                            value={Attraction_ID}
-                            onChange={(e) => handleChange(e, index, "Attraction_ID")}
+                            value={Item_name}
+                            onChange={(e) => handleChange(e, index, "Item_name")}
                             className="border px-2 py-1 text-xs"
                           />
-                          {errors[index]?.Attraction_ID && (
-                            <Typography className="text-red-500 text-xs">{errors[index].Attraction_ID}</Typography>
+                          {errors[index]?.Item_name && (
+                            <Typography className="text-red-500 text-xs">{errors[index].Item_name}</Typography>
                           )}
                         </>
                       ) : (
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{Attraction_ID}</Typography>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">{Item_name}</Typography>
                       )}
                     </td>
                     <td className={className}>
@@ -279,33 +263,16 @@ export function Maintenance_report() {
                         <>
                           <input
                             type="text"
-                            value={Employee_ID}
-                            onChange={(e) => handleChange(e, index, "Employee_ID")}
+                            value={Bulk_cost}
+                            onChange={(e) => handleChange(e, index, "Bulk_cost")}
                             className="border px-2 py-1 text-xs"
                           />
-                          {errors[index]?.Employee_ID && (
-                            <Typography className="text-red-500 text-xs">{errors[index].Employee_ID}</Typography>
+                          {errors[index]?.Bulk_cost && (
+                            <Typography className="text-red-500 text-xs">{errors[index].Bulk_cost}</Typography>
                           )}
                         </>
                       ) : (
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{Employee_ID}</Typography>
-                      )}
-                    </td>
-                    <td className={className}>
-                      {editingRow === index ? (
-                        <>
-                          <input
-                            type="text"
-                            value={Start_Date}
-                            onChange={(e) => handleChange(e, index, "Start_Date")}
-                            className="border px-2 py-1 text-xs"
-                          />
-                          {errors[index]?.Start_Date && (
-                            <Typography className="text-red-500 text-xs">{errors[index].Start_Date}</Typography>
-                          )}
-                        </>
-                      ) : (
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{Start_Date}</Typography>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">{Bulk_cost}</Typography>
                       )}
                     </td>
 
@@ -314,50 +281,53 @@ export function Maintenance_report() {
                         <>
                           <input
                             type="text"
-                            value={End_Date}
-                            onChange={(e) => handleChange(e, index, "End_Date")}
+                            value={Amount_of_items}
+                            onChange={(e) => handleChange(e, index, "Amount_of_items")}
                             className="border px-2 py-1 text-xs"
                           />
-                          {errors[index]?.End_Date && (
-                            <Typography className="text-red-500 text-xs">{errors[index].End_Date}</Typography>
+                          {errors[index]?.Amount_of_items && (
+                            <Typography className="text-red-500 text-xs">{errors[index].Amount_of_items}</Typography>
                           )}
                         </>
                       ) : (
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{End_Date}</Typography>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">{Amount_of_items}</Typography>
                       )}
                     </td>
+
                     <td className={className}>
                       {editingRow === index ? (
                         <>
                           <input
                             type="text"
-                            value={Description}
-                            onChange={(e) => handleChange(e, index, "Description")}
+                            value={Date_purchased}
+                            onChange={(e) => handleChange(e, index, "Date_purchased")}
                             className="border px-2 py-1 text-xs"
                           />
-                          {errors[index]?.Description && (
-                            <Typography className="text-red-500 text-xs">{errors[index].Description}</Typography>
+                          {errors[index]?.Date_purchased && (
+                            <Typography className="text-red-500 text-xs">{errors[index].Date_purchased}</Typography>
                           )}
                         </>
                       ) : (
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{Description}</Typography>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">{Date_purchased}</Typography>
                       )}
                     </td>
+
+
                     <td className={className}>
                       {editingRow === index ? (
                         <>
                           <input
                             type="text"
-                            value={Status}
-                            onChange={(e) => handleChange(e, index, "Status")}
+                            value={Producer}
+                            onChange={(e) => handleChange(e, index, "Producer")}
                             className="border px-2 py-1 text-xs"
                           />
-                          {errors[index]?.Status && (
-                            <Typography className="text-red-500 text-xs">{errors[index].Status}</Typography>
+                          {errors[index]?.Producer && (
+                            <Typography className="text-red-500 text-xs">{errors[index].Producer}</Typography>
                           )}
                         </>
                       ) : (
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{Status}</Typography>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">{Producer}</Typography>
                       )}
                     </td>
                     <td className={className}>
@@ -402,4 +372,4 @@ export function Maintenance_report() {
   );
 }
 
-export default Maintenance_report;
+export default Adbulkpurchase_query;
