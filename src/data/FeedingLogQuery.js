@@ -1,4 +1,4 @@
-/*this is the data the Adfeedinglog_query.jsx draws from. will be deprecated once backend is connected*/
+// FeedingLogQuery.js
 export const FeedingLogQuery = [
   {
     img: "/img/giraffe1.jpg",
@@ -50,4 +50,14 @@ export const FeedingLogQuery = [
   },
 ];
 
+// Function to get unique values for dropdowns
+export const getUniqueDropdownValues = () => {
+  const uniqueAnimals = [...new Set(FeedingLogQuery.map((entry) => entry.Animal_ID))];
+  const uniqueEmployees = [...new Set(FeedingLogQuery.map((entry) => entry.Employee_ID))];
+  const uniqueFoodTypes = [...new Set(FeedingLogQuery.map((entry) => entry.Food_Type))];
+
+  return { uniqueAnimals, uniqueEmployees, uniqueFoodTypes };
+};
+
 export default FeedingLogQuery;
+

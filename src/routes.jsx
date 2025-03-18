@@ -6,7 +6,7 @@ import {
   ServerStackIcon,
   RectangleStackIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, Adfeedinglog_query, Maintenance_query, Medical_query, Adbulkpurchase_query, Signin_query, Notifications } from "@/pages/dashboard";
+import { Home, Profile, FeedingLogEntryForm, Adfeedinglog_query, Maintenance_query, Medical_query, Adbulkpurchase_query, Signin_query, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 
 const icon = {
@@ -28,6 +28,12 @@ export const routes = [
         name: "profile",
         path: "/profile",
         element: <Profile />,
+      },
+      {
+        icon: <TableCellsIcon {...icon} />,
+        name: "Feeding Log Entry",
+        path: "/Feeding_Log_Entry",
+        element: <FeedingLogEntryForm />,
       },
       {
         icon: <TableCellsIcon {...icon} />,

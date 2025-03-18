@@ -6,3 +6,4 @@ export * from "@/pages/dashboard/Medical_query";
 export * from "@/pages/dashboard/Adbulkpurchase_query";
 export * from "@/pages/dashboard/Signin_query";
 export * from "@/pages/dashboard/notifications";
+export * from "@/pages/dashboard/FeedingLogEntryForm";
