@@ -95,7 +95,7 @@ export function FeedingLogEntryForm() {
         </CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-            {/* Image Upload */}
+            {/* Image Upload 
             <div className="flex items-center justify-center">
               {!imageUploaded && (
                 <label className="cursor-pointer border border-gray-400 rounded-lg w-16 h-16 flex items-center justify-center">
@@ -105,6 +105,7 @@ export function FeedingLogEntryForm() {
               )}
               {formData.img && <Avatar src={formData.img} size="xl" variant="rounded" />}
             </div>
+            */}
 
             {/* Grid Layout for Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -125,7 +126,7 @@ export function FeedingLogEntryForm() {
                 </select>
               </div>
 
-              {/* Employee ID Dropdown */}
+              {/* Employee ID Dropdown 
               <div>
                 <label className="block text-sm font-medium text-gray-700">Employee ID</label>
                 <select
@@ -141,6 +142,7 @@ export function FeedingLogEntryForm() {
                   ))}
                 </select>
               </div>
+              */}
 
               {/* Food Type Dropdown */}
               <div>
@@ -159,7 +161,31 @@ export function FeedingLogEntryForm() {
                 </select>
               </div>
 
-              {/* Feeding Time */}
+              {/* Date Input */}
+              <div>
+                <label htmlFor="dateInput" className="block text-sm font-medium text-gray-700">
+                  Date Input
+                </label>
+                <input
+                  type="date"
+                  id="dateInput"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Time Input */}
+              <div>
+                <label htmlFor="timeInput" className="block text-sm font-medium text-gray-700">
+                  Time Input
+                </label>
+                <input
+                  type="time"
+                  id="timeInput"
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Feeding Time 
               <div>
                 <label className="block text-sm font-medium text-gray-700">Feeding Time</label>
                 <input
@@ -171,6 +197,7 @@ export function FeedingLogEntryForm() {
                 />
                 {errors.date && <Typography className="text-red-500 text-xs">{errors.date}</Typography>}
               </div>
+              */}
 
               {/* Quantity */}
               <div>
