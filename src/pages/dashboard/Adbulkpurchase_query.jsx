@@ -79,7 +79,7 @@ export function Adbulkpurchase_query() {
     if (!newRow) return false; // Prevents crashes
   
     // Check if any required field is empty (excluding image)
-    const requiredFields = ["Merchant_ID", "Item_name", "Bulk_cost", "Amount_of_items", "Date_purchased", "Producer"];
+    const requiredFields = ["Merchant_Name", "Item_name", "Bulk_cost", "Amount_of_items", "Date_purchased", "Producer"];
     if (requiredFields.some(field => !newRow[field]?.trim())) return false;
   
     // Validate Feeding Time format
@@ -92,7 +92,7 @@ export function Adbulkpurchase_query() {
 
   const handleAddNewRow = () => {
     setNewRow({
-      Merchant_ID: "",
+      Merchant_Name: "",
       Item_name: "",
       Bulk_cost: "",
       Amount_of_items: "",
@@ -132,7 +132,7 @@ export function Adbulkpurchase_query() {
           <table className="w-full min-w-[640px] table-auto">
             <thead>
               <tr>
-                {["Merchant_ID", "Item_name", "Bulk_cost", "Amount_of_items", "Date_purchased", "Producer", "Actions"].map((el) => (
+                {["Merchant_Name", "Item_name", "Bulk_cost", "Amount_of_items", "Date_purchased", "Producer", "Actions"].map((el) => (
                   <th key={el} className="border-b border-blue-gray-50 py-3 px-5 text-left">
                     <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
                       {el}
@@ -150,8 +150,8 @@ export function Adbulkpurchase_query() {
 
                       <input
                         type="text"
-                        value={newRow.Merchant_ID}
-                        onChange={(e) => handleNewRowChange(e, "Merchant_ID")}
+                        value={newRow.Merchant_Name}
+                        onChange={(e) => handleNewRowChange(e, "Merchant_Name")}
                         className="border px-2 py-1 text-xs"
                       />
                     </div>
@@ -218,7 +218,7 @@ export function Adbulkpurchase_query() {
               )}
 
 
-              {authorsData.map(({ Merchant_ID, Item_name, Bulk_cost, Amount_of_items, Date_purchased, Producer}, index) => {
+              {authorsData.map(({ Merchant_Name, Item_name, Bulk_cost, Amount_of_items, Date_purchased, Producer}, index) => {
                 const className = `py-3 px-5 ${index === authorsData.length - 1 ? "" : "border-b border-blue-gray-50"}`;
                 const hasErrors = errors[index] && Object.values(errors[index]).some((err) => err);
 
@@ -229,16 +229,16 @@ export function Adbulkpurchase_query() {
                         <>
                           <input
                             type="text"
-                            value={Merchant_ID}
+                            value={Merchant_Name}
                             onChange={(e) => handleChange(e, index, "Mechant_ID")}
                             className="border px-2 py-1 text-xs"
                           />
-                          {errors[index]?.Merchant_ID && (
-                            <Typography className="text-red-500 text-xs">{errors[index].Merchant_ID}</Typography>
+                          {errors[index]?.Merchant_Name && (
+                            <Typography className="text-red-500 text-xs">{errors[index].Merchant_Name}</Typography>
                           )}
                         </>
                       ) : (
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{Merchant_ID}</Typography>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">{Merchant_Name}</Typography>
                       )}
                     </td>
                     <td className={className}>

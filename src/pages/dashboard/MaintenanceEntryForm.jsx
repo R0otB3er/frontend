@@ -157,6 +157,8 @@ export function MaintenanceEntryForm() {
     setSelectedStartTime("");
     setSelectedEndDate("");
     setSelectedEndTime("");
+
+
   };
 
   return (
@@ -241,7 +243,7 @@ export function MaintenanceEntryForm() {
             {/* Buttons */}
             <div className="flex justify-between mt-6">
               <button
-                onClick={() => navigate("/maintenance-query")}
+                onClick={() => navigate("/dashboard/Maintenance_Query")}
                 className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700"
               >
                 Back to Maintenance Query

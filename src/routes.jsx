@@ -6,7 +6,7 @@ import {
   ServerStackIcon,
   RectangleStackIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, FeedingLogEntryForm, Adfeedinglog_query, MaintenanceEntryForm, Maintenance_query, Medical_query, Adbulkpurchase_query, Signin_query, Notifications } from "@/pages/dashboard";
+import { Home, Profile, FeedingLogEntryForm, Adfeedinglog_query, MaintenanceEntryForm, Maintenance_query, MedicalEntryForm, Medical_query, BulkPurchaseEntryForm, Adbulkpurchase_query, Signin_query, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 
 const icon = {
@@ -55,9 +55,21 @@ export const routes = [
       },
       {
         icon: <TableCellsIcon {...icon} />,
+        name: "Medical Entry",
+        path: "/Medical_Entry",
+        element: <MedicalEntryForm />,
+      },
+      {
+        icon: <TableCellsIcon {...icon} />,
         name: "Medical Query",
         path: "/Medical_Query",
         element: <Medical_query />,
+      },
+      {
+        icon: <TableCellsIcon {...icon} />,
+        name: "Bulk Purchase Entry",
+        path: "/Bulk_Purchase_Entry",
+        element: <BulkPurchaseEntryForm />,
       },
       {
         icon: <TableCellsIcon {...icon} />,
