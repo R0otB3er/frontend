@@ -91,7 +91,6 @@ export function FeedingLogEntryForm() {
   const isFormValid =
     Object.values(errors).every((err) => !err) &&
     formData.Animal_ID.trim() !== "" &&
-    formData.Employee_ID.trim() !== "" &&
     formData.Food_Type.trim() !== "" &&
     formData.date.trim() !== "" &&
     formData.quantity.trim() !== "";
@@ -144,7 +143,7 @@ export function FeedingLogEntryForm() {
                 </select>
               </div>
 
-              {/* Employee ID Dropdown */}
+              {/* Employee ID Dropdown }
               <div>
                 <label className="block text-sm font-medium text-gray-700">Employee ID</label>
                 <select
@@ -157,7 +156,7 @@ export function FeedingLogEntryForm() {
                     <option key={id} value={id}>{id}</option>
                   ))}
                 </select>
-              </div>
+              </div>*/}
 
               {/* Food Type Dropdown */}
               <div>
