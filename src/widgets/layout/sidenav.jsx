@@ -115,7 +115,7 @@ document.head.appendChild(styleSheet);
 
 Sidenav.defaultProps = {
   brandImg: "/img/logo-ct.png",
-  brandName: "Material Tailwind React",
+  brandName: "Admin Dashboard",
 };
 
 Sidenav.propTypes = {
