@@ -13,8 +13,6 @@ export function Maintenance_query() {
   const [authorsData, setAuthorsData] = useState(MaintenanceQuery);
   const [editingRow, setEditingRow] = useState(null);
   const [errors, setErrors] = useState({});
-  const [newRow, setNewRow] = useState(null);
-  const [newErrors, setNewErrors] = useState({});
 
   const handleEditClick = (index) => {
     setEditingRow(index);
@@ -59,74 +57,8 @@ export function Maintenance_query() {
   };
 
 
-
-  const handleNewRowChange = (event, field) => {
-    const value = event.target.value;
-    let error = "";
-
-    if (!value.trim()) {
-        error = "This field cannot be empty.";
-      } else if (field === "Start_Date" && !/\d{2}\/\d{2}\/\d{4}$/.test(value)) {
-        error = "Date must be in MM/DD/YYYY format.";
-      }else if (field === "End_Date" && !/\d{2}\/\d{2}\/\d{4}$/.test(value)) {
-        error = "Date must be in MM/DD/YYYY format.";
-      }
-
-    setNewErrors((prevErrors) => ({
-      ...prevErrors,
-      [field]: error || null,
-    }));
-
-    setNewRow((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const isNewRowValid = () => {
-    if (!newRow) return false; // Prevents crashes
-  
-    // Check if any required field is empty (excluding image)
-    const requiredFields = ["Maintenance_ID", "Attraction_Name", "Employee_ID", "Start_Date", "End_Date", "Description", "Status"];
-    if (requiredFields.some(field => !newRow[field]?.trim())) return false;
-  
-    // Validate Feeding Time format
-    if (!/\d{2}\/\d{2}\/\d{4}$/.test(newRow.Start_Date)) return false;
-    if (!/\d{2}\/\d{2}\/\d{4}$/.test(newRow.End_Date)) return false;
-
-    return true;
-  };
-
-
-  const handleAddNewRow = () => {
-    setNewRow({
-      Maintenance_ID: "",
-      Attraction_Name: "",
-      Employee_ID: "",
-      Start_Date: "",
-      End_Date: "",
-      Description: "",
-      Status: ""
-    });
-    setNewErrors({});
-  };
-
-  const handleSaveNewRow = () => {
-    if (!newRow || Object.values(newErrors).some((err) => err)) {
-      alert("All fields must be filled out correctly.");
-      return;
-    }
-
-    setAuthorsData([newRow, ...authorsData]);
-    setNewRow(null);
-  };
-
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12">
-      {/* Create New Button (Black) */}
-      <button
-        onClick={handleAddNewRow}
-        className="mb-4 px-4 py-2 bg-black text-white rounded w-32"
-      >
-        + Create New
-      </button>
 
       <Card>
         <CardHeader variant="gradient" color="gray" className="mb-8 p-6">
@@ -148,90 +80,6 @@ export function Maintenance_query() {
               </tr>
             </thead>
             <tbody>
-              {/* New Entry Row */}
-              {newRow && (
-                <tr className="bg-white">
-                  <td className="py-3 px-5 border-b border-blue-gray-50">
-                    <div className="flex items-center gap-4">
-
-                      <input
-                        type="text"
-                        value={newRow.Maintenance_ID}
-                        onChange={(e) => handleNewRowChange(e, "Maintenance_ID")}
-                        className="border px-2 py-1 text-xs"
-                      />
-                    </div>
-                  </td>
-                  <td className="py-3 px-5 border-b border-blue-gray-50">
-                    <input
-                      type="text"
-                      value={newRow.Attraction_Name}
-                      onChange={(e) => handleNewRowChange(e, "Attraction_Name")}
-                      className="border px-2 py-1 text-xs"
-                    />
-                  </td>
-                  <td className="py-3 px-5 border-b border-blue-gray-50">
-                    <input
-                      type="text"
-                      value={newRow.Employee_ID}
-                      onChange={(e) => handleNewRowChange(e, "Employee_ID")}
-                      className="border px-2 py-1 text-xs"
-                    />
-                  </td>
-                  <td className="py-3 px-5 border-b border-blue-gray-50">
-                    <input
-                      type="text"
-                      value={newRow.Start_Date}
-                      onChange={(e) => handleNewRowChange(e, "Start_Date")}
-                      className="border px-2 py-1 text-xs"
-                      placeholder="MM/DD/YYYY"
-                    />
-                    {newErrors.Start_Date && (
-                      <Typography className="text-red-500 text-xs">{newErrors.Start_Date}</Typography>
-                    )}
-                  </td>
-                  <td className="py-3 px-5 border-b border-blue-gray-50">
-                    <input
-                      type="text"
-                      value={newRow.End_Date}
-                      onChange={(e) => handleNewRowChange(e, "End_Date")}
-                      className="border px-2 py-1 text-xs"
-                      placeholder="MM/DD/YYYY"
-                    />
-                    {newErrors.End_Date && (
-                      <Typography className="text-red-500 text-xs">{newErrors.End_Date}</Typography>
-                    )}
-                  </td>
-
-                  <td className="py-3 px-5 border-b border-blue-gray-50">
-                    <input
-                      type="text"
-                      value={newRow.Description}
-                      onChange={(e) => handleNewRowChange(e, "Description")}
-                      className="border px-2 py-1 text-xs"
-                    />
-                  </td>
-
-                  <td className="py-3 px-5 border-b border-blue-gray-50">
-                    <input
-                      type="text"
-                      value={newRow.Status}
-                      onChange={(e) => handleNewRowChange(e, "Status")}
-                      className="border px-2 py-1 text-xs"
-                    />
-                  </td>
-                  <td className="py-3 px-5 border-b border-blue-gray-50">
-  <button
-    onClick={handleSaveNewRow}
-    className={`text-xs font-semibold ${isNewRowValid() ? "text-green-600" : "text-gray-400 cursor-not-allowed"}`}
-    disabled={!isNewRowValid()}
-  >
-    Save
-  </button>
-</td>
-
-                </tr>
-              )}
 
 
               {authorsData.map(({ Maintenance_ID, Attraction_Name, Employee_ID, Start_Date, End_Date, Description, Status }, index) => {
