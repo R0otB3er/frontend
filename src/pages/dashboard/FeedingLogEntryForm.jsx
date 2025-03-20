@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Card, CardHeader, CardBody, Typography, Avatar } from "@material-tailwind/react";
+import { Card, CardHeader, CardBody, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
-import { getUniqueDropdownValues } from "@/data"; // ✅ Import new function
+import { getUniqueDropdownValues } from "@/data"; // ✅ Import function
 
 export function FeedingLogEntryForm() {
   const navigate = useNavigate();
@@ -11,16 +11,17 @@ export function FeedingLogEntryForm() {
     Food_Type: "",
     date: "",
     quantity: "",
-    img: "",
   });
 
   const [errors, setErrors] = useState({});
-  const [imageUploaded, setImageUploaded] = useState(false);
   const [dropdownValues, setDropdownValues] = useState({
     animalIDs: [],
     employeeIDs: [],
     foodTypes: [],
   });
+
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
 
   useEffect(() => {
     // Fetch unique values for dropdowns
@@ -32,14 +33,13 @@ export function FeedingLogEntryForm() {
     });
   }, []);
 
+  // Handle input changes
   const handleChange = (event, field) => {
     const value = event.target.value;
     let error = "";
 
     if (!value.trim()) {
       error = "This field cannot be empty.";
-    } else if (field === "date" && !/^\d{2}:\d{2} (AM|PM), \d{2}\/\d{2}\/\d{4}$/.test(value)) {
-      error = "Date must be in HH:MM AM/PM, MM/DD/YYYY format.";
     }
 
     setErrors((prevErrors) => ({
@@ -50,21 +50,53 @@ export function FeedingLogEntryForm() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleFileChange = (event) => {
-    setFormData((prev) => ({
-      ...prev,
-      img: URL.createObjectURL(event.target.files[0]),
-    }));
-    setImageUploaded(true);
+  // Handle Date and Time selection
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+    updateFeedingTime(event.target.value, selectedTime);
   };
 
+  const handleTimeChange = (event) => {
+    setSelectedTime(event.target.value);
+    updateFeedingTime(selectedDate, event.target.value);
+  };
+
+  // Update Feeding Time in proper format
+  const updateFeedingTime = (date, time) => {
+    if (date && time) {
+      const formattedTime = formatTimeTo12Hour(time);
+      const formattedDate = formatDateToMMDDYYYY(date);
+      const feedingTime = `${formattedTime}, ${formattedDate}`;
+      
+      setFormData((prev) => ({ ...prev, date: feedingTime }));
+    }
+  };
+
+  // Convert 24-hour time to 12-hour format
+  const formatTimeTo12Hour = (time) => {
+    const [hour, minute] = time.split(":");
+    let hourInt = parseInt(hour, 10);
+    const ampm = hourInt >= 12 ? "PM" : "AM";
+    hourInt = hourInt % 12 || 12;
+    return `${hourInt}:${minute} ${ampm}`;
+  };
+
+  // Format date to MM/DD/YYYY
+  const formatDateToMMDDYYYY = (date) => {
+    const [year, month, day] = date.split("-");
+    return `${month}/${day}/${year}`;
+  };
+
+  // ✅ Validate form before enabling submit button
   const isFormValid =
     Object.values(errors).every((err) => !err) &&
-    Object.values(formData).every((val) => val !== "") &&
-    formData.Animal_ID !== "Select an Animal" &&
-    formData.Employee_ID !== "Select an Employee" &&
-    formData.Food_Type !== "Select a Food Type";
+    formData.Animal_ID.trim() !== "" &&
+    formData.Employee_ID.trim() !== "" &&
+    formData.Food_Type.trim() !== "" &&
+    formData.date.trim() !== "" &&
+    formData.quantity.trim() !== "";
 
+  // Handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -80,9 +112,9 @@ export function FeedingLogEntryForm() {
       Food_Type: "",
       date: "",
       quantity: "",
-      img: "",
     });
-    setImageUploaded(false);
+    setSelectedDate("");
+    setSelectedTime("");
   };
 
   return (
@@ -95,18 +127,6 @@ export function FeedingLogEntryForm() {
         </CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-            {/* Image Upload 
-            <div className="flex items-center justify-center">
-              {!imageUploaded && (
-                <label className="cursor-pointer border border-gray-400 rounded-lg w-16 h-16 flex items-center justify-center">
-                  <span className="text-xl">+</span>
-                  <input type="file" className="hidden" onChange={handleFileChange} />
-                </label>
-              )}
-              {formData.img && <Avatar src={formData.img} size="xl" variant="rounded" />}
-            </div>
-            */}
-
             {/* Grid Layout for Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Animal ID Dropdown */}
@@ -119,14 +139,12 @@ export function FeedingLogEntryForm() {
                 >
                   <option value="" className="text-gray-400">Select an Animal</option>
                   {dropdownValues.animalIDs.map((id) => (
-                    <option key={id} value={id}>
-                      {id}
-                    </option>
+                    <option key={id} value={id}>{id}</option>
                   ))}
                 </select>
               </div>
 
-              {/* Employee ID Dropdown 
+              {/* Employee ID Dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Employee ID</label>
                 <select
@@ -136,13 +154,10 @@ export function FeedingLogEntryForm() {
                 >
                   <option value="" className="text-gray-400">Select an Employee</option>
                   {dropdownValues.employeeIDs.map((id) => (
-                    <option key={id} value={id}>
-                      {id}
-                    </option>
+                    <option key={id} value={id}>{id}</option>
                   ))}
                 </select>
               </div>
-              */}
 
               {/* Food Type Dropdown */}
               <div>
@@ -154,50 +169,30 @@ export function FeedingLogEntryForm() {
                 >
                   <option value="" className="text-gray-400">Select a Food Type</option>
                   {dropdownValues.foodTypes.map((food) => (
-                    <option key={food} value={food}>
-                      {food}
-                    </option>
+                    <option key={food} value={food}>{food}</option>
                   ))}
                 </select>
               </div>
 
-              {/* Date Input */}
-              <div>
-                <label htmlFor="dateInput" className="block text-sm font-medium text-gray-700">
-                  Date Input
-                </label>
-                <input
-                  type="date"
-                  id="dateInput"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Time Input */}
-              <div>
-                <label htmlFor="timeInput" className="block text-sm font-medium text-gray-700">
-                  Time Input
-                </label>
-                <input
-                  type="time"
-                  id="timeInput"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Feeding Time 
+              {/* Feeding Time (Date & Time Combined) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Feeding Time</label>
-                <input
-                  type="text"
-                  value={formData.date}
-                  onChange={(e) => handleChange(e, "date")}
-                  className="border px-3 py-2 w-full rounded-md shadow-sm"
-                  placeholder="HH:MM AM/PM, MM/DD/YYYY"
-                />
+                <div className="flex space-x-2">
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={handleDateChange}
+                    className="border px-3 py-2 w-1/2 rounded-md shadow-sm"
+                  />
+                  <input
+                    type="time"
+                    value={selectedTime}
+                    onChange={handleTimeChange}
+                    className="border px-3 py-2 w-1/2 rounded-md shadow-sm"
+                  />
+                </div>
                 {errors.date && <Typography className="text-red-500 text-xs">{errors.date}</Typography>}
               </div>
-              */}
 
               {/* Quantity */}
               <div>
@@ -214,10 +209,17 @@ export function FeedingLogEntryForm() {
 
             {/* Buttons */}
             <div className="flex justify-between mt-6">
-              <button onClick={() => navigate("/feeding-log-report")} className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700">
+              <button
+                onClick={() => navigate("/feeding-log-report")}
+                className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700"
+              >
                 Back to Feeding Log
               </button>
-              <button type="submit" className={`px-4 py-2 rounded-md text-white ${isFormValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`} disabled={!isFormValid}>
+              <button
+                type="submit"
+                className={`px-4 py-2 rounded-md text-white ${isFormValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`}
+                disabled={!isFormValid}
+              >
                 Submit
               </button>
             </div>
@@ -229,5 +231,6 @@ export function FeedingLogEntryForm() {
 }
 
 export default FeedingLogEntryForm;
+
 
 
