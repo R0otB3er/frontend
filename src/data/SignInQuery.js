@@ -1,35 +1,43 @@
-/*this is the data the Signin_query.jsx draws from. will be deprecated once backend is connected*/
+/* This is the data the Signin_query.jsx draws from. Will be deprecated once backend is connected */
 export const SignInQuery = [
-    {
-      Name: "234456425",
-      Role: "dsfgdfhds3",
-      Email: "JohnCena1@yahoo.com",
-    },
-    {
-        Name: "234456425",
-        Role: "dsfgdfhds3",
-        Email: "BeffJezos@gmail.com",
-      },
-      {
-        Name: "234456425",
-        Role: "dsfgdfhds3",
-        Email: "MarkyZ@bing.com",
-      },
-      {
-        Name: "234456425",
-        Role: "dsfgdfhds3",
-        Email: "smith23@gmail.com",
-      },
-      {
-        Name: "234456425",
-        Role: "dsfgdfhds3",
-        Email: "jacob5@hotmail.com",
-      },
-      {
-        Name: "234456425",
-        Role: "dsfgdfhds3",
-        Email: "dustin68@bing.com",
-      },
-  ];
-  
-  export default SignInQuery;
+  {
+    Name: "John Cena",
+    Role: "Veterinarian",
+    Email: "JohnCena1@yahoo.com",
+  },
+  {
+    Name: "Jeff Bezos",
+    Role: "Zookeeper",
+    Email: "BeffJezos@gmail.com",
+  },
+  {
+    Name: "Mark Zuckerberg",
+    Role: "Admin",
+    Email: "MarkyZ@bing.com",
+  },
+  {
+    Name: "Will Smith",
+    Role: "Security",
+    Email: "smith23@gmail.com",
+  },
+  {
+    Name: "Jacob Peterson",
+    Role: "Trainer",
+    Email: "jacob5@hotmail.com",
+  },
+  {
+    Name: "Dustin Hoffman",
+    Role: "Maintenance",
+    Email: "dustin68@bing.com",
+  },
+];
+
+/**
+* Function to get unique roles for dropdowns
+*/
+export const getUniqueRoles = () => {
+const uniqueRoles = [...new Set(SignInQuery.map((entry) => entry.Role))];
+return { uniqueRoles };
+};
+
+export default SignInQuery;

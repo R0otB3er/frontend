@@ -10,3 +10,4 @@ export * from "@/pages/dashboard/FeedingLogEntryForm";
 export * from "@/pages/dashboard/MaintenanceEntryForm";
 export * from "@/pages/dashboard/MedicalEntryForm";
 export * from "@/pages/dashboard/BulkPurchaseEntryForm";
+export * from "@/pages/dashboard/EmployeeEntryForm";
