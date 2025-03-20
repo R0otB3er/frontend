@@ -84,7 +84,7 @@ export function Maintenance_query() {
     if (!newRow) return false; // Prevents crashes
   
     // Check if any required field is empty (excluding image)
-    const requiredFields = ["Maintenance_ID", "Attraction_ID", "Employee_ID", "Start_Date", "End_Date", "Description", "Status"];
+    const requiredFields = ["Maintenance_ID", "Attraction_Name", "Employee_ID", "Start_Date", "End_Date", "Description", "Status"];
     if (requiredFields.some(field => !newRow[field]?.trim())) return false;
   
     // Validate Feeding Time format
@@ -98,7 +98,7 @@ export function Maintenance_query() {
   const handleAddNewRow = () => {
     setNewRow({
       Maintenance_ID: "",
-      Attraction_ID: "",
+      Attraction_Name: "",
       Employee_ID: "",
       Start_Date: "",
       End_Date: "",
@@ -138,7 +138,7 @@ export function Maintenance_query() {
           <table className="w-full min-w-[640px] table-auto">
             <thead>
               <tr>
-                {["Maintenance_ID", "Attraction_ID", "Employee_ID", "Start_Date", "End_Date", "Description", "Status", "Actions"].map((el) => (
+                {["Maintenance_ID", "Attraction_Name", "Employee_ID", "Start_Date", "End_Date", "Description", "Status", "Actions"].map((el) => (
                   <th key={el} className="border-b border-blue-gray-50 py-3 px-5 text-left">
                     <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
                       {el}
@@ -165,8 +165,8 @@ export function Maintenance_query() {
                   <td className="py-3 px-5 border-b border-blue-gray-50">
                     <input
                       type="text"
-                      value={newRow.Attraction_ID}
-                      onChange={(e) => handleNewRowChange(e, "Attraction_ID")}
+                      value={newRow.Attraction_Name}
+                      onChange={(e) => handleNewRowChange(e, "Attraction_Name")}
                       className="border px-2 py-1 text-xs"
                     />
                   </td>
@@ -234,7 +234,7 @@ export function Maintenance_query() {
               )}
 
 
-              {authorsData.map(({ Maintenance_ID, Attraction_ID, Employee_ID, Start_Date, End_Date, Description, Status }, index) => {
+              {authorsData.map(({ Maintenance_ID, Attraction_Name, Employee_ID, Start_Date, End_Date, Description, Status }, index) => {
                 const className = `py-3 px-5 ${index === authorsData.length - 1 ? "" : "border-b border-blue-gray-50"}`;
                 const hasErrors = errors[index] && Object.values(errors[index]).some((err) => err);
 
@@ -262,16 +262,16 @@ export function Maintenance_query() {
                         <>
                           <input
                             type="text"
-                            value={Attraction_ID}
-                            onChange={(e) => handleChange(e, index, "Attraction_ID")}
+                            value={Attraction_Name}
+                            onChange={(e) => handleChange(e, index, "Attraction_Name")}
                             className="border px-2 py-1 text-xs"
                           />
-                          {errors[index]?.Attraction_ID && (
-                            <Typography className="text-red-500 text-xs">{errors[index].Attraction_ID}</Typography>
+                          {errors[index]?.Attraction_Name && (
+                            <Typography className="text-red-500 text-xs">{errors[index].Attraction_Name}</Typography>
                           )}
                         </>
                       ) : (
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{Attraction_ID}</Typography>
+                        <Typography className="text-xs font-semibold text-blue-gray-600">{Attraction_Name}</Typography>
                       )}
                     </td>
                     <td className={className}>

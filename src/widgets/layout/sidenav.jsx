@@ -22,11 +22,10 @@ export function Sidenav({ brandImg, brandName, routes }) {
     <aside
       className={`${sidenavTypes[sidenavType]} ${
         openSidenav ? "translate-x-0" : "-translate-x-80"
-      } fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl transition-transform duration-300 xl:translate-x-0 border border-blue-gray-100`}
+      } fixed inset-0 z-50 my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl transition-transform duration-300 xl:translate-x-0 border border-blue-gray-100 flex flex-col`}
     >
-      <div
-        className={`relative`}
-      >
+      {/* Brand Logo and Close Button */}
+      <div className="relative flex-shrink-0">
         <Link to="/" className="py-6 px-8 text-center">
           <Typography
             variant="h6"
@@ -46,7 +45,9 @@ export function Sidenav({ brandImg, brandName, routes }) {
           <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-white" />
         </IconButton>
       </div>
-      <div className="m-4">
+
+      {/* Scrollable Nav Items (Scrollbar Hidden) */}
+      <div className="m-4 flex-1 overflow-y-auto custom-scrollbar">
         {routes.map(({ layout, title, pages }, key) => (
           <ul key={key} className="mb-4 flex flex-col gap-1">
             {title && (
@@ -94,6 +95,23 @@ export function Sidenav({ brandImg, brandName, routes }) {
     </aside>
   );
 }
+
+/* Hide scrollbar using Tailwind & CSS */
+const styles = `
+  .custom-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .custom-scrollbar {
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
+  }
+`;
+
+// Inject styles into the document
+const styleSheet = document.createElement("style");
+styleSheet.type = "text/css";
+styleSheet.innerText = styles;
+document.head.appendChild(styleSheet);
 
 Sidenav.defaultProps = {
   brandImg: "/img/logo-ct.png",
