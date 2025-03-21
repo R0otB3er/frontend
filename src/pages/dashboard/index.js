@@ -8,4 +8,7 @@ export * from "@/pages/dashboard/Signin_query";
 export * from "@/pages/dashboard/notifications";
 export * from "@/pages/dashboard/FeedingLogEntryForm";
 export * from "@/pages/dashboard/MaintenanceEntryForm";
-export * from "@/pages/dashboard/test";
+export * from "@/pages/dashboard/MedicalEntryForm";
+export * from "@/pages/dashboard/BulkPurchaseEntryForm";
+export * from "@/pages/dashboard/EmployeeEntryForm";
+export * from "@/pages/dashboard/TestForm"

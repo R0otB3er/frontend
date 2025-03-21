@@ -6,7 +6,7 @@ import {
   ServerStackIcon,
   RectangleStackIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, FeedingLogEntryForm, Adfeedinglog_query, MaintenanceEntryForm, Maintenance_query, Medical_query, Adbulkpurchase_query, Signin_query, Notifications, TestingForm } from "@/pages/dashboard";
+import { Home, Profile, FeedingLogEntryForm, Adfeedinglog_query, MaintenanceEntryForm, Maintenance_query, MedicalEntryForm, Medical_query, BulkPurchaseEntryForm, Adbulkpurchase_query, EmployeeEntryForm, Signin_query, Notifications, TestingForm } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 
 const icon = {
@@ -55,15 +55,33 @@ export const routes = [
       },
       {
         icon: <TableCellsIcon {...icon} />,
+        name: "Medical Entry",
+        path: "/Medical_Entry",
+        element: <MedicalEntryForm />,
+      },
+      {
+        icon: <TableCellsIcon {...icon} />,
         name: "Medical Query",
         path: "/Medical_Query",
         element: <Medical_query />,
       },
       {
         icon: <TableCellsIcon {...icon} />,
+        name: "Bulk Purchase Entry",
+        path: "/Bulk_Purchase_Entry",
+        element: <BulkPurchaseEntryForm />,
+      },
+      {
+        icon: <TableCellsIcon {...icon} />,
         name: "Bulk Purchase Query",
         path: "/Bulk_Purchase_Query",
         element: <Adbulkpurchase_query />,
+      },
+      {
+        icon: <TableCellsIcon {...icon} />,
+        name: "Employee Entry",
+        path: "/Employee_Entry",
+        element: <EmployeeEntryForm />,
       },
       {
         icon: <TableCellsIcon {...icon} />,
@@ -79,10 +97,11 @@ export const routes = [
       },
       {
         icon: <InformationCircleIcon {...icon} />,
-        name: "testing page",
-        path: "/testingForm",
+        name: "Testing",
+        path: "/Testing",
         element: <TestingForm />,
       },
+
     ],
   },
   {

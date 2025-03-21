@@ -114,6 +114,8 @@ export function FeedingLogEntryForm() {
     });
     setSelectedDate("");
     setSelectedTime("");
+
+
   };
 
   return (
@@ -208,8 +210,9 @@ export function FeedingLogEntryForm() {
 
             {/* Buttons */}
             <div className="flex justify-between mt-6">
-              <button
-                onClick={() => navigate("/feeding-log-report")}
+            <button
+                onClick={() => navigate("/dashboard/Feeding_Log_Query")}
+
                 className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700"
               >
                 Back to Feeding Log
