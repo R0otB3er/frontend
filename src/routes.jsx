@@ -6,7 +6,7 @@ import {
   ServerStackIcon,
   RectangleStackIcon,
 } from "@heroicons/react/24/solid";
-import { Home, Profile, FeedingLogEntryForm, Adfeedinglog_query, MaintenanceEntryForm, Maintenance_query, MedicalEntryForm, Medical_query, BulkPurchaseEntryForm, Adbulkpurchase_query, EmployeeEntryForm, Signin_query, Notifications } from "@/pages/dashboard";
+import { Home, Profile, FeedingLogEntryForm, Adfeedinglog_query, MaintenanceEntryForm, Maintenance_query, MedicalEntryForm, Medical_query, BulkPurchaseEntryForm, Adbulkpurchase_query, EmployeeEntryForm, Signin_query, Notifications, TestingForm } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
 
 const icon = {
@@ -95,6 +95,13 @@ export const routes = [
         path: "/notifications",
         element: <Notifications />,
       },
+      {
+        icon: <InformationCircleIcon {...icon} />,
+        name: "Testing",
+        path: "/Testing",
+        element: <TestingForm />,
+      },
+
     ],
   },
   {
