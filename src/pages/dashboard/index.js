@@ -8,3 +8,4 @@ export * from "@/pages/dashboard/Signin_query";
 export * from "@/pages/dashboard/notifications";
 export * from "@/pages/dashboard/FeedingLogEntryForm";
 export * from "@/pages/dashboard/MaintenanceEntryForm";
+export * from "@/pages/dashboard/test";
