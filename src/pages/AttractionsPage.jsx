@@ -23,7 +23,7 @@ const attractions = [
   {
     id: 3,
     name: 'Animal Training Demonstration',
-    image: 'https://images.unsplash.com/photo-1584633155097-19e7e26e8e03?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    image: 'https://content.api.news/v3/images/bin/287f4f52d97f5e4e2ef7215c9322fb56?width=1024',
     description: 'Learn about animal care and training techniques.',
     duration: '45 minutes',
     location: 'Training Arena',

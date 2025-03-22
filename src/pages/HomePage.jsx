@@ -16,7 +16,7 @@ function HomePage() {
         <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
           <div className="text-white">
             <h1 className="text-5xl md:text-6xl font-bold mb-4">
-              Welcome to WildLife Zoo
+              Welcome to Lonestar Houston Zoo
             </h1>
             <p className="text-xl md:text-2xl mb-8">
               Experience the wonders of nature up close
@@ -58,7 +58,7 @@ function HomePage() {
 
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <img
-              src="https://images.unsplash.com/photo-1582556833652-6c2dc70f7275?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+              src="https://www.columbuszoo.org/sites/default/files/styles/uncropped_xl/public/assets/attractions/North%20American%20Train%20%28Electric%29%200721%20-%20Grahm%20S.%20Jones%2C%20Columbus%20Zoo%20and%20Aquarium.jpg?itok=Regg2XxU"
               alt="Zoo Train"
               className="w-full h-48 object-cover"
             />

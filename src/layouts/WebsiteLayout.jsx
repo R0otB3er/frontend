@@ -13,7 +13,7 @@ export default function WebsiteLayout() {
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center space-x-2">
               <PawPrint className="h-8 w-8" />
-              <span className="text-xl font-bold">WildLife Zoo</span>
+              <span className="text-xl font-bold">Lonestar Houston Zoo</span>
             </Link>
             <div className="hidden md:block">
               <div className="flex items-center space-x-8">
@@ -62,7 +62,7 @@ export default function WebsiteLayout() {
             <div>
               <h3 className="text-lg font-semibold mb-4">Visit Us</h3>
               <p>123 Zoo Avenue</p>
-              <p>Wildlife City, WC 12345</p>
+              <p>Lonestar Houston City, WC 12345</p>
               <p>Phone: (555) 123-4567</p>
             </div>
             <div>
@@ -76,9 +76,6 @@ export default function WebsiteLayout() {
               <a href="#" className="block hover:text-green-200">Twitter</a>
               <a href="#" className="block hover:text-green-200">Instagram</a>
             </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-green-700 text-center">
-            <p>&copy; 2024 WildLife Zoo. All rights reserved.</p>
           </div>
         </div>
       </footer>

@@ -24,7 +24,7 @@ const animals = [
     id: 3,
     name: 'Red Panda',
     category: 'Mammals',
-    image: 'https://images.unsplash.com/photo-1585668874132-fa6dd7cc4a39?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    image: 'https://redpandanetwork.org/get/files/image/galleries/28138502587_a0a020ae9a_k.jpeg?resize=1920x0&crop=1920x1040',
     description: 'Adorable tree-dwelling mammals known for their reddish fur and cute appearance.',
     habitat: 'Mountain Forest',
     diet: 'Herbivore',
