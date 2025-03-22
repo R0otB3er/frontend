@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import routes from "@/routes";
+import { Admin } from "@/layouts";
 
 // This function recursively maps your route definitions
 function renderRoutes(routes) {
@@ -24,6 +25,7 @@ function App() {
   return (
     <Routes>
       {renderRoutes(routes)}
+      <Route path="/Admin/*" element={<Admin />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ShoppingCart, Filter } from 'lucide-react';
 
-function ShopPage() {
+export function ShopPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -101,5 +101,3 @@ function ShopPage() {
     </div>
   );
 }
-
-export default ShopPage;

@@ -6,11 +6,13 @@ import {
   Button,
   Typography,
 } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 export function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   //john.doe@email.com hashed_password1
   const [formData, setFormData] = useState({
@@ -59,6 +61,7 @@ export function SignIn() {
     });
 
     /* ADD NAVIGATION WHEN DASHBOARDS ARE READY*/
+    navigate("/Admin/home");
     setShowAlerts((current) => ({ ...current, blue: true }));
 
     setIsLoading(false);

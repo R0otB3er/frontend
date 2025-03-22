@@ -40,7 +40,7 @@ const attractions = [
   },
 ];
 
-function AttractionsPage() {
+export function AttractionsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold mb-8">Attractions & Shows</h1>
@@ -102,5 +102,3 @@ function AttractionsPage() {
     </div>
   );
 }
-
-export default AttractionsPage;
