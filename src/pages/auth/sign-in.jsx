@@ -149,7 +149,7 @@ export function SignIn() {
 
           <Button 
           type="submit"
-          className={`px-4 py-2 rounded-md text-white ${isFormValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`}
+          className={`w-full mt-6 rounded-md text-white ${isFormValid ? "mt-6 w-full" : "bg-gray-400 cursor-not-allowed"}`}
           disabled={!isFormValid}
           >
             Sign In
