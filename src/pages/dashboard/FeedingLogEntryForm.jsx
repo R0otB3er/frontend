@@ -10,13 +10,14 @@ export function FeedingLogEntryForm() {
     Employee_ID: "",
     Food_Type: "",
     date: "",
+    time: "",
     quantity: "",
+    unit:"",
   });
 
   const [errors, setErrors] = useState({});
   const [dropdownValues, setDropdownValues] = useState({
-    animalIDs: [],
-    employeeIDs: [],
+    animalNames: [],
     foodTypes: [],
   });
 
@@ -84,10 +85,10 @@ export function FeedingLogEntryForm() {
   // Format date to MM/DD/YYYY
   const formatDateToMMDDYYYY = (date) => {
     const [year, month, day] = date.split("-");
-    return `${month}/${day}/${year}`;
+    return `${month}-${day}-${year}`;
   };
 
-  // ✅ Validate form before enabling submit button
+  // Validate form before enabling submit button
   const isFormValid =
     Object.values(errors).every((err) => !err) &&
     formData.Animal_ID.trim() !== "" &&
@@ -144,22 +145,6 @@ export function FeedingLogEntryForm() {
                   ))}
                 </select>
               </div>
-
-              {/* Employee ID Dropdown }
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Employee ID</label>
-                <select
-                  value={formData.Employee_ID}
-                  onChange={(e) => handleChange(e, "Employee_ID")}
-                  className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                >
-                  <option value="" className="text-gray-400">Select an Employee</option>
-                  {dropdownValues.employeeIDs.map((id) => (
-                    <option key={id} value={id}>{id}</option>
-                  ))}
-                </select>
-              </div>*/}
-
               {/* Food Type Dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Food Type</label>
@@ -174,7 +159,6 @@ export function FeedingLogEntryForm() {
                   ))}
                 </select>
               </div>
-
               {/* Feeding Time (Date & Time Combined) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Feeding Time</label>

@@ -62,7 +62,7 @@ export const routes = [
   },
   {
     title:"admin",
-    layout: "Admin",
+    layout: "admin",
     element: <Admin />,
     pages: [
       { icon: <HomeIcon {...icon} />, name: "dashboard", path: "/home", element: <Home /> },

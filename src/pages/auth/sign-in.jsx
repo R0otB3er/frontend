@@ -9,6 +9,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useUserStore } from "@/user_managment/user_store";
 
 export function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,9 +20,8 @@ export function SignIn() {
     email: "",
     password:"",
   });
-  const [user_type, setRole] = useState({
-    user_type: "",
-  });
+
+  const role = useUserStore(state => state.role);
 
   const [showAlerts, setShowAlerts] = React.useState({
     blue: false,
@@ -56,12 +56,11 @@ export function SignIn() {
     const ad = await res.json();
     console.log(ad);
 
-    setRole({
-      user_type: ad.user_type,
-    });
+    useUserStore.getState().setUserState(ad.id, ad.role);
 
     /* ADD NAVIGATION WHEN DASHBOARDS ARE READY*/
-    navigate("/Admin/home");
+    navigate("//home");
+
     setShowAlerts((current) => ({ ...current, blue: true }));
 
     setIsLoading(false);
@@ -102,7 +101,7 @@ export function SignIn() {
             color={"blue"}
             onClose={() => setShowAlerts((current) => ({ ...current, ["blue"]: false }))}
           >
-            You are a {user_type.user_type}
+            You are a {role || ''}
           </Alert>
           <Typography variant="h2" className="font-bold mb-4">
             Sign In
