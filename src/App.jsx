@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import routes from "@/routes";
+import { Admin } from "@/layouts";
 
 // Helper to wrap routes inside layout components
 function renderRoutes(routes) {

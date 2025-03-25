@@ -1,16 +1,109 @@
+import React from "react";
 import {
   Card,
+  Alert,
   Input,
   Button,
   Typography,
 } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export function SignIn() {
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
+  //john.doe@email.com hashed_password1
+  const [formData, setFormData] = useState({
+    email: "",
+    password:"",
+  });
+  const [user_type, setRole] = useState({
+    user_type: "",
+  });
+
+  const [showAlerts, setShowAlerts] = React.useState({
+    blue: false,
+    red: false,
+  });
+
+  const isFormValid =
+    Object.values(errors).every((err) => !err) &&
+    formData.email.trim() !== "";
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const email = formData.email;
+    const password = formData.password;
+
+    setIsLoading(true);
+
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/loginUser`,{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify( { email , password } ),
+    });
+
+    if (!res.ok) {
+      console.error("Invalid email or password");
+      setShowAlerts((current) => ({ ...current, red: true }));
+      return;
+    }
+
+    const ad = await res.json();
+    console.log(ad);
+
+    setRole({
+      user_type: ad.user_type,
+    });
+
+    /* ADD NAVIGATION WHEN DASHBOARDS ARE READY*/
+    navigate("/Admin/home");
+    setShowAlerts((current) => ({ ...current, blue: true }));
+
+    setIsLoading(false);
+  }
+  
+  // Handle input changes
+  const handleChange = (event, field) => {
+    const value = event.target.value;
+    let error = "";
+
+    if (!value.trim()) {
+      error = "This field cannot be empty.";
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: error || null,
+    }));
+
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+  
   return (
     <section className="flex justify-center items-center min-h-screen">
       <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8">
         <div className="text-center">
+          <Alert
+            key="red"
+            open={showAlerts["red"]}
+            color={"red"}
+            onClose={() => setShowAlerts((current) => ({ ...current, ["red"]: false }))}
+          >
+            Invalid Login Credentials 
+          </Alert>
+          <Alert
+            key="blue"
+            open={showAlerts["blue"]}
+            color={"blue"}
+            onClose={() => setShowAlerts((current) => ({ ...current, ["blue"]: false }))}
+          >
+            You are a {user_type.user_type}
+          </Alert>
           <Typography variant="h2" className="font-bold mb-4">
             Sign In
           </Typography>
@@ -22,7 +115,7 @@ export function SignIn() {
             Enter your email and password to Sign In.
           </Typography>
         </div>
-        <form className="mt-8">
+        <form className="mt-8" onSubmit={handleSubmit}>
           <div className="mb-6 flex flex-col gap-6">
             <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
               Your email
@@ -31,7 +124,13 @@ export function SignIn() {
               size="lg"
               placeholder="name@mail.com"
               className="border border-gray-300 rounded-md px-3 py-2"
+              type="email"
+              value={formData.email}
+              id="email"
+              name="email"
+              onChange={(e) => handleChange(e, "email")}
             />
+            {errors.email && <Typography className="text-red-500 text-xs">{errors.email}</Typography>}
             <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
               Password
             </Typography>
@@ -40,10 +139,19 @@ export function SignIn() {
               size="lg"
               placeholder="********"
               className="border border-gray-300 rounded-md px-3 py-2"
+              value={formData.password}
+              id="password"
+              name="password"
+              onChange={(e) => handleChange(e, "password")}
             />
+            {errors.password && <Typography className="text-red-500 text-xs">{errors.password}</Typography>}
           </div>
 
-          <Button className="mt-6 w-full">
+          <Button 
+          type="submit"
+          className={`w-full mt-6 rounded-md text-white ${isFormValid ? "mt-6 w-full" : "bg-gray-400 cursor-not-allowed"}`}
+          disabled={!isFormValid}
+          >
             Sign In
           </Button>
 

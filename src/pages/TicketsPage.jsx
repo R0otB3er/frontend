@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Calendar, Users, Info } from 'lucide-react';
 
-function TicketsPage() {
+export function TicketsPage() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState('');
@@ -100,5 +100,3 @@ function TicketsPage() {
     </div>
   );
 }
-
-export default TicketsPage;

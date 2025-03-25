@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
-function HomePage() {
+export function HomePage() {
   return (
     <div>
       {/* Hero Section */}
@@ -126,5 +126,3 @@ function HomePage() {
     </div>
   );
 }
-
-export default HomePage;

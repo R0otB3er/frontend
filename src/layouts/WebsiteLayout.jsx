@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { Menu, X, PawPrint, Ticket, Compass, ShoppingBag } from "lucide-react";
 
-export default function WebsiteLayout() {
+export function WebsiteLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -102,3 +102,7 @@ function MobileLink({ to, icon, label }) {
     </Link>
   );
 }
+
+WebsiteLayout.displayName = "/src/layout/WebsiteLayout.jsx";
+
+export default WebsiteLayout;
