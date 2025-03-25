@@ -68,7 +68,7 @@ export const routes = [
     layout: "dashboard",
     element: <Dashboard />,
     pages: [
-      { icon: <HomeIcon {...icon} />, name: "dashboard", path: "/dashboard", element: <Home /> },
+      { icon: <HomeIcon {...icon} />, name: "dashboard", path: "/", element: <Home /> },
       { icon: <UserCircleIcon {...icon} />, name: "profile", path: "/dashboard/profile", element: <Profile /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "/dashboard/Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "/dashboard/Feeding_Log_Query", element: <Adfeedinglog_query /> },
@@ -87,7 +87,7 @@ export const routes = [
     layout: "caretaker",
     element: <CaretakerDashboard />,
     pages: [
-      { icon: <HomeIcon {...icon} />, name: "Caretaker Home", path: "/", element: <Cthome /> },
+      { icon: <HomeIcon {...icon} />, name: "Caretaker Home", path: "/caretaker", element: <Cthome /> },
       { icon: <UserCircleIcon {...icon} />, name: "Profile", path: "/caretaker/profile", element: <Ctprofile /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "/caretaker/Feeding_Log_Entry", element: <CtFeedingLogEntryForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "/caretaker/Feeding_Log_Query", element: <Ctfeedinglog_query /> },
