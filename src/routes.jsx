@@ -68,7 +68,7 @@ export const routes = [
     layout: "dashboard",
     element: <Dashboard />,
     pages: [
-      { icon: <HomeIcon {...icon} />, name: "dashboard", path: "/", element: <Home /> },
+      { icon: <HomeIcon {...icon} />, name: "dashboard", path: "/dashboard", element: <Home /> },
       { icon: <UserCircleIcon {...icon} />, name: "profile", path: "/dashboard/profile", element: <Profile /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "/dashboard/Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "/dashboard/Feeding_Log_Query", element: <Adfeedinglog_query /> },
@@ -110,7 +110,7 @@ export const routes = [
     layout: "public",
     element: <WebsiteLayout />,
     pages: [
-      { name: "Home", path: "/public", element: <HomePage /> },
+      { name: "Home", path: "/", element: <HomePage /> },
       { name: "Animals", path: "/animals", element: <AnimalsPage /> },
       { name: "Tickets", path: "/tickets", element: <TicketsPage /> },
       { name: "Attractions", path: "/attractions", element: <AttractionsPage /> },
