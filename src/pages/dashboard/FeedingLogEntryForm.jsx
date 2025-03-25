@@ -199,12 +199,23 @@ export function FeedingLogEntryForm() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Quantity</label>
                 <input
-                  type="text"
+                  min={0}
+                  type="number"
                   value={formData.quantity}
                   onChange={(e) => handleChange(e, "quantity")}
-                  className="border px-3 py-2 w-full rounded-md shadow-sm"
+                  className="border px-3 py-2 w-1/2 rounded-md shadow-sm"
                 />
                 {errors.quantity && <Typography className="text-red-500 text-xs">{errors.quantity}</Typography>}
+                <select
+                  value={formData.Food_Type}
+                  onChange={(e) => handleChange(e, "Food_Type")}
+                  className="border px-3 py-2 w-1/2 rounded-md shadow-sm bg-white text-gray-600"
+                >
+                  <option value="" className="text-gray-400">Select a Food Type</option>
+                  {dropdownValues.foodTypes.map((food) => (
+                    <option key={food} value={food}>{food}</option>
+                  ))}
+                </select>
               </div>
             </div>
 
