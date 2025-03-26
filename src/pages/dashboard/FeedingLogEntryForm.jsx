@@ -1,123 +1,123 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardBody, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
-import { getUniqueDropdownValues } from "@/data"; // ✅ Import function
 
 export function FeedingLogEntryForm() {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     Animal_ID: "",
-    Employee_ID: "",
+    Employee_ID: "5", // 🔥 Hardcoded to 5
     Food_Type: "",
     date: "",
     time: "",
     quantity: "",
-    unit:"",
+    Q_Unit: "",
   });
 
-  const [errors, setErrors] = useState({});
-  const [dropdownValues, setDropdownValues] = useState({
-    animalNames: [],
-    foodTypes: [],
+  const [dropdownData, setDropdownData] = useState({
+    Animals: [],
+    Food_types: [],
+    Units: [],
   });
 
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
 
   useEffect(() => {
-    // Fetch unique values for dropdowns
-    const { uniqueAnimals, uniqueEmployees, uniqueFoodTypes } = getUniqueDropdownValues();
-    setDropdownValues({
-      animalIDs: uniqueAnimals,
-      employeeIDs: uniqueEmployees,
-      foodTypes: uniqueFoodTypes,
-    });
+    const ID = 5; // Hardcoded employee ID
+  
+    fetch(`${import.meta.env.VITE_API_URL}/api/feeding/form-info`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ employee_ID: ID }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("📦 Form Info Response Data:", data); // ✅ Log the backend response
+        setDropdownData(data);
+        console.log(dropdownData.Units);
+      })
+      .catch((err) => console.error("❌ Error fetching feeding form info:", err));
   }, []);
+  
 
-  // Handle input changes
-  const handleChange = (event, field) => {
-    const value = event.target.value;
-    let error = "";
-
-    if (!value.trim()) {
-      error = "This field cannot be empty.";
-    }
-
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [field]: error || null,
-    }));
-
+  const handleChange = (e, field) => {
+    const value = e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Handle Date and Time selection
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
-    updateFeedingTime(event.target.value, selectedTime);
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+    updateDateTime(e.target.value, selectedTime);
   };
 
-  const handleTimeChange = (event) => {
-    setSelectedTime(event.target.value);
-    updateFeedingTime(selectedDate, event.target.value);
+  const handleTimeChange = (e) => {
+    setSelectedTime(e.target.value);
+    updateDateTime(selectedDate, e.target.value);
   };
 
-  // Update Feeding Time in proper format
-  const updateFeedingTime = (date, time) => {
+  const updateDateTime = (date, time) => {
     if (date && time) {
-      const formattedTime = formatTimeTo12Hour(time);
-      const formattedDate = formatDateToMMDDYYYY(date);
-      const feedingTime = `${formattedTime}, ${formattedDate}`;
-      
-      setFormData((prev) => ({ ...prev, date: feedingTime }));
+      setFormData((prev) => ({
+        ...prev,
+        date: date,
+        time: time,
+      }));
     }
   };
 
-  // Convert 24-hour time to 12-hour format
-  const formatTimeTo12Hour = (time) => {
-    const [hour, minute] = time.split(":");
-    let hourInt = parseInt(hour, 10);
-    const ampm = hourInt >= 12 ? "PM" : "AM";
-    hourInt = hourInt % 12 || 12;
-    return `${hourInt}:${minute} ${ampm}`;
-  };
-
-  // Format date to MM/DD/YYYY
-  const formatDateToMMDDYYYY = (date) => {
-    const [year, month, day] = date.split("-");
-    return `${month}-${day}-${year}`;
-  };
-
-  // Validate form before enabling submit button
   const isFormValid =
-    Object.values(errors).every((err) => !err) &&
-    formData.Animal_ID.trim() !== "" &&
-    formData.Food_Type.trim() !== "" &&
-    formData.date.trim() !== "" &&
-    formData.quantity.trim() !== "";
+    formData.Animal_ID && formData.Food_Type && formData.date && formData.time && formData.quantity && formData.Q_Unit;
 
-  // Handle form submission
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    if (!isFormValid) {
-      alert("Please fill out all fields correctly.");
-      return;
-    }
-
-    console.log("Form submitted:", formData);
-    setFormData({
-      Animal_ID: "",
-      Employee_ID: "",
-      Food_Type: "",
-      date: "",
-      quantity: "",
-    });
-    setSelectedDate("");
-    setSelectedTime("");
-
-
-  };
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      if (!isFormValid) return alert("Please complete all fields.");
+    
+      const payload = {
+        animal_ID: formData.Animal_ID,
+        employee_ID: formData.Employee_ID,
+        date: formData.date,
+        time: formData.time,
+        foodtID: formData.Food_Type,
+        quantity: formData.quantity,
+        unittID: formData.Q_Unit,
+      };
+    
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/feeding/create`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+    
+        const result = await res.json();
+    
+        if (res.ok) {
+          alert("Feeding log submitted!");
+    
+          // ✅ Reset the form here
+          setFormData({
+            Animal_ID: "",
+            Employee_ID: "5",
+            Food_Type: "",
+            date: "",
+            time: "",
+            quantity: "",
+            Q_Unit: "",
+          });
+    
+          setSelectedDate("");
+          setSelectedTime("");
+        } else {
+          console.error(result.error);
+          alert("Failed to submit feeding log.");
+        }
+      } catch (error) {
+        console.error("❌ Submission error:", error);
+        alert("Submission failed. Please try again.");
+      }
+    };
 
   return (
     <div className="mt-12 flex flex-col items-center">
@@ -129,23 +129,23 @@ export function FeedingLogEntryForm() {
         </CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-            {/* Grid Layout for Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Animal ID Dropdown */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Animal ID</label>
+                <label className="block text-sm font-medium text-gray-700">Animal</label>
                 <select
                   value={formData.Animal_ID}
                   onChange={(e) => handleChange(e, "Animal_ID")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
                 >
-                  <option value="" className="text-gray-400">Select an Animal</option>
-                  {dropdownValues.animalIDs.map((id) => (
-                    <option key={id} value={id}>{id}</option>
+                  <option value="">Select an Animal</option>
+                  {dropdownData.Animals.map((animal) => (
+                    <option key={animal.Animal_ID} value={animal.Animal_ID}>
+                      {animal.Animal_Name}
+                    </option>
                   ))}
                 </select>
               </div>
-              {/* Food Type Dropdown */}
+
               <div>
                 <label className="block text-sm font-medium text-gray-700">Food Type</label>
                 <select
@@ -153,15 +153,17 @@ export function FeedingLogEntryForm() {
                   onChange={(e) => handleChange(e, "Food_Type")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
                 >
-                  <option value="" className="text-gray-400">Select a Food Type</option>
-                  {dropdownValues.foodTypes.map((food) => (
-                    <option key={food} value={food}>{food}</option>
+                  <option value="">Select Food</option>
+                  {dropdownData.Food_types.map((food) => (
+                    <option key={food.foodtype_ID} value={food.foodtype_ID}>
+                      {food.food_Types}
+                    </option>
                   ))}
                 </select>
               </div>
-              {/* Feeding Time (Date & Time Combined) */}
+
               <div>
-                <label className="block text-sm font-medium text-gray-700">Feeding Time</label>
+                <label className="block text-sm font-medium text-gray-700">Date & Time</label>
                 <div className="flex space-x-2">
                   <input
                     type="date"
@@ -176,46 +178,47 @@ export function FeedingLogEntryForm() {
                     className="border px-3 py-2 w-1/2 rounded-md shadow-sm"
                   />
                 </div>
-                {errors.date && <Typography className="text-red-500 text-xs">{errors.date}</Typography>}
               </div>
 
-              {/* Quantity */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Quantity</label>
-                <input
-                  min={0}
-                  type="number"
-                  value={formData.quantity}
-                  onChange={(e) => handleChange(e, "quantity")}
-                  className="border px-3 py-2 w-1/2 rounded-md shadow-sm"
-                />
-                {errors.quantity && <Typography className="text-red-500 text-xs">{errors.quantity}</Typography>}
-                <select
-                  value={formData.Food_Type}
-                  onChange={(e) => handleChange(e, "Food_Type")}
-                  className="border px-3 py-2 w-1/2 rounded-md shadow-sm bg-white text-gray-600"
-                >
-                  <option value="" className="text-gray-400">Select a Food Type</option>
-                  {dropdownValues.foodTypes.map((food) => (
-                    <option key={food} value={food}>{food}</option>
-                  ))}
-                </select>
+                <div className="flex space-x-2">
+                  <input
+                    type="number"
+                    value={formData.quantity}
+                    onChange={(e) => handleChange(e, "quantity")}
+                    className="border px-3 py-2 w-1/2 rounded-md shadow-sm"
+                    min={0}
+                  />
+                  <select
+  value={formData.Q_Unit}
+  onChange={(e) => handleChange(e, "Q_Unit")}
+  className="border px-3 py-2 w-1/2 rounded-md shadow-sm bg-white text-gray-600"
+>
+  <option value="">Unit</option>
+  {dropdownData.Units.map((unit) => (
+    <option key={unit.Unit_ID} value={unit.Unit_ID}>
+      {unit.Unit_text}
+    </option>
+  ))}
+</select>
+
+                </div>
               </div>
             </div>
 
-            {/* Buttons */}
             <div className="flex justify-between mt-6">
-            <button
+              <button
                 onClick={() => navigate("/dashboard/Feeding_Log_Query")}
-
                 className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700"
               >
                 Back to Feeding Log
               </button>
               <button
                 type="submit"
-                className={`px-4 py-2 rounded-md text-white ${isFormValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`}
                 disabled={!isFormValid}
+                className={`px-4 py-2 rounded-md text-white ${isFormValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`}
+                
               >
                 Submit
               </button>
@@ -228,6 +231,7 @@ export function FeedingLogEntryForm() {
 }
 
 export default FeedingLogEntryForm;
+
 
 
 
