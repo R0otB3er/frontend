@@ -55,9 +55,9 @@ import SignUp from "@/pages/auth/sign-up";
 
 // Layouts
 import WebsiteLayout from "@/layouts/WebsiteLayout";
-import Dashboard from "@/layouts/Dashboard";
 import CaretakerDashboard from "@/layouts/CaretakerDashboard";
 import MaintenanceDashboard from "@/layouts/MaintenanceDashboard";
+import { Admin } from "./layouts";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -65,34 +65,33 @@ const icon = {
 
 export const routes = [
   {
-    layout: "dashboard",
-    element: <Dashboard />,
+    layout: "admin",
+    element: <Admin />,
     pages: [
-      { icon: <HomeIcon {...icon} />, name: "dashboard", path: "/", element: <Home /> },
-      { icon: <UserCircleIcon {...icon} />, name: "profile", path: "/dashboard/profile", element: <Profile /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "/dashboard/Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "/dashboard/Feeding_Log_Query", element: <Adfeedinglog_query /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Entry", path: "/dashboard/Maintenance_Entry", element: <MaintenanceEntryForm /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "/dashboard/Maintenance_Query", element: <Maintenance_query /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "/dashboard/Medical_Entry", element: <MedicalEntryForm /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Medical Query", path: "/dashboard/Medical_Query", element: <Medical_query /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase Entry", path: "/dashboard/Bulk_Purchase_Entry", element: <BulkPurchaseEntryForm /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase Query", path: "/dashboard/Bulk_Purchase_Query", element: <Adbulkpurchase_query /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Employee Entry", path: "/dashboard/Employee_Entry", element: <EmployeeEntryForm /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Sign-in Query", path: "/dashboard/Sign_in_Query", element: <Signin_query /> },
-      { icon: <InformationCircleIcon {...icon} />, name: "Testing", path: "/dashboard/Testing", element: <TestingForm /> },
+      { icon: <HomeIcon {...icon} />, name: "dashboard", path: "/admin", element: <Home /> },
+      { icon: <UserCircleIcon {...icon} />, name: "profile", path: "/admin/profile", element: <Profile /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "/admin/Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "/admin/Feeding_Log_Query", element: <Adfeedinglog_query /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Entry", path: "/admin/Maintenance_Entry", element: <MaintenanceEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "/admin/Maintenance_Query", element: <Maintenance_query /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "/admin/Medical_Entry", element: <MedicalEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Medical Query", path: "/admin/Medical_Query", element: <Medical_query /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase Entry", path: "/admin/Bulk_Purchase_Entry", element: <BulkPurchaseEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase Query", path: "/admin/Bulk_Purchase_Query", element: <Adbulkpurchase_query /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Employee Entry", path: "/admin/Employee_Entry", element: <EmployeeEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Sign-in Query", path: "/admin/Sign_in_Query", element: <Signin_query /> },
+      { icon: <InformationCircleIcon {...icon} />, name: "Testing", path: "/admin/Testing", element: <TestingForm /> },
     ],
   },
   {
     layout: "caretaker",
     element: <CaretakerDashboard />,
     pages: [
-      { icon: <HomeIcon {...icon} />, name: "Caretaker Home", path: "/caretaker", element: <Cthome /> },
-      { icon: <UserCircleIcon {...icon} />, name: "Profile", path: "/caretaker/profile", element: <Ctprofile /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "/caretaker/Feeding_Log_Entry", element: <CtFeedingLogEntryForm /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "/caretaker/Feeding_Log_Query", element: <Ctfeedinglog_query /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "/caretaker/Medical_Entry", element: <CtMedicalEntryForm /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Medical Query", path: "/caretaker/Medical_Query", element: <CtMedical_query /> },
+      { icon: <HomeIcon {...icon} />, name: "dashboard", path: "/caretaker", element: <Home /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "/caretaker/Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "/caretaker/Feeding_Log_Query", element: <Adfeedinglog_query /> },
+      //{ icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "/dashboard/Medical_Entry", element: <MedicalEntryForm /> },
+      //{ icon: <TableCellsIcon {...icon} />, name: "Medical Query", path: "/dashboard/Medical_Query", element: <Medical_query /> },
     ],
   },
   {
@@ -110,7 +109,7 @@ export const routes = [
     layout: "public",
     element: <WebsiteLayout />,
     pages: [
-      { name: "Home", path: "/public", element: <HomePage /> },
+      { name: "Home", path: "/", element: <HomePage /> },
       { name: "Animals", path: "/animals", element: <AnimalsPage /> },
       { name: "Tickets", path: "/tickets", element: <TicketsPage /> },
       { name: "Attractions", path: "/attractions", element: <AttractionsPage /> },

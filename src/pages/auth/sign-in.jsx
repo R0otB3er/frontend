@@ -16,7 +16,7 @@ export function SignIn() {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   //john.doe@email.com hashed_password1
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({ 
     email: "",
     password:"",
   });
@@ -54,13 +54,12 @@ export function SignIn() {
     }
 
     const ad = await res.json();
-    console.log(ad);
+    console.log(ad); //ad.Units[0].id();
 
     useUserStore.getState().setUserState(ad.id, ad.role);
 
     /* ADD NAVIGATION WHEN DASHBOARDS ARE READY*/
-    navigate("//home");
-
+    navigate("/caretaker");
     setShowAlerts((current) => ({ ...current, blue: true }));
 
     setIsLoading(false);
