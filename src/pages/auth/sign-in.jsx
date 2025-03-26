@@ -44,7 +44,7 @@ export function SignIn() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify( { email , password } ),
+      body: JSON.stringify( { email , password } ), 
     });
 
     if (!res.ok) {
@@ -53,13 +53,14 @@ export function SignIn() {
       return;
     }
 
-    const ad = await res.json();
-    console.log(ad); //ad.Units[0].id();
+    const data = await res.json();
+    console.log(data); 
 
-    useUserStore.getState().setUserState(ad.id, ad.role);
+    useUserStore.getState().setUserState(data.id, data.user_type);
 
     /* ADD NAVIGATION WHEN DASHBOARDS ARE READY*/
-    navigate("/caretaker");
+    console.log(`navigating to /${data.user_type}/dashboard`);
+    navigate(`/${data.user_type}/dashboard`);
     setShowAlerts((current) => ({ ...current, blue: true }));
 
     setIsLoading(false);

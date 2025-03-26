@@ -27,7 +27,7 @@ export function CtFeedingLogEntryForm() {
     // Fetch unique values for dropdowns
     const { uniqueAnimals, uniqueEmployees, uniqueFoodTypes } = getUniqueDropdownValues();
     setDropdownValues({
-      animalIDs: uniqueAnimals,
+      animalIDs: uniqueAnimals, //
       employeeIDs: uniqueEmployees,
       foodTypes: uniqueFoodTypes,
     });
