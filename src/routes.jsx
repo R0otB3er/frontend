@@ -55,7 +55,7 @@ import SignUp from "@/pages/auth/sign-up";
 
 // Layouts
 import WebsiteLayout from "@/layouts/WebsiteLayout";
-import Dashboard from "@/layouts/Dashboard";
+import Dashboard from "@/layouts/dashboard";
 import CaretakerDashboard from "@/layouts/CaretakerDashboard";
 import MaintenanceDashboard from "@/layouts/MaintenanceDashboard";
 
