@@ -11,13 +11,13 @@ export const useUserStore = create(
 				set({
 					loggedIn: true,
 					id: id,
-                    role: role
+                    user_type: role
 				}),
 			clearState: () => {
 				set({
 					loggedIn: false,
 					id: 0,
-                    role: ""
+                    user_type: ""
 				});
 				localStorage.removeItem("user-store");
 			},

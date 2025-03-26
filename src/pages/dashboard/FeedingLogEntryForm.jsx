@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardBody, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
+import { useUserStore } from "@/user_managment/user_store";
 
 export function FeedingLogEntryForm() {
   const navigate = useNavigate();
-
+  const employeeId = useUserStore(state => state.id); //uses stored id
   const [formData, setFormData] = useState({
     Animal_ID: "",
-    Employee_ID: "5", // 🔥 Hardcoded to 5
+    Employee_ID: employeeId,
     Food_Type: "",
     date: "",
     time: "",
@@ -25,7 +26,7 @@ export function FeedingLogEntryForm() {
   const [selectedTime, setSelectedTime] = useState("");
 
   useEffect(() => {
-    const ID = 5; // Hardcoded employee ID
+    const ID = employeeId; // Hardcoded employee ID
   
     fetch(`${import.meta.env.VITE_API_URL}/api/feeding/form-info`, {
       method: "POST",
@@ -34,7 +35,7 @@ export function FeedingLogEntryForm() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("📦 Form Info Response Data:", data); // ✅ Log the backend response
+        console.log("📦 Form Info Response Data:", data); //  Log the backend response
         setDropdownData(data);
         console.log(dropdownData.Units);
       })
@@ -96,10 +97,10 @@ export function FeedingLogEntryForm() {
         if (res.ok) {
           alert("Feeding log submitted!");
     
-          // ✅ Reset the form here
+          // Reset the form here
           setFormData({
             Animal_ID: "",
-            Employee_ID: "5",
+            Employee_ID: "",
             Food_Type: "",
             date: "",
             time: "",
@@ -191,18 +192,17 @@ export function FeedingLogEntryForm() {
                     min={0}
                   />
                   <select
-  value={formData.Q_Unit}
-  onChange={(e) => handleChange(e, "Q_Unit")}
-  className="border px-3 py-2 w-1/2 rounded-md shadow-sm bg-white text-gray-600"
->
-  <option value="">Unit</option>
-  {dropdownData.Units.map((unit) => (
-    <option key={unit.Unit_ID} value={unit.Unit_ID}>
-      {unit.Unit_text}
-    </option>
-  ))}
-</select>
-
+                    value={formData.Q_Unit}
+                    onChange={(e) => handleChange(e, "Q_Unit")}
+                    className="border px-3 py-2 w-1/2 rounded-md shadow-sm bg-white text-gray-600"
+                  >
+                    <option value="">Unit</option>
+                    {dropdownData.Units.map((unit) => (
+                      <option key={unit.Unit_ID} value={unit.Unit_ID}>
+                        {unit.Unit_text}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>

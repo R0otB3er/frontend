@@ -21,7 +21,9 @@ export function SignIn() {
     password:"",
   });
 
-  const role = useUserStore(state => state.role);
+  const role = useUserStore(state => state.user_type
+    
+  );
 
   const [showAlerts, setShowAlerts] = React.useState({
     blue: false,
