@@ -10,12 +10,13 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
+
 export function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   //john.doe@email.com hashed_password1
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({ 
     email: "",
     password:"",
   });
@@ -54,14 +55,14 @@ export function SignIn() {
     }
 
     const ad = await res.json();
-    console.log(ad);
+    console.log(ad); //ad.Units[0].id();
 
     setRole({
       user_type: ad.user_type,
     });
 
     /* ADD NAVIGATION WHEN DASHBOARDS ARE READY*/
-    navigate("/Admin/home");
+    navigate("/caretaker");
     setShowAlerts((current) => ({ ...current, blue: true }));
 
     setIsLoading(false);
