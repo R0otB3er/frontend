@@ -14,15 +14,15 @@ export function Admin() {
   const [controller, dispatch] = useMaterialTailwindController();
   const { sidenavType } = controller;
 
-    // Filter routes to include only those with layout "Admin"
-    const adminRoutes = routes.filter((route) => route.layout === "Admin");
+    // Filter routes to include only those with layout "admin"
+    const adminRoutes = routes.filter((route) => route.layout === "admin");
 
   return (
     <div className="min-h-screen bg-blue-gray-50/50">
       <Sidenav
         routes={adminRoutes}
         brandImg={
-          sidenavType === "dark" ? "/img/logo-ct.png" : "/img/logo-ct-dark.png"
+          sidenavType === "white" ? "/img/logo-ct.png" : "/img/logo-ct-dark.png"
         }
       />
       <div className="p-4 xl:ml-80">
@@ -38,13 +38,11 @@ export function Admin() {
           <Cog6ToothIcon className="h-5 w-5" />
         </IconButton>
         <Routes>
-          {routes.map(
-            ({ layout, pages }) =>
-              layout === "Admin" &&
-              pages.map(({ path, element }) => (
-                <Route exact path={path} element={element} />
-              ))
-          )}
+          {routes
+            .find((r) => r.layout === "admin")
+            ?.pages.map(({ path, element }) => (
+              <Route key={path} path={path} element={element} />
+          ))}
         </Routes>
         <div className="text-blue-gray-600">
           <Footer />
