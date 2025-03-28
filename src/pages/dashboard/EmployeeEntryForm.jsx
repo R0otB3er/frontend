@@ -43,7 +43,7 @@ export function EmployeeEntryForm() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // ✅ Validate form before enabling submit button
+  //  Validate form before enabling submit button
   const isFormValid =
     Object.values(errors).every((err) => !err) &&
     formData.Name.trim() !== "" &&

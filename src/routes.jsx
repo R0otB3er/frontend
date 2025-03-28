@@ -22,6 +22,7 @@ import {
   EmployeeEntryForm,
   Signin_query,
   TestingForm,
+  FeedingLogSearch,
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -71,6 +72,7 @@ export const routes = [
       //{ icon: <HomeIcon {...icon} />, name: "dashboard", path: "dashboard", element: <Home /> },
       //{ icon: <UserCircleIcon {...icon} />, name: "profile", path: "profile", element: <Profile /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Search", path: "Feeding_Log_Search", element: <FeedingLogSearch /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <Adfeedinglog_query /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Maintenance Entry", path: "Maintenance_Entry", element: <MaintenanceEntryForm /> },
      // { icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <Maintenance_query /> },
@@ -89,6 +91,7 @@ export const routes = [
     pages: [
       { icon: <HomeIcon {...icon} />, name: "dashboard", path: "dashboard", element: <Home /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Search", path: "Feeding_Log_Search", element: <FeedingLogSearch /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <Adfeedinglog_query /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "/dashboard/Medical_Entry", element: <MedicalEntryForm /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Medical Query", path: "/dashboard/Medical_Query", element: <Medical_query /> },

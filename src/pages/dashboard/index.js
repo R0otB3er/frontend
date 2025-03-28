@@ -12,3 +12,4 @@ export * from "@/pages/dashboard/MedicalEntryForm";
 export * from "@/pages/dashboard/BulkPurchaseEntryForm";
 export * from "@/pages/dashboard/EmployeeEntryForm";
 export * from "@/pages/dashboard/TestForm"
+export * from "@/pages/dashboard/FeedingLogSearch"
