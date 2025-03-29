@@ -110,7 +110,7 @@ export function FeedingLogSearch() {
       <Card className="w-full max-w-3xl shadow-lg rounded-lg p-6 bg-white">
         <CardHeader variant="gradient" color="gray" className="mb-6 p-6 rounded-t-lg">
           <Typography variant="h5" color="white" className="text-center">
-            Feeding Log Entry Form
+            Feeding Log Search
           </Typography>
         </CardHeader>
         <CardBody>
