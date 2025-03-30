@@ -71,7 +71,7 @@ export const routes = [
     layout: "admin",
     element: <Admin />,
     pages: [
-      //{ icon: <HomeIcon {...icon} />, name: "dashboard", path: "dashboard", element: <Home /> },
+      { icon: <HomeIcon {...icon} />, name: "dashboard", path: "dashboard", element: <Home /> },
       //{ icon: <UserCircleIcon {...icon} />, name: "profile", path: "profile", element: <Profile /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Search", path: "Feeding_Log_Search", element: <FeedingLogSearch /> },

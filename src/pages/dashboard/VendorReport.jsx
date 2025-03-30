@@ -20,7 +20,7 @@ export function VendorReport() {
     Merchandise: [],
   });
 
-  const [feedingLogs, setFeedingLogs] = useState([]);
+  const [ReportData, setReportData] = useState([]);
 
   const [selectedDate, setSelectedDate] = useState("");
 
@@ -28,7 +28,7 @@ export function VendorReport() {
 
   useEffect(() => {
   
-    fetch(`${import.meta.env.VITE_API_URL}/api/getReportFormInfo`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/getVendMerchReportFormInfo`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })
@@ -61,43 +61,38 @@ export function VendorReport() {
   };
 
     const handleSubmit = async (e) => {
-      e.preventDefault();
-      if (!isFormValid) return alert("Please Input a valid start and end date.");
+        e.preventDefault();
+        if (!isFormValid) return alert("Please Input a valid start and end date.");
     
-      const payload = {
-        animal_ID: formData.Animal_ID,
-        employee_ID: formData.Employee_ID,
-        date: formData.date,
-        time: formData.time,
-        foodtID: formData.Food_Type,
-        unittID: formData.Q_Unit,
-        speciesID: formData.Species_ID,
-        EmployeeID: formData.Employee_ID,
-        Habitat_ID: formData.Habitat_ID,
-      };
+        const payload = {
+            Department_ID: formData.Department_ID,
+            Vendor_ID: formData.Vendor_ID,
+            item_typeID: formData.item_typeID,
+            Merchandise_ID: formData.Merchandise_ID,
+            Start_Date: formData.Start_Date,
+            End_Date: formData.End_Date,
+        };
     
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/QueryFeedingLogs`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/QueryFeedingLogs`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
     
-        
-    
-        if (res.ok) {
-          setFeedingLogs([]);
-          const result = await res.json();
-          console.log(result);
-          setFeedingLogs(Array.isArray(result) ? result : []);
-        } else {
-          console.error(result.error);
-          alert("Failed to submit feeding log.");
+            if (res.ok) {
+                setReportData([]);
+                const result = await res.json();
+                console.log(result);
+                setReportData(Array.isArray(result) ? result : []);
+            } else {
+                console.error(result.error);
+                alert("Failed to submit feeding log.");
+            }
+        } catch (error) {
+            console.error("❌ Submission error:", error);
+            alert("Submission failed. Please try again.");
         }
-      } catch (error) {
-        console.error("❌ Submission error:", error);
-        alert("Submission failed. Please try again.");
-      }
 
     };
 
