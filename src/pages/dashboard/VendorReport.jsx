@@ -1,9 +1,23 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardBody, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
+import {StatisticsChart } from "@/widgets/charts";
+import DepartmentSalesChartConfig from "@/widgets/charts/vendor-sales-charts";
 
 export function VendorReport() {
   const navigate = useNavigate();
+  const salesData = [ //for testing
+    { date: '2023-01-01', sales: 1200, department: 'aquatic' },
+    { date: '2023-01-02', sales: 1900, department: 'aquatic' },
+    { date: '2023-01-03', sales: 1500, department: 'aquatic' },
+    { date: '2023-01-01', sales: 1100, department: 'safari' },
+    { date: '2023-01-02', sales: 2000, department: 'safari' },
+    { date: '2023-01-03', sales: 1300, department: 'safari' },
+    { date: '2023-01-01', sales: 900, department: 'reptile' },
+    { date: '2023-01-02', sales: 1200, department: 'reptile' },
+    { date: '2023-01-03', sales: 1100, department: 'reptile' },
+  ];
+
   const [formData, setFormData] = useState({
     Department_ID: "",
     Vendor_ID: "",
@@ -59,6 +73,11 @@ export function VendorReport() {
       }));
     }
   };
+
+  const chartConfig = DepartmentSalesChartConfig.getConfig({
+    data: salesData,
+    type: "line" // or "line", "area"
+  });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -210,83 +229,12 @@ export function VendorReport() {
         </CardBody>
       </Card>
 
-      <Card>
-        <CardHeader variant="gradient" color="gray" className="mb-8 p-6">
-          <Typography variant="h6" color="white">
-            Feeding Log Query
-          </Typography>
-        </CardHeader>
-        <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
-          <table className="w-full min-w-[640px] table-auto">
-            <thead>
-              <tr>
-                {["Animal name", "Species", "Caretaker name", "Food type", "Quantity", "feeding date", "feeding time"].map((el) => (
-                  <th key={el} className="border-b border-blue-gray-50 py-3 px-5 text-left">
-                    <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
-                      {el}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
- 
-            {feedingLogs.length > 0 ? (
-              feedingLogs.map(({ Animal_Name,
-                Name, 
-                first_name, 
-                last_name, 
-                food_Types, 
-                Quantity,
-                Feeding_Date,
-                Feeding_Time,
-                Unit_text}, index) => {
-                const className = `py-3 px-5 ${index === feedingLogs.length - 1 ? "" : "border-b border-blue-gray-50"}`;
-
-                return (
-                  <tr key={index}>
-                    <td className={className}>
-                      <div className="flex items-center gap-4">
-                        <div>
-                          <Typography variant="small" className="font-semibold text-blue-gray-600">
-                            {Animal_Name}
-                          </Typography>
-                        </div>
-                      </div>
-                    </td>
-                    <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{Name}</Typography>
-                    </td>
-                    <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{`${first_name} ${last_name}`}</Typography>
-                    </td>
-                    <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{food_Types}</Typography>
-                    </td>
-                    <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{`${Quantity} ${Unit_text}`}</Typography>
-                    </td>
-                    <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{Feeding_Date.split('T')[0]}</Typography>
-                    </td>
-                    <td className={className}>
-                        <Typography className="text-xs font-semibold text-blue-gray-600">{Feeding_Time}</Typography>
-                    </td>
-                   
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan="8" className="py-4 text-center text-gray-500">
-                  No feeding logs found
-                </td>
-              </tr>
-            )}
-            </tbody>
-          </table>
-        </CardBody>
-      </Card>
+      <StatisticsChart
+        color="green"
+        chart={chartConfig}
+        title="Monthly Department Sales"
+        description="Comparison across all departments"
+      />
     </div>
   );
 }

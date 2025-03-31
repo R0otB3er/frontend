@@ -1,37 +1,51 @@
-import PropTypes from 'prop-types';
 import { chartsConfig } from "@/configs";
-import StatisticsChart from "./StatisticsChart";
 
-const SalesChart = ({ 
+const DepartmentSalesChartConfig = ({ 
   data = [], 
-  title = "Sales Chart",
-  description = "Total sales over time",
+  title = "Department Sales",
+  description = "Sales by department over time",
   color = "blue",
-  type = "bar"
+  type = "line"  // Default to line chart for multiple series
 }) => {
-  // Transform the data into chart format
-  const series = [{
-    name: "Sales",
-    data: data.map(item => item.sales)
-  }];
+  // Group data by department
+  const departments = [...new Set(data.map(item => item.department))];
+  
+  // Create series for each department
+  const series = departments.map(dept => {
+    const deptData = data.filter(item => item.department === dept);
+    return {
+      name: dept,
+      data: deptData.map(item => item.sales)
+    };
+  });
 
-  const categories = data.map(item => {
-    // If date is a string, parse it
-    const date = typeof item.date === 'string' ? new Date(item.date) : item.date;
-    return date.toLocaleDateString('en-US', {
+  // Get unique dates (x-axis categories)
+  const dates = [...new Set(data.map(item => item.date))];
+  const categories = dates.map(date => {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
     });
   });
 
-  const chartConfig = {
+  // Generate distinct colors for each department
+  const departmentColors = [
+    "#388e3c",  // green
+    "#d32f2f",  // red
+    "#1976d2",  // blue
+    "#ffa000",  // amber
+    "#7b1fa2",  // purple
+  ];
+
+  return {
     type: type,
-    height: 220,
+    height: 300,  // Slightly taller to accommodate legend
     series: series,
     options: {
       ...chartsConfig,
-      colors: "#388e3c",
+      colors: departmentColors,
       plotOptions: {
         bar: {
           columnWidth: "16%",
@@ -42,41 +56,14 @@ const SalesChart = ({
         ...chartsConfig.xaxis,
         categories: categories,
       },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'center',
+      },
     },
   };
-
-  return (
-    <StatisticsChart
-      color={color}
-      chart={chartConfig}
-      title={title}
-      description={description}
-    />
-  );
 };
 
-SalesChart.propTypes = {
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      date: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.instanceOf(Date)
-      ]).isRequired,
-      sales: PropTypes.number.isRequired
-    })
-  ).isRequired,
-  title: PropTypes.node,
-  description: PropTypes.node,
-  color: PropTypes.string,
-  type: PropTypes.oneOf(['bar', 'line', 'area']),
+export default {
+  getConfig: DepartmentSalesChartConfig
 };
-
-SalesChart.defaultProps = {
-  data: [],
-  title: "Sales Chart",
-  description: "Total sales over time",
-  color: "blue",
-  type: "bar"
-};
-
-export default SalesChart;
