@@ -52,6 +52,8 @@ import AnimalsPage from "@/pages/AnimalsPage";
 import TicketsPage from "@/pages/TicketsPage";
 import AttractionsPage from "@/pages/AttractionsPage";
 import ShopPage from "@/pages/ShopPage";
+import Orders from "@/pages/Orders";
+import Payments from "@/pages/Payments";
 
 // Auth Pages
 import SignIn from "@/pages/auth/sign-in";
@@ -124,6 +126,8 @@ export const routes = [
       { name: "Tickets", path: "/tickets", element: <TicketsPage /> },
       { name: "Attractions", path: "/attractions", element: <AttractionsPage /> },
       { name: "Shop", path: "/shop", element: <ShopPage /> },
+      { name: "Orders", path: "/orders", element: <Orders /> },
+      { name: "Payment", path: "/payment", element: <Payments />,}
     ],
   },
   {
@@ -134,6 +138,7 @@ export const routes = [
       { icon: <RectangleStackIcon {...icon} />, name: "sign up", path: "/sign-up", element: <SignUp /> },
     ],
   },
+
 ];
 
 export default routes;
