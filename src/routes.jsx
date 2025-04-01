@@ -24,7 +24,8 @@ import {
   TestingForm,
   FeedingLogSearch,
   TicketSalesSearch,
-  VendorReport
+  VendorReport,
+  MaintenanceReport
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -85,6 +86,7 @@ export const routes = [
      // { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase Query", path: "Bulk_Purchase_Query", element: <Adbulkpurchase_query /> },
      { icon: <TableCellsIcon {...icon} />, name: "Ticket Sales Search", path: "Ticket_Sales_Search", element: <TicketSalesSearch />,
     },
+    { icon: <TableCellsIcon {...icon} />, name: "Maintenance Report", path: "Maintenance_Log", element: <MaintenanceReport /> },
       { icon: <TableCellsIcon {...icon} />, name: "Employee Entry", path: "Employee_Entry", element: <EmployeeEntryForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Sign-in Query", path: "Sign_in_Query", element: <Signin_query /> },
       //{ icon: <InformationCircleIcon {...icon} />, name: "Testing", path: "Testing", element: <TestingForm /> },
