@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardBody, Typography, Button } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
 
 const mockItems = [
-  { id: "TICKET-1", name: "Adult Ticket", price: 20, type: "Ticket", vendorID: 101 },
-  { id: "FOOD-1", name: "Hot Dog", price: 5, type: "Food", vendorID: 202 },
-  { id: "GIFT-1", name: "Zoo T-Shirt", price: 15, type: "GiftShop", vendorID: 303 },
+  { id: "TICKET-1", name: "Adult Ticket", price: 20, type: "Ticket"},
+  { id: "FOOD-1", name: "Hot Dog", price: 5, type: "Food"},
+  { id: "GIFT-1", name: "Zoo T-Shirt", price: 15, type: "GiftShop" },
 ];
 
 const taxRate = 0.0825; // 8.25% sales tax
@@ -27,10 +26,6 @@ export default function OrderPage() {
   const [orderDate, setOrderDate] = useState("");
   const [orderStatus, setOrderStatus] = useState("Pending");
 
-  useEffect(() => {
-    setOrderID(uuidv4());
-    setOrderDate(new Date().toISOString().split("T")[0]);
-  }, []);
 
   const handleAddToCart = (item) => {
     const exists = cart.find((i) => i.id === item.id);
@@ -69,7 +64,6 @@ export default function OrderPage() {
       orderStatus: "Confirmed",
       membershipLevel,
       saleType: cart.map((i) => i.type),
-      vendorIDs: [...new Set(cart.map((i) => i.vendorID))],
       subtotal,
       discount,
       tax,
