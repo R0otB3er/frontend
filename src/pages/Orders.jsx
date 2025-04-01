@@ -78,7 +78,7 @@ export default function OrderPage() {
     };
 
     localStorage.setItem("currentOrder", JSON.stringify(orderDetails));
-    navigate("/payment");
+    navigate("/payments");
   };
 
   return (

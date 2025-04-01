@@ -127,7 +127,7 @@ export const routes = [
       { name: "Attractions", path: "/attractions", element: <AttractionsPage /> },
       { name: "Shop", path: "/shop", element: <ShopPage /> },
       { name: "Orders", path: "/orders", element: <Orders /> },
-      { name: "Payment", path: "/payment", element: <Payments />,}
+      { name: "Payments", path: "/payments", element: <Payments />,}
     ],
   },
   {
