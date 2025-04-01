@@ -255,19 +255,28 @@ export function MaintenanceReport() {
       {/* Charts & Table */}
       {showCharts && !isLoading && (
         <>
-          <StatisticsChart
-            color="blue"
-            chart={costChartConfig}
-            title="Maintenance Cost Over Time"
-            description="Track maintenance spending by date"
-          />
+         {showCharts && !isLoading && (
+  <div className="flex flex-col md:flex-row gap-6 w-full max-w-6xl mt-10">
+    <div className="w-full md:w-1/2">
+      <StatisticsChart
+        color="white"
+        chart={costChartConfig}
+        title="Maintenance Cost Over Time"
+        description="Track maintenance spending by date"
+      />
+    </div>
+    <div className="w-full md:w-1/2">
+      <StatisticsChart
+        color="white"
+        chart={durationChartConfig}
+        title="Maintenance Duration by Category"
+        description="How long tasks took by type"
+      />
+    </div>
+  </div>
+)}
 
-          <StatisticsChart
-            color="orange"
-            chart={durationChartConfig}
-            title="Maintenance Duration by Category"
-            description="How long tasks took by type"
-          />
+          
 
           {/* Table of Chart Data */}
           <Card className="mt-6 w-full max-w-4xl">
