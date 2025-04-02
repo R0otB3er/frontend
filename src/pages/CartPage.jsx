@@ -36,7 +36,7 @@ export default function CartPage() {
                   {cartItems.map((item) => (
                     <tr key={item.id} className="border-t">
                       <td className="p-2">{item.name}</td>
-                      <td className="p-2">{item.category}</td>
+                      <td className="p-2">{item.category || item.type}</td>
                       <td className="p-2 text-center">
                         <input
                           type="number"
@@ -73,12 +73,10 @@ export default function CartPage() {
                   Total: ${total.toFixed(2)}
                 </Typography>
 
-                {/* Proceed to Checkout (disabled for now) */}
                 <Button
                   color="green"
                   className="mt-4"
                   onClick={() => {
-                    // Placeholder for future navigation to ShopOrders.jsx
                     console.log("Checkout button clicked.");
                   }}
                 >

@@ -2,6 +2,10 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 const CartContext = createContext();
 
+export function useCart() {
+  return useContext(CartContext);
+}
+
 export const CartProvider = ({ children }) => {
   const [userId, setUserId] = useState("guest");
   const [cartItems, setCartItems] = useState([]);
@@ -32,6 +36,11 @@ export const CartProvider = ({ children }) => {
     syncCart(updatedCart);
   };
 
+  const removeFromCart = (itemId) => {
+    const updatedCart = cartItems.filter((item) => item.id !== itemId);
+    syncCart(updatedCart);
+  };
+
   const clearCart = () => {
     syncCart([]);
   };
@@ -59,12 +68,17 @@ export const CartProvider = ({ children }) => {
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, clearCart, cartCount, switchUser }}
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        clearCart,
+        cartCount,
+        switchUser,
+      }}
     >
       {children}
     </CartContext.Provider>
   );
 };
-
-export const useCart = () => useContext(CartContext);
 
