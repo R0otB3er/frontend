@@ -166,45 +166,49 @@ const chartConfig = DepartmentSalesChartConfig.getConfig({
         <CardBody>
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <SelectField
-                label="Departments"
-                value={formData.Department_ID}
-                onChange={(e) => handleChange(e, "Department_ID")}
-                options={dropdownData.Departments.map((d) => ({
-                  value: d.Department_ID,
-                  label: d.name,
-                }))}
-              />
+            <SelectField
+  label="Departments"
+  value={formData.Department_ID}
+  onChange={(e) => handleChange(e, "Department_ID")}
+  defaultLabel="All Departments"
+  options={dropdownData.Departments.map((d) => ({
+    value: d.Department_ID,
+    label: d.name,
+  }))}
+/>
 
-              <SelectField
-                label="All Vendors"
-                value={formData.Vendor_ID}
-                onChange={(e) => handleChange(e, "Vendor_ID")}
-                options={dropdownData.Vendors.map((v) => ({
-                  value: v.Vendor_ID,
-                  label: v.name,
-                }))}
-              />
+<SelectField
+  label="Vendors"
+  value={formData.Vendor_ID}
+  onChange={(e) => handleChange(e, "Vendor_ID")}
+  defaultLabel="All Vendors"
+  options={dropdownData.Vendors.map((v) => ({
+    value: v.Vendor_ID,
+    label: v.name,
+  }))}
+/>
 
-              <SelectField
-                label="Merchandise Types"
-                value={formData.item_typeID}
-                onChange={(e) => handleChange(e, "item_typeID")}
-                options={dropdownData.Item_types.map((i) => ({
-                  value: i.item_typeID,
-                  label: i.item_types,
-                }))}
-              />
+<SelectField
+  label="Merchandise Types"
+  value={formData.item_typeID}
+  onChange={(e) => handleChange(e, "item_typeID")}
+  defaultLabel="All Merchandise Type"
+  options={dropdownData.Item_types.map((i) => ({
+    value: i.item_typeID,
+    label: i.item_types,
+  }))}
+/>
 
-              <SelectField
-                label="Specific Merchandise"
-                value={formData.Merchandise_ID}
-                onChange={(e) => handleChange(e, "Merchandise_ID")}
-                options={dropdownData.Merchandise.map((m) => ({
-                  value: m.Merchandise_ID,
-                  label: m.Item_Name,
-                }))}
-              />
+<SelectField
+  label="Specific Merchandise"
+  value={formData.Merchandise_ID}
+  onChange={(e) => handleChange(e, "Merchandise_ID")}
+  defaultLabel="All Merchandise"
+  options={dropdownData.Merchandise.map((m) => ({
+    value: m.Merchandise_ID,
+    label: m.Item_Name,
+  }))}
+/>
 
               <InputField
                 label="Start Date"
@@ -293,7 +297,7 @@ const chartConfig = DepartmentSalesChartConfig.getConfig({
   );
 }
 
-function SelectField({ label, value, onChange, options }) {
+function SelectField({ label, value, onChange, options, defaultLabel }) {
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700">{label}</label>
@@ -302,7 +306,7 @@ function SelectField({ label, value, onChange, options }) {
         onChange={onChange}
         className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
       >
-        <option value="">All</option>
+        <option value="">{defaultLabel}</option>
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
@@ -312,6 +316,7 @@ function SelectField({ label, value, onChange, options }) {
     </div>
   );
 }
+
 
 function InputField({ label, ...props }) {
   return (
