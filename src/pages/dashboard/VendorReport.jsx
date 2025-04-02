@@ -1,23 +1,30 @@
 import { useState, useEffect } from "react";
-import { Card, CardHeader, CardBody, Typography } from "@material-tailwind/react";
-import { useNavigate } from "react-router-dom";
-import {StatisticsChart } from "@/widgets/charts";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Typography,
+  Spinner,
+} from "@material-tailwind/react";
+import { StatisticsChart } from "@/widgets/charts";
 import DepartmentSalesChartConfig from "@/widgets/charts/vendor-sales-charts";
 
-export function VendorReport() {
-  const navigate = useNavigate();
-  const salesData = [ //for testing
-    { date: '2023-01-01', sales: 1200, department: 'aquatic' },
-    { date: '2023-01-02', sales: 1900, department: 'aquatic' },
-    { date: '2023-01-03', sales: 1500, department: 'aquatic' },
-    { date: '2023-01-01', sales: 1100, department: 'safari' },
-    { date: '2023-01-02', sales: 2000, department: 'safari' },
-    { date: '2023-01-03', sales: 1300, department: 'safari' },
-    { date: '2023-01-01', sales: 900, department: 'reptile' },
-    { date: '2023-01-02', sales: 1200, department: 'reptile' },
-    { date: '2023-01-03', sales: 1100, department: 'reptile' },
-  ];
+const dummySalesData = [
+  { date: "2023-01-01", sales: 2026, department: "Aquatic" },
+  { date: "2023-01-01", sales: 1925, department: "Safari" },
+  { date: "2023-01-01", sales: 2413, department: "Reptile" },
+  { date: "2023-01-01", sales: 2057, department: "Birds" },
+  { date: "2023-01-02", sales: 1730, department: "Aquatic" },
+  { date: "2023-01-02", sales: 1168, department: "Safari" },
+  { date: "2023-01-02", sales: 1317, department: "Reptile" },
+  { date: "2023-01-02", sales: 1032, department: "Birds" },
+  { date: "2023-01-03", sales: 1651, department: "Aquatic" },
+  { date: "2023-01-03", sales: 2094, department: "Safari" },
+  // ... add more as needed
+];
 
+
+export function VendorReport() {
   const [formData, setFormData] = useState({
     Department_ID: "",
     Vendor_ID: "",
@@ -27,96 +34,129 @@ export function VendorReport() {
     End_Date: "",
   });
 
-  const [dropdownData, setDropdownData] = useState({
+  /*const [dropdownData, setDropdownData] = useState({
     Departments: [],
     Vendors: [],
     Item_types: [],
     Merchandise: [],
+  });*/
+  const [dropdownData] = useState({
+    Departments: [
+      { Department_ID: "1", name: "Aquatic" },
+      { Department_ID: "2", name: "Safari" },
+      { Department_ID: "3", name: "Reptile" },
+    ],
+    Vendors: [
+      { Vendor_ID: "1", name: "ZooSupply Co." },
+      { Vendor_ID: "2", name: "WildThings Inc." },
+    ],
+    Item_types: [
+      { item_typeID: "1", item_types: "Toys" },
+      { item_typeID: "2", item_types: "Snacks" },
+    ],
+    Merchandise: [
+      { Merchandise_ID: "1", Item_Name: "Plush Lion" },
+      { Merchandise_ID: "2", Item_Name: "Zoo Map Poster" },
+    ],
   });
 
-  const [ReportData, setReportData] = useState([]);
+  const [chartData, setChartData] = useState([]);
+  const [reportData, setReportData] = useState([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showCharts, setShowCharts] = useState(false);
 
-  const [selectedDate, setSelectedDate] = useState("");
+  const isFormValid =
+    formData.Start_Date &&
+    formData.End_Date &&
+    formData.Start_Date < formData.End_Date;
 
-  const isFormValid = formData.Start_Date && formData.End_Date && (formData.Start_Date < formData.End_Date);
-
-  useEffect(() => {
-  
+  /*useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/getVendMerchReportFormInfo`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => res.json())
-      .then((data) => {
-        console.log("Query Form Info Response Data:", data); //  Log the backend response
-        setDropdownData(data);
-      })
-      .catch((err) => console.error("Error fetching feeding form info:", err));
-  }, []);
-  
+      .then((data) => setDropdownData(data))
+      .catch((err) => console.error("Error fetching form data:", err));
+  }, []);*/
 
   const handleChange = (e, field) => {
     const value = e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleDateChange = (e) => {
-    setSelectedDate(e.target.value);
-    updateDate(e.target.value);
-  };
-
-  const updateDate = (date) => {
-    if (date) {
-      setFormData((prev) => ({
-        ...prev,
-        date: date,
-      }));
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!isFormValid) {
+      alert("Please input a valid start and end date.");
+      return;
     }
+  
+    setIsLoading(true);
+    setShowCharts(false);
+  
+    setTimeout(() => {
+      const filtered = dummySalesData.filter((row) => {
+        const rowDate = new Date(row.date);
+        const start = new Date(formData.Start_Date);
+        const end = new Date(formData.End_Date);
+        return rowDate >= start && rowDate <= end;
+      });
+  
+      setChartData(filtered);
+      setReportData(filtered);
+      const total = filtered.reduce((sum, row) => sum + row.sales, 0);
+setTotalRevenue(total);
+      setIsLoading(false);
+      setShowCharts(true);
+    }, 800);
   };
 
-  const chartConfig = DepartmentSalesChartConfig.getConfig({
-    data: salesData,
-    type: "line" // or "line", "area"
-  });
+    /*const payload = { ...formData };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!isFormValid) return alert("Please Input a valid start and end date.");
-    
-        const payload = {
-            Department_ID: formData.Department_ID,
-            Vendor_ID: formData.Vendor_ID,
-            item_typeID: formData.item_typeID,
-            Merchandise_ID: formData.Merchandise_ID,
-            Start_Date: formData.Start_Date,
-            End_Date: formData.End_Date,
-        };
-    
-        try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/QueryFeedingLogs`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-    
-            if (res.ok) {
-                setReportData([]);
-                const result = await res.json();
-                console.log(result);
-                setReportData(Array.isArray(result) ? result : []);
-            } else {
-                console.error(result.error);
-                alert("Failed to submit feeding log.");
-            }
-        } catch (error) {
-            console.error("❌ Submission error:", error);
-            alert("Submission failed. Please try again.");
-        }
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/QueryVendorSalesReport`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    };
+      const result = await res.json();
+
+      if (res.ok) {
+        const chartFormatted = result.map((row) => ({
+          date: row.date,
+          sales: row.sales,
+          department: row.department,
+        }));
+
+        setChartData(chartFormatted);
+        setReportData(result);
+        setShowCharts(true);
+      } else {
+        console.error(result.error);
+        alert("Failed to generate report.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Submission failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };*/
+
+
+const chartConfig = DepartmentSalesChartConfig.getConfig({
+  data: chartData,
+  type: "line",
+});
+
+
 
   return (
     <div className="mt-12 flex flex-col items-center">
+      {/* Form Card */}
       <Card className="w-full max-w-3xl shadow-lg rounded-lg p-6 bg-white">
         <CardHeader variant="gradient" color="gray" className="mb-6 p-6 rounded-t-lg">
           <Typography variant="h5" color="white" className="text-center">
@@ -126,101 +166,67 @@ export function VendorReport() {
         <CardBody>
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Departments</label>
-                <select
-                  value={formData.Department_ID}
-                  onChange={(e) => handleChange(e, "Animal_ID")}
-                  className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                >
-                  <option value="">All Departments</option>
-                  {dropdownData.Departments.map((department) => (
-                    <option key={department.Department_ID} value={department.Department_ID}>
-                      {department.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <SelectField
+                label="Departments"
+                value={formData.Department_ID}
+                onChange={(e) => handleChange(e, "Department_ID")}
+                options={dropdownData.Departments.map((d) => ({
+                  value: d.Department_ID,
+                  label: d.name,
+                }))}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">All Vendors</label>
-                <select
-                  value={formData.Vendor_ID}
-                  onChange={(e) => handleChange(e, "Vendor_ID")}
-                  className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                >
-                  <option value="">Vendors</option>
-                  {dropdownData.Vendors.map((vendors) => (
-                    <option key={vendors.Vendor_ID} value={vendors.Vendor_ID}>
-                      {vendors.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <SelectField
+                label="All Vendors"
+                value={formData.Vendor_ID}
+                onChange={(e) => handleChange(e, "Vendor_ID")}
+                options={dropdownData.Vendors.map((v) => ({
+                  value: v.Vendor_ID,
+                  label: v.name,
+                }))}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Merchandise Types</label>
-                <select
-                  value={formData.item_typeID}
-                  onChange={(e) => handleChange(e, "item_typeID")}
-                  className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                >
-                  <option value="">All types</option>
-                  {dropdownData.Item_types.map((types) => (
-                    <option key={types.item_typeID} value={types.item_typeID}>
-                      {types.item_types}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <SelectField
+                label="Merchandise Types"
+                value={formData.item_typeID}
+                onChange={(e) => handleChange(e, "item_typeID")}
+                options={dropdownData.Item_types.map((i) => ({
+                  value: i.item_typeID,
+                  label: i.item_types,
+                }))}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Specific Merchandise</label>
-                <select
-                  value={formData.Merchandise_ID}
-                  onChange={(e) => handleChange(e, "Merchandise_ID")}
-                  className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                >
-                  <option value="">Employee</option>
-                  {dropdownData.Merchandise.map((merchandise) => (
-                    <option key={merchandise.Merchandise_ID} value={merchandise.Merchandise_ID}>
-                      {merchandise.Item_Name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <SelectField
+                label="Specific Merchandise"
+                value={formData.Merchandise_ID}
+                onChange={(e) => handleChange(e, "Merchandise_ID")}
+                options={dropdownData.Merchandise.map((m) => ({
+                  value: m.Merchandise_ID,
+                  label: m.Item_Name,
+                }))}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Start Date</label>
-                <div className="flex space-x-2">
-                  <input
-                    type="date"
-                    value={formData.Start_Date}
-                    onChange={(e) => handleChange(e, "Start_Date")}
-                    className="border px-3 py-2 w-full rounded-md shadow-sm"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">End Date</label>
-                <div className="flex space-x-2">
-                  <input
-                    type="date"
-                    value={formData.End_Date}
-                    onChange={(e) => handleChange(e, "End_Date")}
-                    className="border px-3 py-2 w-full rounded-md shadow-sm"
-                  />
-                </div>
-              </div>
-
+              <InputField
+                label="Start Date"
+                type="date"
+                value={formData.Start_Date}
+                onChange={(e) => handleChange(e, "Start_Date")}
+              />
+              <InputField
+                label="End Date"
+                type="date"
+                value={formData.End_Date}
+                onChange={(e) => handleChange(e, "End_Date")}
+              />
             </div>
 
-            <div className="flex justify-between mt-6">
+            <div className="flex justify-end mt-6">
               <button
                 type="submit"
                 disabled={!isFormValid}
-                className={`px-4 py-2 rounded-md text-white ${isFormValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`} 
+                className={`px-4 py-2 rounded-md text-white ${
+                  isFormValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"
+                }`}
               >
                 Submit
               </button>
@@ -229,12 +235,89 @@ export function VendorReport() {
         </CardBody>
       </Card>
 
-      <StatisticsChart
-        color="green"
-        chart={chartConfig}
-        title="Monthly Department Sales"
-        description="Comparison across all departments"
-      />
+      {/* Spinner */}
+      {isLoading && <Spinner className="mt-8 h-10 w-10 text-gray-700" />}
+
+      {/* Chart and Table */}
+      {showCharts && !isLoading && (
+        <>
+          <StatisticsChart
+            color="white"
+            chart={chartConfig}
+            title="Monthly Department Sales"
+            description="Comparison across all departments"
+          />
+
+          <Card className="mt-6 w-full max-w-4xl">
+            <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
+              <Typography variant="h6" color="white">
+                Sales Report Table
+              </Typography>
+            </CardHeader>
+            <CardBody className="overflow-x-auto">
+              <table className="min-w-full table-auto">
+                <thead>
+                  <tr>
+                    {["Date", "Sales", "Department"].map((head) => (
+                      <th key={head} className="px-4 py-2 text-left text-sm font-semibold text-blue-gray-500">
+                        {head}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {reportData.map((row, idx) => (
+                    <tr key={idx} className="border-t">
+                      <td className="px-4 py-2">{row.date}</td>
+                      <td className="px-4 py-2">${row.sales}</td>
+                      <td className="px-4 py-2">{row.department}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {reportData.length > 0 && (
+  <div className="mt-4 text-right pr-4">
+    <Typography variant="h6" className="text-green-700">
+      Total Revenue: ${totalRevenue.toLocaleString()}
+    </Typography>
+  </div>
+)}
+
+            </CardBody>
+          </Card>
+          
+        </>
+      )}
+    </div>
+  );
+}
+
+function SelectField({ label, value, onChange, options }) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <select
+        value={value}
+        onChange={onChange}
+        className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
+      >
+        <option value="">All</option>
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function InputField({ label, ...props }) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <input {...props} className="border px-3 py-2 w-full rounded-md shadow-sm" />
     </div>
   );
 }

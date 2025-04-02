@@ -22,6 +22,7 @@ export function TicketSalesSearch() {
   });
 
   const [ticketResults, setTicketResults] = useState([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
 
   const departments = ["Customer Service", "Sales", "Marketing"];
   const attractions = {
@@ -106,6 +107,10 @@ export function TicketSalesSearch() {
     });
 
     setTicketResults(filtered);
+
+    // 💰 Calculate total revenue assuming $20 per ticket
+    const total = filtered.reduce((sum, row) => sum + row.ticketsSold * 20, 0);
+    setTotalRevenue(total);
   };
 
   return (
@@ -258,6 +263,15 @@ export function TicketSalesSearch() {
               )}
             </tbody>
           </table>
+
+          {/* Display total revenue below the table */}
+          {ticketResults.length > 0 && (
+            <div className="mt-4 text-right pr-4">
+              <Typography variant="h6" className="text-green-700">
+                Total Revenue: ${totalRevenue.toLocaleString()}
+              </Typography>
+            </div>
+          )}
         </CardBody>
       </Card>
     </div>
@@ -265,4 +279,5 @@ export function TicketSalesSearch() {
 }
 
 export default TicketSalesSearch;
+
 
