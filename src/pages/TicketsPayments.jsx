@@ -9,7 +9,7 @@ import {
 } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 
-export default function Payments() {
+export default function TicketsPayments() {
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState({
