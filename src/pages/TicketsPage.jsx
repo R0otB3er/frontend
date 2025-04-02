@@ -14,7 +14,7 @@ export default function TicketsPage() {
     }
 
     // Directly navigate to Orders page
-    navigate("/orders");
+    navigate("/ticketsorders");
   };
 
   return (

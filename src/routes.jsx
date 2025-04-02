@@ -52,8 +52,9 @@ import AnimalsPage from "@/pages/AnimalsPage";
 import TicketsPage from "@/pages/TicketsPage";
 import AttractionsPage from "@/pages/AttractionsPage";
 import ShopPage from "@/pages/ShopPage";
-import Orders from "@/pages/Orders";
-import Payments from "@/pages/Payments";
+import TicketsOrders from "@/pages/TicketsOrders";
+import TicketsPayments from "@/pages/TicketsPayments";
+import CartPage from "@/pages/CartPage";
 
 // Auth Pages
 import SignIn from "@/pages/auth/sign-in";
@@ -126,8 +127,9 @@ export const routes = [
       { name: "Tickets", path: "/tickets", element: <TicketsPage /> },
       { name: "Attractions", path: "/attractions", element: <AttractionsPage /> },
       { name: "Shop", path: "/shop", element: <ShopPage /> },
-      { name: "Orders", path: "/orders", element: <Orders /> },
-      { name: "Payments", path: "/payments", element: <Payments />,}
+      { name: "Ticekts Orders", path: "/ticketsorders", element: <TicketsOrders /> },
+      { name: "Tickets Payments", path: "/ticketspayments", element: <TicketsPayments />,},
+      { name: "Cart", path: "/cart", element: <CartPage /> }
     ],
   },
   {

@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { Menu, X, PawPrint, Ticket, Compass, ShoppingBag } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 export function WebsiteLayout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const { cartCount } = useCart();
 
   return (
     <div className="min-h-screen bg-gray-50 text-black">
@@ -23,6 +27,14 @@ export function WebsiteLayout() {
                 <NavLink to="/shop" icon={<ShoppingBag />} label="Shop" />
                 <NavLink to="/sign-in" label="Sign In" />
                 <NavLink to="/sign-up" label="Sign Up" />
+                <Link to="/cart" className="relative hover:text-green-200">
+  <ShoppingCart className="h-6 w-6" />
+  {cartCount > 0 && (
+    <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+      {cartCount}
+    </span>
+  )}
+</Link>
               </div>
             </div>
             <div className="md:hidden">
@@ -45,6 +57,14 @@ export function WebsiteLayout() {
               <MobileLink to="/shop" icon={<ShoppingBag />} label="Shop" />
               <MobileLink to="/sign-in" label="Sign In" />
               <MobileLink to="/sign-up" label="Sign Up" />
+<Link to="/cart" className="relative hover:text-green-200">
+  <ShoppingCart className="h-6 w-6" />
+  {cartCount > 0 && (
+    <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+      {cartCount}
+    </span>
+  )}
+</Link>
             </div>
           </div>
         )}

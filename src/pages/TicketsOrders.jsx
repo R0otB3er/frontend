@@ -1,14 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardHeader, CardBody, Typography, Button } from "@material-tailwind/react";
+import React, { useState } from "react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Typography,
+  Button,
+} from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 
-const mockItems = [
-  { id: "TICKET-1", name: "Adult Ticket", price: 20, type: "Ticket"},
-  { id: "FOOD-1", name: "Hot Dog", price: 5, type: "Food"},
-  { id: "GIFT-1", name: "Zoo T-Shirt", price: 15, type: "GiftShop" },
+const ticketItems = [
+  { id: "TICKET-1", name: "Adult Ticket", price: 20, type: "Ticket" },
+  { id: "TICKET-2", name: "Child Ticket", price: 10, type: "Ticket" },
+  { id: "TICKET-3", name: "Senior Ticket", price: 15, type: "Ticket" },
+  { id: "TICKET-4", name: "Veteran Ticket", price: 12, type: "Ticket" }, // 👈 Added
 ];
 
-const taxRate = 0.0825; // 8.25% sales tax
+const taxRate = 0.0825;
 
 const membershipDiscounts = {
   none: 0,
@@ -17,15 +24,10 @@ const membershipDiscounts = {
   gold: 0.15,
 };
 
-export default function OrderPage() {
+export default function TicketsOrder() {
   const navigate = useNavigate();
-
   const [cart, setCart] = useState([]);
-  const [membershipLevel, setMembershipLevel] = useState("silver"); // hardcoded for now
-  const [orderID, setOrderID] = useState("");
-  const [orderDate, setOrderDate] = useState("");
-  const [orderStatus, setOrderStatus] = useState("Pending");
-
+  const [membershipLevel] = useState("silver");
 
   const handleAddToCart = (item) => {
     const exists = cart.find((i) => i.id === item.id);
@@ -51,43 +53,38 @@ export default function OrderPage() {
   const calculateSubtotal = () =>
     cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const discountRate = membershipDiscounts[membershipLevel] || 0;
   const subtotal = calculateSubtotal();
-  const discount = subtotal * discountRate;
+  const discount = subtotal * membershipDiscounts[membershipLevel];
   const tax = (subtotal - discount) * taxRate;
   const total = subtotal - discount + tax;
 
   const handleCheckout = () => {
     const orderDetails = {
-      orderID,
-      orderDate,
-      orderStatus: "Confirmed",
+      type: "ticket",
       membershipLevel,
-      saleType: cart.map((i) => i.type),
+      items: cart,
       subtotal,
       discount,
       tax,
       total,
-      items: cart,
     };
-
-    localStorage.setItem("currentOrder", JSON.stringify(orderDetails));
-    navigate("/payments");
+    localStorage.setItem("ticketOrder", JSON.stringify(orderDetails));
+    navigate("/ticketspayments");
   };
 
   return (
     <div className="max-w-5xl mx-auto py-10 px-4">
       <Typography variant="h4" className="mb-6 text-center">
-        Place Your Order
+        Purchase Tickets
       </Typography>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        {mockItems.map((item) => (
+        {ticketItems.map((item) => (
           <Card key={item.id}>
             <CardHeader floated={false} shadow={false} className="p-4">
               <Typography variant="h6">{item.name}</Typography>
               <Typography variant="small" color="gray">
-                ${item.price.toFixed(2)} - {item.type}
+                ${item.price.toFixed(2)}
               </Typography>
             </CardHeader>
             <CardBody className="pt-0">
@@ -107,6 +104,7 @@ export default function OrderPage() {
         <Typography variant="h6" className="mb-4">
           Your Cart
         </Typography>
+
         {cart.length === 0 ? (
           <Typography color="gray">No items in cart.</Typography>
         ) : (
@@ -114,7 +112,6 @@ export default function OrderPage() {
             <thead>
               <tr>
                 <th className="text-left p-2">Item</th>
-                <th className="text-left p-2">Type</th>
                 <th className="text-center p-2">Quantity</th>
                 <th className="text-right p-2">Subtotal</th>
               </tr>
@@ -123,7 +120,6 @@ export default function OrderPage() {
               {cart.map((item) => (
                 <tr key={item.id}>
                   <td className="p-2">{item.name}</td>
-                  <td className="p-2">{item.type}</td>
                   <td className="p-2 text-center">
                     <input
                       type="number"
@@ -147,16 +143,14 @@ export default function OrderPage() {
         {cart.length > 0 && (
           <div className="mt-6 space-y-2 text-right">
             <Typography>Subtotal: ${subtotal.toFixed(2)}</Typography>
-            <Typography>Discount ({membershipLevel}): -${discount.toFixed(2)}</Typography>
+            <Typography>
+              Discount ({membershipLevel}): -${discount.toFixed(2)}
+            </Typography>
             <Typography>Tax: ${tax.toFixed(2)}</Typography>
             <Typography variant="h6" className="text-green-600">
               Total: ${total.toFixed(2)}
             </Typography>
-            <Button
-              onClick={handleCheckout}
-              color="green"
-              className="mt-4"
-            >
+            <Button onClick={handleCheckout} color="green" className="mt-4">
               Proceed to Payment
             </Button>
           </div>
@@ -165,3 +159,4 @@ export default function OrderPage() {
     </div>
   );
 }
+

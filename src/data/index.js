@@ -10,3 +10,4 @@ export * from "@/data/MaintenanceQuery";
 export * from "@/data/MedicalQuery";
 export * from "@/data/BulkPurchaseQuery";
 export * from "@/data/SignInQuery";
+export * from "@/data/giftshopProducts";
