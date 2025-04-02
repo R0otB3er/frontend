@@ -20,7 +20,7 @@ export default function Payments() {
   });
 
   useEffect(() => {
-    const savedOrder = localStorage.getItem("currentOrder");
+    const savedOrder = localStorage.getItem("ticketOrder"); // 🔁 Fix this line
     if (savedOrder) {
       setOrder(JSON.parse(savedOrder));
     } else {
@@ -49,7 +49,8 @@ export default function Payments() {
     }
 
     alert("Payment successful! Thank you for your order.");
-    localStorage.removeItem("currentOrder");
+    localStorage.removeItem("ticketOrder"); 
+
     navigate("/");
   };
 
