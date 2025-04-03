@@ -90,7 +90,7 @@ export function DashboardNavbar() {
               className="hidden items-center gap-1 px-4 xl:flex normal-case"
             >
               <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
-              Sign In
+              Sign Out
             </Button>
             <IconButton
               variant="text"
@@ -108,12 +108,7 @@ export function DashboardNavbar() {
             </MenuHandler>
             <MenuList className="w-max border-0">
               <MenuItem className="flex items-center gap-3">
-                <Avatar
-                  src="https://demos.creative-tim.com/material-dashboard/assets/img/team-2.jpg"
-                  alt="item-1"
-                  size="sm"
-                  variant="circular"
-                />
+          
                 <div>
                   <Typography
                     variant="small"

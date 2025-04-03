@@ -1,37 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { ShoppingCart, Filter } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { ShoppingCart, Filter } from "lucide-react";
+import giftshopProducts from "@/data/giftshopProducts";
+import { useCart } from "@/context/CartContext";
 
 export default function ShopPage() {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
+  const { addToCart } = useCart();
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/products')
-      .then(response => {
-        setProducts(response.data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching products:', error);
-        setLoading(false);
-      });
+    setProducts(giftshopProducts);
   }, []);
 
-  const categories = ['All', ...new Set(products.map(product => product.category))];
+  const categories = ["All", ...new Set(products.map((product) => product.category))];
 
-  const filteredProducts = selectedCategory === 'All'
-    ? products
-    : products.filter(product => product.category === selectedCategory);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-      </div>
-    );
-  }
+  const filteredProducts =
+    selectedCategory === "All"
+      ? products
+      : products.filter((product) => product.category === selectedCategory);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
@@ -44,8 +31,10 @@ export default function ShopPage() {
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            {categories.map(category => (
-              <option key={category} value={category}>{category}</option>
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
             ))}
           </select>
         </div>
@@ -65,7 +54,10 @@ export default function ShopPage() {
                 <span className="text-2xl font-bold text-green-600">
                   ${product.price}
                 </span>
-                <button className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                <button
+                  onClick={() => addToCart(product)}
+                  className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                >
                   <ShoppingCart className="h-5 w-5 mr-2" />
                   Add to Cart
                 </button>
@@ -81,7 +73,7 @@ export default function ShopPage() {
           <div>
             <h3 className="font-semibold mb-2">Shipping</h3>
             <p className="text-gray-600">
-              Free shipping on orders over $50. Standard delivery within 3-5 business days.
+              Free shipping on orders over $50. Standard delivery within 3–5 business days.
             </p>
           </div>
           <div>
