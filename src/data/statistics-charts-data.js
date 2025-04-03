@@ -9,7 +9,7 @@ const websiteViewsChart = {
       data: [50, 20, 10, 22, 50, 10, 40],
     },
   ],
-  options: {
+  options: { 
     ...chartsConfig,
     colors: "#388e3c",
     plotOptions: {
