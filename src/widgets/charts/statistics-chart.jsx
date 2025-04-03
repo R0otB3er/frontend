@@ -1,7 +1,7 @@
 import {
   Card,
   CardHeader,
-  CardBody,
+  CardBody, 
   CardFooter,
   Typography,
 } from "@material-tailwind/react";
