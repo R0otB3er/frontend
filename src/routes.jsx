@@ -55,6 +55,7 @@ import ShopPage from "@/pages/ShopPage";
 import TicketsOrders from "@/pages/TicketsOrders";
 import TicketsPayments from "@/pages/TicketsPayments";
 import CartPage from "@/pages/CartPage";
+import ShopPayments from "@/pages/ShopPayments";
 
 // Auth Pages
 import SignIn from "@/pages/auth/sign-in";
@@ -129,7 +130,8 @@ export const routes = [
       { name: "Shop", path: "/shop", element: <ShopPage /> },
       { name: "Ticekts Orders", path: "/ticketsorders", element: <TicketsOrders /> },
       { name: "Tickets Payments", path: "/ticketspayments", element: <TicketsPayments />,},
-      { name: "Cart", path: "/cart", element: <CartPage /> }
+      { name: "Cart", path: "/cart", element: <CartPage /> },
+      { name: "Shop Payments", path: "/ShopPayments", element: <ShopPayments /> }
     ],
   },
   {
