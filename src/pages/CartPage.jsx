@@ -1,9 +1,11 @@
 import React from "react";
 import { useCart } from "@/context/CartContext";
 import { Typography, Button, Card, CardBody } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom"; // ✅ Step 1
 
 export default function CartPage() {
   const { cartItems, removeFromCart, updateQuantity } = useCart();
+  const navigate = useNavigate(); // ✅ Step 2
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const taxRate = 0.0825;
@@ -74,14 +76,23 @@ export default function CartPage() {
                 </Typography>
 
                 <Button
-                  color="green"
-                  className="mt-4"
-                  onClick={() => {
-                    console.log("Checkout button clicked.");
-                  }}
-                >
-                  Proceed to Checkout
-                </Button>
+  color="green"
+  className="mt-4"
+  onClick={() => {
+    const orderDetails = {
+      items: cartItems,
+      subtotal,
+      discount: 0, // optional for now
+      tax,
+      total,
+    };
+    localStorage.setItem("shopOrder", JSON.stringify(orderDetails));
+    navigate("/ShopPayments");
+  }}
+>
+  Proceed to Checkout
+</Button>
+
               </div>
             </>
           )}
