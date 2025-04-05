@@ -26,11 +26,11 @@ export function FeedingLogEntryForm() {
   const [selectedTime, setSelectedTime] = useState("");
 
   useEffect(() => {
-    const ID = employeeId; // Hardcoded employee ID
+    const ID = employeeId; 
   
     fetch(`${import.meta.env.VITE_API_URL}/api/feeding/form-info`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json" }, 
       body: JSON.stringify({ employee_ID: ID }),
     })
       .then((res) => res.json())
