@@ -1,6 +1,8 @@
+import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { useEffect, useState} from "react";
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
-import { IconButton } from "@material-tailwind/react";
+import { IconButton, Alert } from "@material-tailwind/react";
 import {
   Sidenav,
   DashboardNavbar,
@@ -13,6 +15,27 @@ import { useMaterialTailwindController, setOpenConfigurator } from "@/context";
 export function MaintenanceDashboard() {
   const [controller, dispatch] = useMaterialTailwindController();
   const { sidenavType } = controller;
+  const [notifications, setNotifications] = useState([]);
+  
+  const [showAlerts, setShowAlerts] = React.useState({
+      blue: false,
+    });
+  
+    useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL}/api/getMaintenanceNotifications`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("recived data: ",data);
+        setNotifications(data.notifications || []);
+        if (data.notifications && data.notifications.length > 0) {
+          setShowAlerts((current) => ({ ...current, ["blue"]: true }));
+        }
+      })
+      .catch((err) => console.error("Error fetching form data:", err));
+  }, []);
 
   return (
     <div className="min-h-screen bg-blue-gray-50/50">
@@ -22,6 +45,17 @@ export function MaintenanceDashboard() {
       />
       <div className="p-4 xl:ml-80">
         <DashboardNavbar />
+        {showAlerts.blue && notifications.length > 0 && (
+          <Alert
+            key="blue"
+            open={showAlerts["blue"]}
+            color={"blue"}
+            onClose={() => setShowAlerts((current) => ({ ...current, ["blue"]: false }))}
+          >
+            {/* Display first notification or join all messages */}
+            {notifications[0].message || notifications.join(", ")}
+          </Alert>
+        )}
         <Configurator />
         <IconButton
           size="lg"

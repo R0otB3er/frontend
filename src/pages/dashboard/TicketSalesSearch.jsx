@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -7,110 +7,125 @@ import {
   Checkbox,
 } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
+import {DepartmentChartConfig, 
+  AttractionChartConfig, 
+  GeneralChartConfig, 
+  PersonTypeChartConfig, 
+  MemTypeChartConfig
+} from "@/widgets/charts/ticket-sales-charts"
+import { StatisticsChart } from "@/widgets/charts";
 
 export function TicketSalesSearch() {
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    department: "",
-    attraction: "",
-    personType: "",
-    membershipStatus: "",
-    startDate: "",
-    endDate: "",
-    allAttractions: false,
+    Department: "",
+    Attraction: "",
+    Person_Type: "",
+    Membership_type: "",
+    start_date: "",
+    end_date: "",
+    IsGeneral: false,
   });
 
-  const [ticketResults, setTicketResults] = useState([]);
+  const [dropdownData, setDropdownData] = useState({
+    departments: [],
+    attractions: [],
+    personTypes: [],
+    membershipStatuses: [],
+  });
+
+  const [ticketResults, setTicketResults] = useState({
+    GeneralSales: [],
+    DeptSales: [],
+    AttSales: [],
+    PTypeSales: [],
+    MemTypeSales: []
+  });
+
   const [totalRevenue, setTotalRevenue] = useState(0);
 
-  const departments = ["Customer Service", "Sales", "Marketing"];
-  const attractions = {
-    "Customer Service": ["Zoo Map Station", "Lost & Found"],
-    Sales: ["Main Entrance", "VIP Booth"],
-    Marketing: ["Photo Booth", "Interactive Display"],
-  };
+  const isFormValid = formData.start_date && formData.end_date && (formData.start_date < formData.end_date);
 
-  const personTypes = ["Adult", "Veteran", "Student", "Children", "Seniors"];
-  const membershipStatuses = ["None", "Bronze", "Silver", "Gold"];
+  useEffect(() => {
+    
+      fetch(`${import.meta.env.VITE_API_URL}/api/getTicketReportFormInfo`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Query Form Info Response Data:", data); //  Log the backend response
+          setDropdownData(data);
+          console.log(dropdownData);
+        })
+        .catch((err) => console.error("Error fetching feeding form info:", err));
+  }, []);
 
-  const dummyData = [
-    {
-      attraction: "Main Entrance",
-      department: "Sales",
-      personType: "Adult",
-      membership: "Gold",
-      date: "2025-03-25",
-      ticketsSold: 120,
-    },
-    {
-      attraction: "Photo Booth",
-      department: "Marketing",
-      personType: "Student",
-      membership: "Silver",
-      date: "2025-03-26",
-      ticketsSold: 35,
-    },
-    {
-      attraction: "Zoo Map Station",
-      department: "Customer Service",
-      personType: "Senior",
-      membership: "None",
-      date: "2025-03-26",
-      ticketsSold: 12,
-    },
-  ];
 
   const handleChange = (e, field) => {
-    const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
-
+    let value;
+    
+    // Handle different input types
+    switch (e.target.type) {
+      case 'checkbox':
+        value = e.target.checked;
+        break;
+      case 'date':
+        value = e.target.value; // This will be in YYYY-MM-DD format
+        break;
+      default:
+        value = e.target.value;
+    }
+  
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
-      if (field === "allAttractions" && value === true) {
-        updated.department = "";
-        updated.attraction = "";
+      
+      // Reset dependent fields when parent changes
+      if (field === "IsGeneral" && value === true) {
+        updated.Department = "";
+        updated.Attraction = "";
       }
+      
+      // Additional logic for date validation if needed
+      if (field === "start_date" || field === "end_date") {
+        // Ensure end date is not before start date
+        if (field === "end_date" && updated.start_date && value < updated.start_date) {
+          // You could set some error state here or adjust the value
+          console.warn("End date cannot be before start date");
+        }
+        
+        if (field === "start_date" && updated.end_date && value > updated.end_date) {
+          console.warn("Start date cannot be after end date");
+        }
+      }
+      
       return updated;
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isFormValid) return alert("Please complete all fields.");
 
-    const filtered = dummyData.filter((row) => {
-      const matchDepartment =
-        formData.allAttractions || !formData.department || row.department === formData.department;
-
-      const matchAttraction =
-        formData.allAttractions || !formData.attraction || row.attraction === formData.attraction;
-
-      const matchPersonType =
-        !formData.personType || row.personType === formData.personType;
-
-      const matchMembership =
-        !formData.membershipStatus || row.membership === formData.membershipStatus;
-
-      const matchStartDate =
-        !formData.startDate || new Date(row.date) >= new Date(formData.startDate);
-
-      const matchEndDate =
-        !formData.endDate || new Date(row.date) <= new Date(formData.endDate);
-
-      return (
-        matchDepartment &&
-        matchAttraction &&
-        matchPersonType &&
-        matchMembership &&
-        matchStartDate &&
-        matchEndDate
-      );
-    });
-
-    setTicketResults(filtered);
-
-    // 💰 Calculate total revenue assuming $20 per ticket
-    const total = filtered.reduce((sum, row) => sum + row.ticketsSold * 20, 0);
-    setTotalRevenue(total);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/getTicketReport`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+  
+      if (res.ok) {
+        const result = await res.json();
+        console.log(result);
+        setTicketResults(result);
+      } else {
+        console.error(result.error);
+        alert("Failed to submit feeding log.");
+      }
+    } catch (error) {
+      console.error("❌ Submission error:", error);
+      alert("Submission failed. Please try again.");
+    }
   };
 
   return (
@@ -118,7 +133,7 @@ export function TicketSalesSearch() {
       <Card className="w-full max-w-3xl shadow-lg rounded-lg p-6 bg-white">
         <CardHeader variant="gradient" color="gray" className="mb-6 p-6 rounded-t-lg">
           <Typography variant="h5" color="white" className="text-center">
-            Ticket Sales Search
+            Ticket Sales Report
           </Typography>
         </CardHeader>
         <CardBody>
@@ -126,23 +141,25 @@ export function TicketSalesSearch() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Checkbox
-                  label="Search All Attractions"
-                  checked={formData.allAttractions}
-                  onChange={(e) => handleChange(e, "allAttractions")}
+                  label="General Admissions only"
+                  checked={formData.IsGeneral}
+                  onChange={(e) => handleChange(e, "IsGeneral")}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">Department</label>
                 <select
-                  value={formData.department}
+                  value={formData.Department}
                   onChange={(e) => handleChange(e, "department")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                  disabled={formData.allAttractions}
+                  disabled={formData.IsGeneral}
                 >
                   <option value="">Select Department</option>
-                  {departments.map((dep) => (
-                    <option key={dep} value={dep}>{dep}</option>
+                  {dropdownData.departments.map((dept) => (
+                    <option key={dept.Department_ID} value={dept.Department_ID}>
+                    {dept.department_name}
+                  </option>
                   ))}
                 </select>
               </div>
@@ -150,14 +167,18 @@ export function TicketSalesSearch() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Attraction</label>
                 <select
-                  value={formData.attraction}
+                  value={formData.Attraction}
                   onChange={(e) => handleChange(e, "attraction")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                  disabled={formData.allAttractions || !formData.department}
+                  disabled={formData.IsGeneral || !formData.Department}
                 >
                   <option value="">Select Attraction</option>
-                  {(attractions[formData.department] || []).map((attr) => (
-                    <option key={attr} value={attr}>{attr}</option>
+                  {dropdownData.attractions
+                    .filter(attr => attr.Dept_ID == formData.Department)
+                    .map((attr) => (
+                      <option key={attr.Attraction_ID} value={attr.Attraction_ID}>
+                        {attr.Attraction_Name}
+                      </option>
                   ))}
                 </select>
               </div>
@@ -165,13 +186,15 @@ export function TicketSalesSearch() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Person Type</label>
                 <select
-                  value={formData.personType}
+                  value={formData.Person_Type}
                   onChange={(e) => handleChange(e, "personType")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
                 >
                   <option value="">Select Type</option>
-                  {personTypes.map((type) => (
-                    <option key={type} value={type}>{type}</option>
+                  {dropdownData.personTypes.map((type) => (
+                     <option key={type.PersonType_ID} value={type.PersonType_ID}>
+                     {type.ticket_person}
+                   </option>
                   ))}
                 </select>
               </div>
@@ -179,13 +202,15 @@ export function TicketSalesSearch() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Membership</label>
                 <select
-                  value={formData.membershipStatus}
+                  value={formData.Membership_type}
                   onChange={(e) => handleChange(e, "membershipStatus")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
                 >
                   <option value="">Select Status</option>
-                  {membershipStatuses.map((m) => (
-                    <option key={m} value={m}>{m}</option>
+                  {dropdownData.membershipStatuses.map((m) => (
+                    <option key={m.membership_TypeID} value={m.membership_TypeID}>
+                    {m.membership_Type}
+                  </option>
                   ))}
                 </select>
               </div>
@@ -195,8 +220,8 @@ export function TicketSalesSearch() {
                   <label className="block text-sm font-medium text-gray-700">Start Date</label>
                   <input
                     type="date"
-                    value={formData.startDate}
-                    onChange={(e) => handleChange(e, "startDate")}
+                    value={formData.start_date}
+                    onChange={(e) => handleChange(e, "start_date")}
                     className="border px-3 py-2 rounded-md shadow-sm"
                   />
                 </div>
@@ -204,8 +229,8 @@ export function TicketSalesSearch() {
                   <label className="block text-sm font-medium text-gray-700">End Date</label>
                   <input
                     type="date"
-                    value={formData.endDate}
-                    onChange={(e) => handleChange(e, "endDate")}
+                    value={formData.end_date}
+                    onChange={(e) => handleChange(e, "end_date")}
                     className="border px-3 py-2 rounded-md shadow-sm"
                   />
                 </div>
@@ -223,8 +248,19 @@ export function TicketSalesSearch() {
           </form>
         </CardBody>
       </Card>
+                  
+      {ticketResults.DeptSales && ticketResults.DeptSales.length > 0 && (
+        <StatisticsChart
+          color="white"
+          chart= {DepartmentChartConfig({
+            data: ticketResults.DeptSales || [], // Fallback to empty array
+            title: "Department Sales",
+            description: "Sales by department over time"
+          })}
+        />
+      )}
 
-      {/* Table of results */}
+      {/* Table of results 
       <Card className="mt-6 w-full max-w-4xl">
         <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
           <Typography variant="h6" color="white">
@@ -264,7 +300,7 @@ export function TicketSalesSearch() {
             </tbody>
           </table>
 
-          {/* Display total revenue below the table */}
+           Display total revenue below the table 
           {ticketResults.length > 0 && (
             <div className="mt-4 text-right pr-4">
               <Typography variant="h6" className="text-green-700">
@@ -274,6 +310,7 @@ export function TicketSalesSearch() {
           )}
         </CardBody>
       </Card>
+      */}
     </div>
   );
 }
