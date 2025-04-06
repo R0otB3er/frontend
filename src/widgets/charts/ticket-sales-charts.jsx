@@ -72,11 +72,11 @@ const AttractionChartConfig = ({
   type = "line"  // Default to line chart for multiple series
 }) => {
   // Group data by department
-  const attractions = [...new Set(data.map(item => item.attraction))];
+  const attractions = [...new Set(data.map(item => item.Attraction_Name))];
   
   // Create series for each department
   const series = attractions.map(att => {
-    const attData = data.filter(item => item.attraction === att);
+    const attData = data.filter(item => item.Attraction_Name === att);
     return {
       name: att,
       data: attData.map(item => item.tickets_sold)
@@ -84,7 +84,7 @@ const AttractionChartConfig = ({
   });
 
   // Get unique dates (x-axis categories)
-  const dates = [...new Set(data.map(item => item.date))];
+  const dates = [...new Set(data.map(item => item.sale_date))];
   const categories = dates.map(date => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     return dateObj.toLocaleDateString('en-US', {
@@ -136,11 +136,11 @@ const GeneralChartConfig = ({
   type = "line"  // Default to line chart for multiple series
 }) => {
   // Group data by department
-  const attractions = [...new Set(data.map(item => item.attraction))];
+  const attractions = [...new Set(data.map(item => item.Attraction_Name))];
   
   // Create series for each department
   const series = attractions.map(att => {
-    const attData = data.filter(item => item.attraction === att);
+    const attData = data.filter(item => item.Attraction_Name === att);
     return {
       name: att,
       data: attData.map(item => item.tickets_sold)
@@ -148,7 +148,7 @@ const GeneralChartConfig = ({
   });
 
   // Get unique dates (x-axis categories)
-  const dates = [...new Set(data.map(item => item.date))];
+  const dates = [...new Set(data.map(item => item.sale_date))];
   const categories = dates.map(date => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     return dateObj.toLocaleDateString('en-US', {
@@ -200,11 +200,11 @@ const PersonTypeChartConfig = ({
   type = "line"  // Default to line chart for multiple series
 }) => {
   // Group data by department
-  const pTypes = [...new Set(data.map(item => item.ticket_Person))];
+  const pTypes = [...new Set(data.map(item => item.ticket_person))];
   
   // Create series for each department
   const series = pTypes.map(pt => {
-    const ptData = data.filter(item => item.ticket_Person === pt);
+    const ptData = data.filter(item => item.ticket_person === pt);
     return {
       name: pt,
       data: ptData.map(item => item.tickets_sold)
@@ -212,7 +212,7 @@ const PersonTypeChartConfig = ({
   });
 
   // Get unique dates (x-axis categories)
-  const dates = [...new Set(data.map(item => item.date))];
+  const dates = [...new Set(data.map(item => item.sale_date))];
   const categories = dates.map(date => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     return dateObj.toLocaleDateString('en-US', {
@@ -264,11 +264,11 @@ const MemTypeChartConfig = ({
   type = "line"  // Default to line chart for multiple series
 }) => {
   // Group data by department
-  const memTypes = [...new Set(data.map(item => item.membersip_type))];
+  const memTypes = [...new Set(data.map(item => item.membership_Type))];
   
   // Create series for each department
   const series = memTypes.map(mt => {
-    const mtData = data.filter(item => item.membersip_type === mt);
+    const mtData = data.filter(item => item.membership_Type === mt);
     return {
       name: mt,
       data: mtData.map(item => item.tickets_sold)
@@ -276,7 +276,7 @@ const MemTypeChartConfig = ({
   });
 
   // Get unique dates (x-axis categories)
-  const dates = [...new Set(data.map(item => item.date))];
+  const dates = [...new Set(data.map(item => item.sale_date))];
   const categories = dates.map(date => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
     return dateObj.toLocaleDateString('en-US', {

@@ -248,18 +248,63 @@ export function TicketSalesSearch() {
           </form>
         </CardBody>
       </Card>
-                  
-      {ticketResults.DeptSales && ticketResults.DeptSales.length > 0 && (
-        <StatisticsChart
-          color="white"
-          chart= {DepartmentChartConfig({
-            data: ticketResults.DeptSales || [], // Fallback to empty array
-            title: "Department Sales",
-            description: "Sales by department over time"
-          })}
-        />
-      )}
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> 
+        {ticketResults.DeptSales && ticketResults.DeptSales.length > 0 && (
+          <StatisticsChart
+            color="white"
+            chart= {DepartmentChartConfig({
+              data: ticketResults.DeptSales || [], // Fallback to empty array
+              title: "Department Sales",
+              description: "Sales by department over time"
+            })}
+          />
+        )}
+
+        {ticketResults.AttSales && ticketResults.AttSales.length > 0 && (
+          <StatisticsChart
+            color="white"
+            chart= {AttractionChartConfig({
+              data: ticketResults.AttSales || [], // Fallback to empty array
+              title: "Department Sales",
+              description: "Sales by department over time"
+            })}
+          />
+        )}
+
+        {ticketResults.GeneralSales && ticketResults.GeneralSales.length > 0 && (
+          <StatisticsChart
+            color="white"
+            chart= {GeneralChartConfig({
+              data: ticketResults.GeneralSales || [], // Fallback to empty array
+              title: "Department Sales",
+              description: "Sales by department over time"
+            })}
+          />
+        )}
+
+        {ticketResults.MemTypeSales && ticketResults.MemTypeSales.length > 0 && (
+          <StatisticsChart
+            color="white"
+            chart= {MemTypeChartConfig({
+              data: ticketResults.MemTypeSales || [], // Fallback to empty array
+              title: "Department Sales",
+              description: "Sales by department over time"
+            })}
+          />
+        )}
+
+        {ticketResults.PTypeSales && ticketResults.PTypeSales.length > 0 && (
+          <StatisticsChart
+            color="white"
+            chart= {PersonTypeChartConfig({
+              data: ticketResults.PTypeSales || [], // Fallback to empty array
+              title: "Department Sales",
+              description: "Sales by department over time"
+            })}
+          />
+        )}
+      </div>
       {/* Table of results 
       <Card className="mt-6 w-full max-w-4xl">
         <CardHeader variant="gradient" color="gray" className="mb-4 p-4">

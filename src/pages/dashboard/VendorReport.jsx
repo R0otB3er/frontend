@@ -7,21 +7,12 @@ import {
   Spinner,
 } from "@material-tailwind/react";
 import { StatisticsChart } from "@/widgets/charts";
-import DepartmentSalesChartConfig from "@/widgets/charts/vendor-sales-charts";
-
-const dummySalesData = [
-  { date: "2023-01-01", sales: 2026, department: "Aquatic" },
-  { date: "2023-01-01", sales: 1925, department: "Safari" },
-  { date: "2023-01-01", sales: 2413, department: "Reptile" },
-  { date: "2023-01-01", sales: 2057, department: "Birds" },
-  { date: "2023-01-02", sales: 1730, department: "Aquatic" },
-  { date: "2023-01-02", sales: 1168, department: "Safari" },
-  { date: "2023-01-02", sales: 1317, department: "Reptile" },
-  { date: "2023-01-02", sales: 1032, department: "Birds" },
-  { date: "2023-01-03", sales: 1651, department: "Aquatic" },
-  { date: "2023-01-03", sales: 2094, department: "Safari" },
-  // ... add more as needed
-];
+import {
+  DepartmentSalesChartConfig,
+  ItemTypeSalesChartConfig,
+  VendorSalesChartConfig,
+  MerchSalesChartConfig
+} from "@/widgets/charts/vendor-sales-charts";
 
 
 export function VendorReport() {
@@ -30,63 +21,88 @@ export function VendorReport() {
     Vendor_ID: "",
     item_typeID: "",
     Merchandise_ID: "",
-    Start_Date: "",
-    End_Date: "",
+    start_date: "",
+    end_date: "",
   });
 
-  /*const [dropdownData, setDropdownData] = useState({
+  const [dropdownData, setDropdownData] = useState({
     Departments: [],
     Vendors: [],
-    Item_types: [],
+    ItemTypes: [],
     Merchandise: [],
-  });*/
-  const [dropdownData] = useState({
-    Departments: [
-      { Department_ID: "1", name: "Aquatic" },
-      { Department_ID: "2", name: "Safari" },
-      { Department_ID: "3", name: "Reptile" },
-    ],
-    Vendors: [
-      { Vendor_ID: "1", name: "ZooSupply Co." },
-      { Vendor_ID: "2", name: "WildThings Inc." },
-    ],
-    Item_types: [
-      { item_typeID: "1", item_types: "Toys" },
-      { item_typeID: "2", item_types: "Snacks" },
-    ],
-    Merchandise: [
-      { Merchandise_ID: "1", Item_Name: "Plush Lion" },
-      { Merchandise_ID: "2", Item_Name: "Zoo Map Poster" },
-    ],
   });
 
-  const [chartData, setChartData] = useState([]);
-  const [reportData, setReportData] = useState([]);
+  const [reportData, setReportData] = useState({
+    deptSales: [],
+    vendorSales: [],
+    itemSales: [],
+    itemTypeSales: []
+  });
+
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [showCharts, setShowCharts] = useState(false);
 
   const isFormValid =
-    formData.Start_Date &&
-    formData.End_Date &&
-    formData.Start_Date < formData.End_Date;
+    formData.start_date &&
+    formData.end_date &&
+    formData.start_date < formData.end_date;
 
-  /*useEffect(() => {
+  useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/getVendMerchReportFormInfo`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => res.json())
-      .then((data) => setDropdownData(data))
+      .then((data) => {
+        console.log("Query Form Info Response Data:", data);
+        setDropdownData(data)
+      })
       .catch((err) => console.error("Error fetching form data:", err));
-  }, []);*/
+  }, []);
 
   const handleChange = (e, field) => {
-    const value = e.target.value;
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    let value;
+    
+    // Handle different input types
+    switch (e.target.type) {
+      case 'checkbox':
+        value = e.target.checked;
+        break;
+      case 'date':
+        value = e.target.value; // This will be in YYYY-MM-DD format
+        break;
+      default:
+        value = e.target.value;
+    }
+  
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value };
+      
+      // Reset dependent fields when parent changes
+      if (field === "IsGeneral" && value === true) {
+        updated.Department = "";
+        updated.Attraction = "";
+      }
+      
+      // Additional logic for date validation if needed
+      if (field === "start_date" || field === "end_date") {
+        // Ensure end date is not before start date
+        if (field === "end_date" && updated.start_date && value < updated.start_date) {
+          // You could set some error state here or adjust the value
+          console.warn("End date cannot be before start date");
+        }
+        
+        if (field === "start_date" && updated.end_date && value > updated.end_date) {
+          console.warn("Start date cannot be after end date");
+        }
+      }
+      
+      return updated;
+    });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isFormValid) {
       alert("Please input a valid start and end date.");
@@ -96,46 +112,21 @@ export function VendorReport() {
     setIsLoading(true);
     setShowCharts(false);
   
-    setTimeout(() => {
-      const filtered = dummySalesData.filter((row) => {
-        const rowDate = new Date(row.date);
-        const start = new Date(formData.Start_Date);
-        const end = new Date(formData.End_Date);
-        return rowDate >= start && rowDate <= end;
-      });
-  
-      setChartData(filtered);
-      setReportData(filtered);
-      const total = filtered.reduce((sum, row) => sum + row.sales, 0);
-setTotalRevenue(total);
-      setIsLoading(false);
-      setShowCharts(true);
-    }, 800);
-  };
-
-    /*const payload = { ...formData };
+    const payload = { ...formData };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/QueryVendorSalesReport`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/getVendMerchReport`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      const result = await res.json();
-
       if (res.ok) {
-        const chartFormatted = result.map((row) => ({
-          date: row.date,
-          sales: row.sales,
-          department: row.department,
-        }));
-
-        setChartData(chartFormatted);
+        const result = await res.json();
+        console.log("retrived report info:", result)
         setReportData(result);
-        setShowCharts(true);
       } else {
-        console.error(result.error);
+        console.error(res.error);
         alert("Failed to generate report.");
       }
     } catch (error) {
@@ -144,13 +135,8 @@ setTotalRevenue(total);
     } finally {
       setIsLoading(false);
     }
-  };*/
+  };
 
-
-const chartConfig = DepartmentSalesChartConfig.getConfig({
-  data: chartData,
-  type: "line",
-});
 
 
 
@@ -167,60 +153,64 @@ const chartConfig = DepartmentSalesChartConfig.getConfig({
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <SelectField
-  label="Departments"
-  value={formData.Department_ID}
-  onChange={(e) => handleChange(e, "Department_ID")}
-  defaultLabel="All Departments"
-  options={dropdownData.Departments.map((d) => ({
-    value: d.Department_ID,
-    label: d.name,
-  }))}
-/>
+              label="Departments"
+              value={formData.Department_ID}
+              onChange={(e) => handleChange(e, "Department_ID")}
+              defaultLabel="All Departments"
+              options={dropdownData.Departments.map((d) => ({
+                value: d.Department_ID,
+                label: d.Department_name,
+              }))}
+              />
 
-<SelectField
-  label="Vendors"
-  value={formData.Vendor_ID}
-  onChange={(e) => handleChange(e, "Vendor_ID")}
-  defaultLabel="All Vendors"
-  options={dropdownData.Vendors.map((v) => ({
-    value: v.Vendor_ID,
-    label: v.name,
-  }))}
-/>
+              <SelectField
+              label="Vendors"
+              value={formData.Vendor_ID}
+              onChange={(e) => handleChange(e, "Vendor_ID")}
+              defaultLabel="All Vendors"
+              options={dropdownData.Vendors
+                .filter(v => v.Dept_ID == formData.Department_ID)                
+                .map((v) => ({
+                value: v.Vendor_ID,
+                label: v.name,
+              }))}
+              />
 
-<SelectField
-  label="Merchandise Types"
-  value={formData.item_typeID}
-  onChange={(e) => handleChange(e, "item_typeID")}
-  defaultLabel="All Merchandise Type"
-  options={dropdownData.Item_types.map((i) => ({
-    value: i.item_typeID,
-    label: i.item_types,
-  }))}
-/>
+              <SelectField
+              label="Merchandise Types"
+              value={formData.item_typeID}
+              onChange={(e) => handleChange(e, "item_typeID")}
+              defaultLabel="All Merchandise Type"
+              options={dropdownData.ItemTypes.map((i) => ({
+                value: i.item_typeID,
+                label: i.item_types,
+              }))}
+              />
 
-<SelectField
-  label="Specific Merchandise"
-  value={formData.Merchandise_ID}
-  onChange={(e) => handleChange(e, "Merchandise_ID")}
-  defaultLabel="All Merchandise"
-  options={dropdownData.Merchandise.map((m) => ({
-    value: m.Merchandise_ID,
-    label: m.Item_Name,
-  }))}
-/>
+              <SelectField
+              label="Specific Merchandise"
+              value={formData.Merchandise_ID}
+              onChange={(e) => handleChange(e, "Merchandise_ID")}
+              defaultLabel="All Merchandise"
+              options={dropdownData.Merchandise
+                .filter( m => m.Item_Type == formData.item_typeID)
+                .map((m) => ({
+                value: m.Merchandise_ID,
+                label: m.Item_Name,
+              }))}
+              />
 
               <InputField
                 label="Start Date"
                 type="date"
-                value={formData.Start_Date}
-                onChange={(e) => handleChange(e, "Start_Date")}
+                value={formData.start_date}
+                onChange={(e) => handleChange(e, "start_date")}
               />
               <InputField
                 label="End Date"
                 type="date"
-                value={formData.End_Date}
-                onChange={(e) => handleChange(e, "End_Date")}
+                value={formData.end_date}
+                onChange={(e) => handleChange(e, "end_date")}
               />
             </div>
 
@@ -243,16 +233,35 @@ const chartConfig = DepartmentSalesChartConfig.getConfig({
       {isLoading && <Spinner className="mt-8 h-10 w-10 text-gray-700" />}
 
       {/* Chart and Table */}
-      {showCharts && !isLoading && (
-        <>
-          <StatisticsChart
-            color="white"
-            chart={chartConfig}
-            title="Monthly Department Sales"
-            description="Comparison across all departments"
-          />
-
-          <Card className="mt-6 w-full max-w-4xl">
+      {reportData.deptSales && reportData.deptSales.length > 0  && (
+        <StatisticsChart
+          chart = {DepartmentSalesChartConfig({
+            data: reportData.deptSales,
+          })}
+        />
+      )}
+      {reportData.vendorSales && reportData.vendorSales.length > 0  && (
+        <StatisticsChart
+          chart = {VendorSalesChartConfig({
+            data: reportData.vendorSales,
+          })}
+        />
+      )}
+      {reportData.itemTypeSales && reportData.itemTypeSales.length > 0  && (
+        <StatisticsChart
+          chart = {ItemTypeSalesChartConfig({
+            data: reportData.itemTypeSales,
+          })}
+        />
+      )}
+      {reportData.itemSales && reportData.itemSales.length > 0  && (
+        <StatisticsChart
+          chart = {MerchSalesChartConfig({
+            data: reportData.itemSales,
+          })}
+        />
+      )}
+          {/*<Card className="mt-6 w-full max-w-4xl">
             <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
               <Typography variant="h6" color="white">
                 Sales Report Table
@@ -286,13 +295,11 @@ const chartConfig = DepartmentSalesChartConfig.getConfig({
       Total Revenue: ${totalRevenue.toLocaleString()}
     </Typography>
   </div>
-)}
+
 
             </CardBody>
           </Card>
-          
-        </>
-      )}
+      )}*/}
     </div>
   );
 }

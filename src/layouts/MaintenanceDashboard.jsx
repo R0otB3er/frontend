@@ -10,7 +10,7 @@ import {
   Footer,
 } from "@/widgets/layout";
 import routes from "@/routes";
-import { useMaterialTailwindController, setOpenConfigurator } from "@/context";
+import { useMaterialTailwindController, setOpenConfigurator } from "@/context"; 
 
 export function MaintenanceDashboard() {
   const [controller, dispatch] = useMaterialTailwindController();
@@ -44,6 +44,7 @@ export function MaintenanceDashboard() {
         brandName="Maintenance Dashboard"
       />
       <div className="p-4 xl:ml-80">
+        
         <DashboardNavbar />
         {showAlerts.blue && notifications.length > 0 && (
           <Alert
