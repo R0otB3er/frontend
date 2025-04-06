@@ -16,7 +16,7 @@ import { useNavigate } from "react-router-dom";
 export default function ShopPayments() {
   const navigate = useNavigate();
   const { clearCart } = useCart();
-  const visitorID = useUserStore((state) => state.id); // 👈 pull Visitor_ID
+  const visitorID = useUserStore((state) => state.id); // pull Visitor_ID
 
   const [order, setOrder] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState({
