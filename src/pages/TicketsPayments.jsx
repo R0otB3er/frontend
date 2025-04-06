@@ -8,9 +8,11 @@ import {
   Button,
 } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
+import { useUserStore } from "@/user_managment/user_store"; //  Grab Visitor_ID
 
 export default function TicketsPayments() {
   const navigate = useNavigate();
+  const { id: Visitor_ID } = useUserStore(); //  Visitor ID from login
   const [order, setOrder] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState({
     cardName: "",
@@ -20,7 +22,7 @@ export default function TicketsPayments() {
   });
 
   useEffect(() => {
-    const savedOrder = localStorage.getItem("ticketOrder"); // 🔁 Fix this line
+    const savedOrder = localStorage.getItem("ticketOrder");
     if (savedOrder) {
       setOrder(JSON.parse(savedOrder));
     } else {
@@ -34,10 +36,9 @@ export default function TicketsPayments() {
     setPaymentInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simple validation
     if (
       !paymentInfo.cardName ||
       !paymentInfo.cardNumber ||
@@ -48,10 +49,30 @@ export default function TicketsPayments() {
       return;
     }
 
-    alert("Payment successful! Thank you for your order.");
-    localStorage.removeItem("ticketOrder"); 
+    try {
+      const payload = {
+        Visitor_ID,
+        tickets: order.items.map((item) => [
+          item.person_typeID,
+          item.Attraction_ID,
+        ]),
+      };
 
-    navigate("/");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/tickets/payment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Failed to submit ticket payment");
+
+      alert("Payment successful! Thank you for your order.");
+      localStorage.removeItem("ticketOrder");
+      navigate("/");
+    } catch (err) {
+      console.error(" Ticket payment error:", err);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   if (!order) return null;
@@ -129,4 +150,4 @@ export default function TicketsPayments() {
       </Card>
     </div>
   );
-} 
+}
