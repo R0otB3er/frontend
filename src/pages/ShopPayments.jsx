@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
+import { useUserStore } from "@/user_managment/user_store";
+
 
 import {
   Card,
@@ -13,7 +15,9 @@ import { useNavigate } from "react-router-dom";
 
 export default function ShopPayments() {
   const navigate = useNavigate();
-  const { clearCart } = useCart(); // ✅ Clear the cart after purchase
+  const { clearCart } = useCart();
+  const visitorID = useUserStore((state) => state.id); // pull Visitor_ID
+
   const [order, setOrder] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState({
     cardName: "",
@@ -37,9 +41,9 @@ export default function ShopPayments() {
     setPaymentInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (
       !paymentInfo.cardName ||
       !paymentInfo.cardNumber ||
@@ -49,13 +53,34 @@ export default function ShopPayments() {
       alert("Please fill in all payment fields.");
       return;
     }
-  
-    alert("Payment successful! Thank you for your shop purchase.");
-    localStorage.removeItem("shopOrder");
-    clearCart(); // ✅ This clears the React cart context
-    navigate("/");
+
+    //Build the payload
+    const payload = {
+      visitor_id: visitorID,
+      items: order.items.map((item) => ({
+        merchandise_id: item.id,
+        quantity: item.quantity,
+      })),
+    };
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/shop/payment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Failed to complete payment");
+
+      alert("Payment successful! Thank you for your shop purchase.");
+      localStorage.removeItem("shopOrder");
+      clearCart();
+      navigate("/");
+    } catch (error) {
+      console.error(" Payment error:", error);
+      alert("Something went wrong. Try again.");
+    }
   };
-  
 
   if (!order) return null;
 

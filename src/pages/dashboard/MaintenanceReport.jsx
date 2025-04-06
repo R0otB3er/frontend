@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -43,53 +44,78 @@ export function MaintenanceReport() {
     formData.endDate &&
     new Date(formData.startDate) <= new Date(formData.endDate);
 
-  useEffect(() => {
-    // Simulate dropdown data
-    setDropdownData({
-      departments: ["General Zoo", "Aquatics", "Safari", "Reptiles"],
-      vendors: ["Vendor A", "Vendor B"],
-      attractions: ["Roller Coaster", "Petting Zoo"],
-      habitats: ["Savannah", "Rainforest"],
-      workers: ["John Doe", "Jane Smith", "Alex Kim"],
-    });
-  }, []);
+    useEffect(() => {
+        async function fetchDropdownData() {
+          try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/maintenance/form-info`, {
+
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            });
+      
+            const data = await res.json();
+            setDropdownData({
+              departments: data.departments || [],
+              vendors: data.vendors || [],
+              attractions: data.attractions || [],
+              habitats: data.habitats || [],
+              workers: data.workers || [],
+            });
+          } catch (err) {
+            console.error("Error fetching dropdown data:", err);
+          }
+        }
+      
+        fetchDropdownData();
+      }, []);
+      
 
   const handleChange = (e, field) => {
     const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!isFormValid) {
-      alert("Please enter a valid date range.");
-      return;
-    }
-
+    console.log("✅ Submit handler triggered");
+    if (!isFormValid) return alert("Please enter a valid date range.");
+  
     setIsLoading(true);
     setShowCharts(false);
+  
+    const payload = {
+      ...formData,
+    };
+  
+    fetch(`${import.meta.env.VITE_API_URL}/api/maintenance/report`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch maintenance report.");
+        return res.json();
+      })
+      .then((result) => {
+        console.log("✅ Report Data Received:", result);
+        console.log("✅ Backend returned:", result);
+        const { costData, durationData } = result;
+  
+        setCostData(Array.isArray(costData) ? costData : []);
+        setDurationData(Array.isArray(durationData) ? durationData : []);
+        setShowCharts(true);
+      })
+      .catch((error) => {
+        console.error("❌ Error in fetch:", error);
+        alert("Could not load report. Please try again.");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+      console.log("🔗 API endpoint:", `${import.meta.env.VITE_API_URL}/api/maintenance/report`);
 
-    // Simulated fetch based on criteria
-    setTimeout(() => {
-      const dummyFilteredCost = [
-        { date: formData.startDate, cost: 1000 },
-        { date: formData.endDate, cost: 1300 },
-      ];
-
-      const dummyFilteredDuration = [
-        formData.includeAttraction && { category: "Attractions", duration: 6 },
-        formData.includeVendor && { category: "Vendors", duration: 4 },
-        formData.includeHabitat && { category: "Habitats", duration: 8 },
-      ].filter(Boolean); // Remove false entries
-
-      setCostData(dummyFilteredCost);
-      setDurationData(dummyFilteredDuration);
-      setIsLoading(false);
-      setShowCharts(true);
-    }, 1000); // simulate network delay
   };
-
+  
   const costChartConfig = MaintenanceCostChartConfig.getConfig({
     data: costData,
     type: "line",
@@ -102,7 +128,6 @@ export function MaintenanceReport() {
 
   return (
     <div className="mt-12 flex flex-col items-center">
-      {/* Form Card */}
       <Card className="w-full max-w-3xl shadow-lg rounded-lg p-6 bg-white">
         <CardHeader variant="gradient" color="gray" className="mb-6 p-6 rounded-t-lg">
           <Typography variant="h5" color="white" className="text-center">
@@ -119,15 +144,14 @@ export function MaintenanceReport() {
                   onChange={(e) => handleChange(e, "departmentID")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm"
                 >
-                  <option value="">General Zoo</option>
+                  <option value="">All Departments</option>
                   {dropdownData.departments.map((dept) => (
-                    <option key={dept} value={dept}>
-                      {dept}
+                    <option key={dept.Department_ID} value={dept.Department_ID}>
+                      {dept.name}
                     </option>
                   ))}
                 </select>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700">Maintenance Worker</label>
                 <select
@@ -135,18 +159,15 @@ export function MaintenanceReport() {
                   onChange={(e) => handleChange(e, "workerID")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm"
                 >
-                  <option value="">Select Worker</option>
+                  <option value="">All Workers</option>
                   {dropdownData.workers.map((worker) => (
-                    <option key={worker} value={worker}>
-                      {worker}
+                    <option key={worker.Employee_ID} value={worker.Employee_ID}>
+                      {worker.first_name} {worker.last_name}
                     </option>
                   ))}
                 </select>
               </div>
-
-              {/* Checkbox Section */}
               <div className="col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Vendor */}
                 <div>
                   <Checkbox
                     label="Include Vendor"
@@ -161,14 +182,12 @@ export function MaintenanceReport() {
                   >
                     <option value="">Select Vendor</option>
                     {dropdownData.vendors.map((v) => (
-                      <option key={v} value={v}>
-                        {v}
+                      <option key={v.Vendor_ID} value={v.Vendor_ID}>
+                        {v.name}
                       </option>
                     ))}
                   </select>
                 </div>
-
-                {/* Attraction */}
                 <div>
                   <Checkbox
                     label="Include Attraction"
@@ -183,14 +202,12 @@ export function MaintenanceReport() {
                   >
                     <option value="">Select Attraction</option>
                     {dropdownData.attractions.map((a) => (
-                      <option key={a} value={a}>
-                        {a}
+                      <option key={a.Attraction_ID} value={a.Attraction_ID}>
+                        {a.Attraction_Name}
                       </option>
                     ))}
                   </select>
                 </div>
-
-                {/* Habitat */}
                 <div>
                   <Checkbox
                     label="Include Habitat"
@@ -205,15 +222,13 @@ export function MaintenanceReport() {
                   >
                     <option value="">Select Habitat</option>
                     {dropdownData.habitats.map((h) => (
-                      <option key={h} value={h}>
-                        {h}
+                      <option key={h.Habitat_ID} value={h.Habitat_ID}>
+                        {h.Habitat_Name}
                       </option>
                     ))}
                   </select>
                 </div>
               </div>
-
-              {/* Date Range */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Start Date</label>
                 <input
@@ -233,7 +248,6 @@ export function MaintenanceReport() {
                 />
               </div>
             </div>
-
             <div className="flex justify-end mt-6">
               <button
                 type="submit"
@@ -249,61 +263,57 @@ export function MaintenanceReport() {
         </CardBody>
       </Card>
 
-      {/* Loading Spinner */}
       {isLoading && <Spinner className="mt-8 h-10 w-10 text-gray-700" />}
 
-      {/* Charts & Table */}
       {showCharts && !isLoading && (
         <>
-         {showCharts && !isLoading && (
-  <div className="flex flex-col md:flex-row gap-6 w-full max-w-6xl mt-10">
-    <div className="w-full md:w-1/2">
-      <StatisticsChart
-        color="white"
-        chart={costChartConfig}
-        title="Maintenance Cost Over Time"
-        description="Track maintenance spending by date"
-      />
-    </div>
-    <div className="w-full md:w-1/2">
-      <StatisticsChart
-        color="white"
-        chart={durationChartConfig}
-        title="Maintenance Duration by Category"
-        description="How long tasks took by type"
-      />
-    </div>
-  </div>
-)}
+          <div className="flex flex-col md:flex-row gap-6 w-full max-w-6xl mt-10">
+            <div className="w-full md:w-1/2">
+              <StatisticsChart
+                color="white"
+                chart={costChartConfig}
+                title="Maintenance Cost Over Time"
+                description="Track maintenance spending by date"
+              />
+            </div>
+            <div className="w-full md:w-1/2">
+              <StatisticsChart
+                color="white"
+                chart={durationChartConfig}
+                title="Maintenance Duration by Category"
+                description="How long tasks took by type"
+              />
+            </div>
+          </div>
 
-          
-
-          {/* Table of Chart Data */}
           <Card className="mt-6 w-full max-w-4xl">
-            <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
-              <Typography variant="h6" color="white">
-                Maintenance Cost Breakdown
-              </Typography>
-            </CardHeader>
-            <CardBody className="overflow-x-auto">
-              <table className="min-w-full table-auto">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Date</th>
-                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Cost</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {costData.map((row, idx) => (
-                    <tr key={idx} className="border-t">
-                      <td className="px-4 py-2">{row.date}</td>
-                      <td className="px-4 py-2">${row.cost}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </CardBody>
-          </Card>
+  <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
+    <Typography variant="h6" color="white">
+      Maintenance Cost Breakdown
+    </Typography>
+  </CardHeader>
+  <CardBody className="overflow-x-auto">
+    <table className="min-w-full table-auto">
+      <thead>
+        <tr>
+          <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Start Date</th>
+          <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">End Date</th>
+          <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        {costData.map((row, idx) => (
+          <tr key={idx} className="border-t">
+            <td className="px-4 py-2">{new Date(row.Start_Date).toLocaleDateString()}</td>
+            <td className="px-4 py-2">{new Date(row.End_Date).toLocaleDateString()}</td>
+            <td className="px-4 py-2">${parseFloat(row.cost).toFixed(2)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </CardBody>
+</Card>
+
         </>
       )}
     </div>
@@ -311,3 +321,4 @@ export function MaintenanceReport() {
 }
 
 export default MaintenanceReport;
+

@@ -48,7 +48,7 @@ export function Configurator() {
 
   const sidenavColors = {
     white: "from-gray-100 to-gray-100 border-gray-200",
-    dark: "from-black to-black border-gray-200",
+    gray: "from-black to-black border-gray-200",
     green: "from-green-400 to-green-600",
     orange: "from-orange-400 to-orange-600",
     red: "from-red-400 to-red-600",
@@ -114,10 +114,10 @@ export function Configurator() {
           </Typography>
           <div className="mt-3 flex items-center gap-2">
             <Button
-              variant={sidenavType === "dark" ? "gradient" : "outlined"}
-              onClick={() => setSidenavType(dispatch, "dark")}
+              variant={sidenavType === "gray" ? "gradient" : "outlined"}
+              onClick={() => setSidenavType(dispatch, "gray")}
             >
-              Dark
+              Gray
             </Button>
             <Button
               variant={sidenavType === "transparent" ? "gradient" : "outlined"}
