@@ -1,36 +1,36 @@
+import CurrencyInput from 'react-currency-input-field';
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardBody, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
-import { getUniqueBulkPurchaseValues } from "@/data"; // ✅ Import function
 
 export function BulkPurchaseEntryForm() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    Merchant_Name: "",
-    Item_name: "",
+    Merchandise_ID: "",
     Bulk_cost: "",
     Amount_of_items: "",
     Date_purchased: "",
     Producer: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({}); 
   const [dropdownValues, setDropdownValues] = useState({
-    merchantNames: [],
-    itemNames: [],
-    producers: [],
+    item_types: [],
+    merchandise: [],
   });
 
-  const [selectedDate, setSelectedDate] = useState("");
-
   useEffect(() => {
-    // Fetch unique values for dropdowns
-    const { uniqueMerchantNames, uniqueItemNames, uniqueProducers } = getUniqueBulkPurchaseValues();
-    setDropdownValues({
-      merchantNames: uniqueMerchantNames,
-      itemNames: uniqueItemNames,
-      producers: uniqueProducers,
-    });
+  
+    fetch(`${import.meta.env.VITE_API_URL}/api/getBulkPurchaseFormInfo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }, 
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("📦 Form Info Response Data:", data); //  Log the backend response
+        setDropdownValues(data);
+      })
+      .catch((err) => console.error("❌ Error fetching feeding form info:", err));
   }, []);
 
   // Handle input changes
@@ -41,12 +41,8 @@ export function BulkPurchaseEntryForm() {
     // Validation checks
     if (!value.trim()) {
       error = "This field cannot be empty.";
-    } else if (field === "Bulk_cost" && !/^\$\d+(\.\d{2})?$/.test(value)) {
-      error = "Bulk cost must be in the format $XX.XX";
-    } else if (field === "Amount_of_items" && !/^\d+$/.test(value)) {
-      error = "Amount must be a whole number.";
     }
-
+    
     setErrors((prevErrors) => ({
       ...prevErrors,
       [field]: error || null,
@@ -55,38 +51,31 @@ export function BulkPurchaseEntryForm() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Handle Date selection
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
-    updateDatePurchased(event.target.value);
+  const handleDateChange = (e) => {
+    const dateValue = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      Date_purchased: dateValue
+    }));
+    
+    // Clear any date error if date is selected
+    setErrors(prev => ({
+      ...prev,
+      Date_purchased: dateValue ? null : "This field cannot be empty."
+    }));
   };
+  
 
-  // Update Date in MM/DD/YYYY format
-  const updateDatePurchased = (date) => {
-    if (date) {
-      const formattedDate = formatDateToMMDDYYYY(date);
-      setFormData((prev) => ({ ...prev, Date_purchased: formattedDate }));
-    }
-  };
-
-  // Format date to MM/DD/YYYY
-  const formatDateToMMDDYYYY = (date) => {
-    const [year, month, day] = date.split("-");
-    return `${month}/${day}/${year}`;
-  };
-
-  // ✅ Validate form before enabling submit button
   const isFormValid =
     Object.values(errors).every((err) => !err) &&
-    formData.Merchant_Name.trim() !== "" &&
-    formData.Item_name.trim() !== "" &&
+    formData.Merchandise_ID.trim() !== "" &&
     formData.Bulk_cost.trim() !== "" &&
     formData.Amount_of_items.trim() !== "" &&
     formData.Date_purchased.trim() !== "" &&
     formData.Producer.trim() !== "";
 
   // Handle form submission
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!isFormValid) {
@@ -94,18 +83,25 @@ export function BulkPurchaseEntryForm() {
       return;
     }
 
-    console.log("Form submitted:", formData);
-    setFormData({
-      Merchant_Name: "",
-      Item_name: "",
-      Bulk_cost: "",
-      Amount_of_items: "",
-      Date_purchased: "",
-      Producer: "",
-    });
-    setSelectedDate("");
+    const payload = { ...formData };
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/addBulkPurchase`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-
+      if (res.ok) {
+        console.log("Form submitted:", payload);
+      } else {
+        console.error(res.error);
+        alert("Failed to generate report.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Submission failed. Please try again.");
+    } finally {
+    }
   };
 
   return (
@@ -120,32 +116,32 @@ export function BulkPurchaseEntryForm() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             {/* Grid Layout for Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Merchant Name Dropdown */}
+              {/* Item types Dropdown 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Merchant Name</label>
+                <label className="block text-sm font-medium text-gray-700">Item Types</label>
                 <select
-                  value={formData.Merchant_Name}
-                  onChange={(e) => handleChange(e, "Merchant_Name")}
-                  className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                >
-                  <option value="" className="text-gray-400">Select a Merchant</option>
-                  {dropdownValues.merchantNames.map((name) => (
-                    <option key={name} value={name}>{name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Item Name Dropdown */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Item Name</label>
-                <select
-                  value={formData.Item_name}
+                  value={formData.Merchandise_ID}
                   onChange={(e) => handleChange(e, "Item_name")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
                 >
                   <option value="" className="text-gray-400">Select an Item</option>
-                  {dropdownValues.itemNames.map((item) => (
-                    <option key={item} value={item}>{item}</option>
+                  {dropdownValues.merchandise.map((item) => (
+                    <option key={item} value={item.Merchandise_ID}>{item.Item_Name}</option>
+                  ))}
+                </select>
+              </div>*/}
+              
+              {/* Item Name Dropdown */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Item Name</label>
+                <select
+                  value={formData.Merchandise_ID}
+                  onChange={(e) => handleChange(e, "Merchandise_ID")}
+                  className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
+                >
+                  <option value="" className="text-gray-400">Select an Item</option>
+                  {dropdownValues.merchandise.map((item) => (
+                    <option key={item.Merchandise_ID} value={item.Merchandise_ID}>{item.Item_Name}</option>
                   ))}
                 </select>
               </div>
@@ -153,12 +149,15 @@ export function BulkPurchaseEntryForm() {
               {/* Bulk Cost Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Bulk Cost ($)</label>
-                <input
-                  type="text"
+                <CurrencyInput
+                  placeholder="Please enter the cost"
                   value={formData.Bulk_cost}
-                  onChange={(e) => handleChange(e, "Bulk_cost")}
+                  decimalsLimit={2}
+                  onValueChange={(value) => {
+                    setFormData(prev => ({ ...prev, Bulk_cost: value || "" }));
+                    setErrors(prev => ({ ...prev, Bulk_cost: value ? null : "This field cannot be empty." }));
+                  }}
                   className="border px-3 py-2 w-full rounded-md shadow-sm"
-                  placeholder="$XX.XX"
                 />
                 {errors.Bulk_cost && <Typography className="text-red-500 text-xs">{errors.Bulk_cost}</Typography>}
               </div>
@@ -167,10 +166,11 @@ export function BulkPurchaseEntryForm() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Amount of Items</label>
                 <input
-                  type="text"
+                  type="number"
                   value={formData.Amount_of_items}
                   onChange={(e) => handleChange(e, "Amount_of_items")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm"
+                  min = {0}
                 />
                 {errors.Amount_of_items && <Typography className="text-red-500 text-xs">{errors.Amount_of_items}</Typography>}
               </div>
@@ -180,36 +180,26 @@ export function BulkPurchaseEntryForm() {
                 <label className="block text-sm font-medium text-gray-700">Date Purchased</label>
                 <input
                   type="date"
-                  value={selectedDate}
+                  value={formData.Date_purchased}
                   onChange={handleDateChange}
                   className="border px-3 py-2 w-full rounded-md shadow-sm"
                 />
               </div>
 
-              {/* Producer Dropdown */}
+              {/* Producer input*/}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Producer</label>
-                <select
+                <input
+                  type = "text"
                   value={formData.Producer}
                   onChange={(e) => handleChange(e, "Producer")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                >
-                  <option value="" className="text-gray-400">Select a Producer</option>
-                  {dropdownValues.producers.map((producer) => (
-                    <option key={producer} value={producer}>{producer}</option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
 
             {/* Buttons */}
             <div className="flex justify-between mt-6">
-              <button
-                onClick={() => navigate("/dashboard/Bulk_Purchase_Query")}
-                className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700"
-              >
-                Back to Bulk Purchase Query
-              </button>
               <button
                 type="submit"
                 className={`px-4 py-2 rounded-md text-white ${isFormValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`}
