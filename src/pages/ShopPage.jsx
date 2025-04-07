@@ -10,16 +10,39 @@ export default function ShopPage() {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    setProducts(giftshopProducts);
+    async function fetchProducts() {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/merchandise`);
+        const data = await response.json();
+  
+        // Map backend data into frontend format
+        const formatted = data.map(item => ({
+          id: item.Merchandise_ID,
+          name: item.Item_Name,
+          price: parseFloat(item.Item_Price),
+          category: item.Item_Type,
+          image: `/img/shop/${item.Merchandise_ID}.webp`,
+          merchandise_id: item.Merchandise_ID,
+        }));
+  
+        setProducts(formatted);
+      } catch (error) {
+        console.error("Failed to fetch shop items:", error);
+      }
+    }
+  
+    fetchProducts();
   }, []);
-
-  const categories = ["All", ...new Set(products.map((product) => product.category))];
+  const categories = products.length > 0
+  ? ["All", ...new Set(products.map((product) => product.category))]
+  : ["All"];
 
   const filteredProducts =
-    selectedCategory === "All"
-      ? products
-      : products.filter((product) => product.category === selectedCategory);
+  selectedCategory === "All"
+    ? products
+    : products.filter((product) => product.category === selectedCategory);
 
+  
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="flex justify-between items-center mb-8">

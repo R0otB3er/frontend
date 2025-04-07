@@ -31,12 +31,13 @@ export default function ShopPayments() {
     e.preventDefault();
 
     const payload = {
-      visitor_id: visitorID,
+      Visitor_ID: visitorID,
       items: order.items.map((item) => ({
-        merchandise_id: item.id,
+        Merchandise_ID: item.id,
         quantity: item.quantity,
       })),
     };
+    
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/shop/payment`, {
