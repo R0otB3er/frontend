@@ -86,7 +86,7 @@ export const routes = [
      // { icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <Maintenance_query /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "Medical_Entry", element: <MedicalEntryForm /> },
      // { icon: <TableCellsIcon {...icon} />, name: "Medical Query", path: "Medical_Query", element: <Medical_query /> },
-      //{ icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase Entry", path: "Bulk_Purchase_Entry", element: <BulkPurchaseEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase Entry", path: "Bulk_Purchase_Entry", element: <BulkPurchaseEntryForm /> },
      // { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase Query", path: "Bulk_Purchase_Query", element: <Adbulkpurchase_query /> },
      { icon: <TableCellsIcon {...icon} />, name: "Ticket Sales Search", path: "Ticket_Sales_Search", element: <TicketSalesSearch />,
     },
