@@ -34,6 +34,7 @@ export function MaintenanceReport() {
     workers: [],
   });
 
+  const [totalCost, setTotalCost] = useState(0);
   const [costData, setCostData] = useState([]);
   const [durationData, setDurationData] = useState([]);
   const [showCharts, setShowCharts] = useState(false);
@@ -103,6 +104,10 @@ export function MaintenanceReport() {
   
         setCostData(Array.isArray(costData) ? costData : []);
         setDurationData(Array.isArray(durationData) ? durationData : []);
+
+        const total = result.costData.reduce((acc, row) => acc + parseFloat(row.cost || 0), 0);
+        setTotalCost(total);
+
         setShowCharts(true);
       })
       .catch((error) => {
@@ -286,7 +291,7 @@ export function MaintenanceReport() {
             </div>
           </div>
 
-          <Card className="mt-6 w-full max-w-4xl">
+          <Card className="mt-6 w-full max-w-6xl">
   <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
     <Typography variant="h6" color="white">
       Maintenance Cost Breakdown
@@ -298,6 +303,7 @@ export function MaintenanceReport() {
         <tr>
           <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Start Date</th>
           <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">End Date</th>
+          <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Location</th>
           <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Cost</th>
         </tr>
       </thead>
@@ -306,10 +312,23 @@ export function MaintenanceReport() {
           <tr key={idx} className="border-t">
             <td className="px-4 py-2">{new Date(row.Start_Date).toLocaleDateString()}</td>
             <td className="px-4 py-2">{new Date(row.End_Date).toLocaleDateString()}</td>
+            <td className="px-4 py-2">{row.Location || "N/A"}</td>
             <td className="px-4 py-2">${parseFloat(row.cost).toFixed(2)}</td>
           </tr>
-        ))}
+          
+        )) 
+        }
+        <tr className="border-t font-semibold">
+  <td className="px-4 py-2"></td>
+  <td className="px-4 py-2"></td>
+  <td className="px-4 py-2"></td>
+  <td className="px-4 py-2 text-right">Total Cost:</td>
+  <td className="px-4 py-2">${totalCost.toFixed(2)}</td>
+</tr>
+
+        
       </tbody>
+      
     </table>
   </CardBody>
 </Card>

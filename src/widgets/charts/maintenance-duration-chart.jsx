@@ -1,16 +1,17 @@
 import { chartsConfig } from "@/configs";
 
 const MaintenanceDurationChartConfig = ({ data = [], type = "bar" }) => {
-  const categories = data.map(item => item.category);
-  const durations = data.map(item => item.duration);
+  // No more rebucketing! Just use backend-provided data.
+  const categories = data.map((d) => d.category);
+  const counts = data.map((d) => d.duration);
 
   return {
     type,
     height: 300,
     series: [
       {
-        name: "Duration (hrs)",
-        data: durations,
+        name: "Number of Tasks",
+        data: counts,
       },
     ],
     options: {
@@ -18,14 +19,11 @@ const MaintenanceDurationChartConfig = ({ data = [], type = "bar" }) => {
       xaxis: {
         ...chartsConfig.xaxis,
         categories,
-        title: {
-          text: "Maintenance Category",
-        },
+        title: { text: "Duration Ranges" },
       },
       yaxis: {
-        title: {
-          text: "Time (hrs)",
-        },
+        title: { text: "Number of Maintenance Tasks" },
+        allowDecimals: false,
       },
       plotOptions: {
         bar: {
@@ -33,7 +31,7 @@ const MaintenanceDurationChartConfig = ({ data = [], type = "bar" }) => {
           borderRadius: 4,
         },
       },
-      colors: ["#FB8C00"], // Orange
+      colors: ["#FB8C00"],
       dataLabels: {
         enabled: true,
       },
