@@ -59,7 +59,7 @@ export function Admin() {
             onClose={() => setShowAlerts((current) => ({ ...current, ["blue"]: false }))}
           >
             {/* Display first notification or join all messages */}
-            {notifications[0].message || notifications.join(", ")}
+            {notifications[0].message } of {notifications[0].Item_Name}
           </Alert>
         )}
         <Configurator />

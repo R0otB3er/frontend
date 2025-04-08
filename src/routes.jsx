@@ -26,7 +26,8 @@ import {
   TicketSalesSearch,
   VendorReport,
   MaintenanceReport,
-  MaintenanceRequestForm
+  MaintenanceRequestForm,
+  MaintenanceEditForm
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -118,6 +119,7 @@ export const routes = [
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance Entry", path: "Maintenance_Entry", element: <MtMaintenanceEntryForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance Request", path: "Maintenance_Request", element: <MaintenanceRequestForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <MtMaintenance_query /> },
+      { name: "Maintenance Edit", path: "Maintenance_Edit/:requestId", element: <MaintenanceEditForm />, hidden: true },
     ],
   },
   {

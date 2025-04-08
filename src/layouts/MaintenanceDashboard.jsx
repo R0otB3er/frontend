@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { useEffect, useState} from "react";
 import { Cog6ToothIcon } from "@heroicons/react/24/solid";
+import { useNavigate } from "react-router-dom";
 import { IconButton, Alert } from "@material-tailwind/react";
 import {
   Sidenav,
@@ -13,6 +14,7 @@ import routes from "@/routes";
 import { useMaterialTailwindController, setOpenConfigurator } from "@/context"; 
 
 export function MaintenanceDashboard() {
+  const navigate = useNavigate();
   const [controller, dispatch] = useMaterialTailwindController();
   const { sidenavType } = controller;
   const [notifications, setNotifications] = useState([]);
@@ -40,7 +42,12 @@ export function MaintenanceDashboard() {
   return (
     <div className="min-h-screen bg-blue-gray-50/50">
       <Sidenav
-        routes={routes.filter((r) => r.layout === "maintenance")}
+        routes={routes
+          .filter((r) => r.layout === "maintenance")
+          .map(group => ({
+            ...group,
+            pages: group.pages.filter(page => !page.hidden)
+        }))}
         brandName="Maintenance Dashboard"
       />
       <div className="p-4 xl:ml-80">
@@ -53,8 +60,12 @@ export function MaintenanceDashboard() {
             color={"blue"}
             onClose={() => setShowAlerts((current) => ({ ...current, ["blue"]: false }))}
           >
-            {/* Display first notification or join all messages */}
-            {notifications[0].message || notifications.join(", ")}
+            <span 
+              className="cursor-pointer hover:underline"
+              onClick={() => navigate(`/maintenance/Maintenance_Edit/${notifications[0].mnt_ID}`)}
+            >
+            {notifications[0].message} at {notifications[0].Location_Name}
+            </span>
           </Alert>
         )}
         <Configurator />
