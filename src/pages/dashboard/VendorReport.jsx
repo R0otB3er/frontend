@@ -125,6 +125,7 @@ export function VendorReport() {
         const result = await res.json();
         console.log("retrived report info:", result)
         setReportData(result);
+        console.log("SAMPLE ITEM DATA:", result.itemSales[0]);
       } else {
         console.error(res.error);
         alert("Failed to generate report.");
@@ -163,18 +164,20 @@ export function VendorReport() {
               }))}
               />
 
-              <SelectField
-              label="Vendors"
-              value={formData.Vendor_ID}
-              onChange={(e) => handleChange(e, "Vendor_ID")}
-              defaultLabel="All Vendors"
-              options={dropdownData.Vendors
-                .filter(v => v.Dept_ID == formData.Department_ID)                
-                .map((v) => ({
-                value: v.Vendor_ID,
-                label: v.name,
-              }))}
-              />
+<SelectField
+  label="Vendors"
+  value={formData.Vendor_ID}
+  onChange={(e) => handleChange(e, "Vendor_ID")}
+  defaultLabel="All Vendors"
+  disabled={!formData.Department_ID} // Disable if no department selected
+  options={dropdownData.Vendors
+    .filter((v) => v.Dept_ID == formData.Department_ID)
+    .map((v) => ({
+      value: v.Vendor_ID,
+      label: v.name,
+    }))}
+/>
+
 
               <SelectField
               label="Merchandise Types"
@@ -187,18 +190,19 @@ export function VendorReport() {
               }))}
               />
 
-              <SelectField
-              label="Specific Merchandise"
-              value={formData.Merchandise_ID}
-              onChange={(e) => handleChange(e, "Merchandise_ID")}
-              defaultLabel="All Merchandise"
-              options={dropdownData.Merchandise
-                .filter( m => m.Item_Type == formData.item_typeID)
-                .map((m) => ({
-                value: m.Merchandise_ID,
-                label: m.Item_Name,
-              }))}
-              />
+<SelectField
+  label="Specific Merchandise"
+  value={formData.Merchandise_ID}
+  onChange={(e) => handleChange(e, "Merchandise_ID")}
+  defaultLabel="All Merchandise"
+  disabled={!formData.item_typeID} // Disable if no item type selected
+  options={dropdownData.Merchandise
+    .filter((m) => m.Item_Type == formData.item_typeID)
+    .map((m) => ({
+      value: m.Merchandise_ID,
+      label: m.Item_Name,
+    }))}
+/>
 
               <InputField
                 label="Start Date"
@@ -233,85 +237,116 @@ export function VendorReport() {
       {isLoading && <Spinner className="mt-8 h-10 w-10 text-gray-700" />}
 
       {/* Chart and Table */}
-      {reportData.deptSales && reportData.deptSales.length > 0  && (
+      {(reportData.deptSales.length > 0 ||
+  reportData.vendorSales.length > 0 ||
+  reportData.itemTypeSales.length > 0 ||
+  reportData.itemSales.length > 0) && (
+  <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+    {reportData.deptSales.length > 0 && (
+      <div className="bg-white rounded-lg shadow-md p-4">
         <StatisticsChart
-          chart = {DepartmentSalesChartConfig({
-            data: reportData.deptSales,
-          })}
+          color="white"
+          chart={DepartmentSalesChartConfig({ data: reportData.deptSales })}
         />
-      )}
-      {reportData.vendorSales && reportData.vendorSales.length > 0  && (
-        <StatisticsChart
-          chart = {VendorSalesChartConfig({
-            data: reportData.vendorSales,
-          })}
-        />
-      )}
-      {reportData.itemTypeSales && reportData.itemTypeSales.length > 0  && (
-        <StatisticsChart
-          chart = {ItemTypeSalesChartConfig({
-            data: reportData.itemTypeSales,
-          })}
-        />
-      )}
-      {reportData.itemSales && reportData.itemSales.length > 0  && (
-        <StatisticsChart
-          chart = {MerchSalesChartConfig({
-            data: reportData.itemSales,
-          })}
-        />
-      )}
-          {/*<Card className="mt-6 w-full max-w-4xl">
-            <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
-              <Typography variant="h6" color="white">
-                Sales Report Table
-              </Typography>
-            </CardHeader>
-            <CardBody className="overflow-x-auto">
-              <table className="min-w-full table-auto">
-                <thead>
-                  <tr>
-                    {["Date", "Sales", "Department"].map((head) => (
-                      <th key={head} className="px-4 py-2 text-left text-sm font-semibold text-blue-gray-500">
-                        {head}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {reportData.map((row, idx) => (
-                    <tr key={idx} className="border-t">
-                      <td className="px-4 py-2">{row.date}</td>
-                      <td className="px-4 py-2">${row.sales}</td>
-                      <td className="px-4 py-2">{row.department}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      </div>
+    )}
 
-              {reportData.length > 0 && (
-  <div className="mt-4 text-right pr-4">
-    <Typography variant="h6" className="text-green-700">
-      Total Revenue: ${totalRevenue.toLocaleString()}
-    </Typography>
+    {reportData.vendorSales.length > 0 && (
+      <div className="bg-white rounded-lg shadow-md p-4">
+        <StatisticsChart
+          color="white"
+          chart={VendorSalesChartConfig({ data: reportData.vendorSales })}
+        />
+      </div>
+    )}
+
+    {reportData.itemTypeSales.length > 0 && (
+      <div className="bg-white rounded-lg shadow-md p-4">
+        <StatisticsChart
+          color="white"
+          chart={ItemTypeSalesChartConfig({ data: reportData.itemTypeSales })}
+        />
+      </div>
+    )}
+
+{reportData.itemSales.length > 0 && (
+  <div className="bg-white rounded-lg shadow-md p-4">
+    <StatisticsChart
+      color="white"
+      chart={MerchSalesChartConfig({
+        data: reportData.itemSales,
+        selectedDepartment: formData.Department_ID || "all",
+        selectedItemType: formData.item_typeID || "all",
+        selectedMerchItem: formData.Merchandise_ID || "all"
+      })}
+    />
   </div>
+)}
 
+  </div>
+)}
 
-            </CardBody>
-          </Card>
-      )}*/}
+{reportData.itemSales.length > 0 && (
+  <Card className="mt-6 w-full max-w-6xl">
+    <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
+      <Typography variant="h6" color="white">
+        Sales Report Table
+      </Typography>
+    </CardHeader>
+    <CardBody className="overflow-x-auto">
+      <table className="min-w-full table-auto">
+        <thead>
+          <tr>
+            {["Date", "Item Name", "Sales ($)"].map((head) => (
+              <th
+                key={head}
+                className="px-4 py-2 text-left text-sm font-semibold text-blue-gray-500"
+              >
+                {head}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {reportData.itemSales.map((row, idx) => (
+            <tr key={idx} className="border-t">
+              <td className="px-4 py-2">
+                {new Date(row.sale_date).toLocaleDateString()}
+              </td>
+              <td className="px-4 py-2">{row.Item_Name}</td>
+              <td className="px-4 py-2">${parseFloat(row.total_sales).toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="mt-4 text-right pr-4">
+        <Typography variant="h6" className="text-green-700">
+          Total Revenue: $
+          {reportData.itemSales
+            .reduce((sum, row) => sum + parseFloat(row.total_sales || 0), 0)
+            .toLocaleString(undefined, { minimumFractionDigits: 2 })}
+        </Typography>
+      </div>
+    </CardBody>
+  </Card>
+)}
+
     </div>
   );
 }
 
-function SelectField({ label, value, onChange, options, defaultLabel }) {
+function SelectField({ label, value, onChange, options, defaultLabel, disabled = false }) {
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700">{label}</label>
       <select
         value={value}
         onChange={onChange}
-        className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
+        disabled={disabled}
+        className={`border px-3 py-2 w-full rounded-md shadow-sm ${
+          disabled ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-white text-gray-600"
+        }`}
       >
         <option value="">{defaultLabel}</option>
         {options.map((opt) => (
@@ -323,6 +358,7 @@ function SelectField({ label, value, onChange, options, defaultLabel }) {
     </div>
   );
 }
+
 
 
 function InputField({ label, ...props }) {

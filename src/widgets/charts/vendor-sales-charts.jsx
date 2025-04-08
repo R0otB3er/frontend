@@ -4,13 +4,11 @@ const DepartmentSalesChartConfig = ({
   data = [], 
   title = "Department Sales",
   description = "Sales by department over time",
-  color = "blue",
-  type = "line"  // Default to line chart for multiple series
+  color = "white",
+  type = "line"
 }) => {
-  // Group data by department
   const departments = [...new Set(data.map(item => item.department_name))];
-  
-  // Create series for each department
+
   const series = departments.map(dept => {
     const deptData = data.filter(item => item.department_name === dept);
     return {
@@ -19,7 +17,6 @@ const DepartmentSalesChartConfig = ({
     };
   });
 
-  // Get unique dates (x-axis categories)
   const dates = [...new Set(data.map(item => item.sale_date))];
   const categories = dates.map(date => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -30,18 +27,11 @@ const DepartmentSalesChartConfig = ({
     });
   });
 
-  // Generate distinct colors for each department
-  const departmentColors = [
-    "#388e3c",  // green
-    "#d32f2f",  // red
-    "#1976d2",  // blue
-    "#ffa000",  // amber
-    "#7b1fa2",  // purple
-  ];
+  const departmentColors = ["#388e3c", "#d32f2f", "#1976d2", "#ffa000", "#7b1fa2"];
 
   return {
     type: type,
-    height: 300,  // Slightly taller to accommodate legend
+    height: 300,
     series: series,
     options: {
       ...chartsConfig,
@@ -55,6 +45,11 @@ const DepartmentSalesChartConfig = ({
       xaxis: {
         ...chartsConfig.xaxis,
         categories: categories,
+      },
+      yaxis: {
+        title: {
+          text: "Total Sales by Department ($)"
+        }
       },
       legend: {
         position: 'top',
@@ -66,12 +61,10 @@ const DepartmentSalesChartConfig = ({
 
 const VendorSalesChartConfig = ({ 
   data = [], 
-  type = "line"  // Default to line chart for multiple series
+  type = "line"
 }) => {
-  // Group data by department
   const departments = [...new Set(data.map(item => item.vendor_name))];
-  
-  // Create series for each department
+
   const series = departments.map(vend => {
     const deptData = data.filter(item => item.vendor_name === vend);
     return {
@@ -80,7 +73,6 @@ const VendorSalesChartConfig = ({
     };
   });
 
-  // Get unique dates (x-axis categories)
   const dates = [...new Set(data.map(item => item.sale_date))];
   const categories = dates.map(date => {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
@@ -91,18 +83,11 @@ const VendorSalesChartConfig = ({
     });
   });
 
-  // Generate distinct colors for each department
-  const departmentColors = [
-    "#388e3c",  // green
-    "#d32f2f",  // red
-    "#1976d2",  // blue
-    "#ffa000",  // amber
-    "#7b1fa2",  // purple
-  ];
+  const departmentColors = ["#388e3c", "#d32f2f", "#1976d2", "#ffa000", "#7b1fa2"];
 
   return {
     type: type,
-    height: 300,  // Slightly taller to accommodate legend
+    height: 300,
     series: series,
     options: {
       ...chartsConfig,
@@ -117,6 +102,11 @@ const VendorSalesChartConfig = ({
         ...chartsConfig.xaxis,
         categories: categories,
       },
+      yaxis: {
+        title: {
+          text: "Total Sales by Vendor ($)"
+        }
+      },
       legend: {
         position: 'top',
         horizontalAlign: 'center',
@@ -125,87 +115,110 @@ const VendorSalesChartConfig = ({
   };
 };
 
-const MerchSalesChartConfig = ({ 
-  data = [], 
-  type = "line"  // Default to line chart for multiple series
+const MerchSalesChartConfig = ({
+  data = [],
+  type = "line",
+  selectedDepartment = "all",
+  selectedItemType = "all",
+  selectedMerchItem = "all"
 }) => {
-  // Group data by department
-  const departments = [...new Set(data.map(item => item.Item_Name))];
+  const filteredData = data.filter(item => {
+    const matchesDepartment = selectedDepartment === "all" || item.Department_ID == selectedDepartment;
+    const matchesItemType = selectedItemType === "all" || item.item_typeID == selectedItemType;
+    const matchesMerchItem = selectedMerchItem === "all" || item.Merchandise_ID == selectedMerchItem;
+    return matchesDepartment && matchesItemType && matchesMerchItem;
+  });
+
+  const formattedData = filteredData.map(item => ({
+    ...item,
+    sale_date: new Date(item.sale_date).toISOString().split("T")[0],
+    total_sales: parseFloat(item.total_sales) || 0
+  }));
+
+  const dates = [...new Set(formattedData.map(item => item.sale_date))].sort();
+
+  const totalSalesPerItem = {};
+  formattedData.forEach(item => {
+    totalSalesPerItem[item.Item_Name] = (totalSalesPerItem[item.Item_Name] || 0) + item.total_sales;
+  });
+
+  const topItems = Object.entries(totalSalesPerItem)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([itemName]) => itemName);
+
+  const series = topItems.map(itemName => {
+    const dailySales = dates.map(date => {
+      const entry = formattedData.find(d => d.sale_date === date && d.Item_Name === itemName);
+      return entry ? entry.total_sales : 0;
+    });
+    return { name: itemName, data: dailySales };
+  });
+
+  const categories = dates.map(date => {
+    const dateObj = new Date(date);
+    return dateObj.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  });
+
+  const departmentColors = ["#388e3c", "#d32f2f", "#1976d2", "#ffa000", "#7b1fa2", "#f57c00"];
+
+  return {
+    type: type,
+    height: 300,
+    series: series,
+    options: {
+      ...chartsConfig,
+      colors: departmentColors.slice(0, series.length),
+      xaxis: {
+        ...chartsConfig.xaxis,
+        categories,
+      },
+      yaxis: {
+        title: {
+          text: "Highest Sales by Merchandise ($)"
+        }
+      },
+      legend: {
+        position: 'top',
+        horizontalAlign: 'center',
+      },
+    },
+  };
+};
+
+
+const ItemTypeSalesChartConfig = ({ data = [], type = "line" }) => {
+  const formattedData = data.map(item => ({
+    ...item,
+    sale_date: new Date(item.sale_date).toISOString().split("T")[0],
+    total_sales: parseFloat(item.total_sales) || 0
+  }));
+
+  const dates = [...new Set(formattedData.map(item => item.sale_date))].sort();
+
+  const types = [...new Set(formattedData.map(item => item.item_types))];
+
+  const series = types.map(typeName => {
+    const salesPerDay = dates.map(date => {
+      const total = formattedData
+        .filter(d => d.sale_date === date && d.item_types === typeName)
+        .reduce((sum, item) => sum + item.total_sales, 0);
+      return total;
+    });
   
-  // Create series for each department
-  const series = departments.map(it => {
-    const deptData = data.filter(item => item.Item_Name === it);
     return {
-      name: it,
-      data: deptData.map(item => item.total_sales)
+      name: typeName,
+      data: salesPerDay
     };
   });
-
-  // Get unique dates (x-axis categories)
-  const dates = [...new Set(data.map(item => item.sale_date))];
-  const categories = dates.map(date => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  });
-
-  // Generate distinct colors for each department
-  const departmentColors = [
-    "#388e3c",  // green
-    "#d32f2f",  // red
-    "#1976d2",  // blue
-    "#ffa000",  // amber
-    "#7b1fa2",  // purple
-  ];
-
-  return {
-    type: type,
-    height: 300,  // Slightly taller to accommodate legend
-    series: series,
-    options: {
-      ...chartsConfig,
-      colors: departmentColors,
-      plotOptions: {
-        bar: {
-          columnWidth: "16%",
-          borderRadius: 5,
-        },
-      },
-      xaxis: {
-        ...chartsConfig.xaxis,
-        categories: categories,
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'center',
-      },
-    },
-  };
-};
-
-const ItemTypeSalesChartConfig = ({ 
-  data = [], 
-  type = "line"  // Default to line chart for multiple series
-}) => {
-  // Group data by department
-  const departments = [...new Set(data.map(item => item.item_types))];
   
-  // Create series for each department
-  const series = departments.map(types => {
-    const deptData = data.filter(item => item.item_types === types);
-    return {
-      name: types,
-      data: deptData.map(item => item.total_sales)
-    };
-  });
 
-  // Get unique dates (x-axis categories)
-  const dates = [...new Set(data.map(item => item.sale_date))];
   const categories = dates.map(date => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    const dateObj = new Date(date);
     return dateObj.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -213,39 +226,32 @@ const ItemTypeSalesChartConfig = ({
     });
   });
 
-  // Generate distinct colors for each department
-  const departmentColors = [
-    "#388e3c",  // green
-    "#d32f2f",  // red
-    "#1976d2",  // blue
-    "#ffa000",  // amber
-    "#7b1fa2",  // purple
-  ];
+  const departmentColors = ["#388e3c", "#d32f2f", "#1976d2", "#ffa000", "#7b1fa2", "#f57c00", "#0288d1"];
 
   return {
-    type: type,
-    height: 300,  // Slightly taller to accommodate legend
-    series: series,
+    type,
+    height: 300,
+    series,
     options: {
       ...chartsConfig,
-      colors: departmentColors,
-      plotOptions: {
-        bar: {
-          columnWidth: "16%",
-          borderRadius: 5,
-        },
-      },
+      colors: departmentColors.slice(0, series.length),
       xaxis: {
         ...chartsConfig.xaxis,
-        categories: categories,
+        categories
+      },
+      yaxis: {
+        title: {
+          text: "Total Sales by Item Type ($)"
+        }
       },
       legend: {
         position: 'top',
         horizontalAlign: 'center',
       },
-    },
+    }
   };
 };
+
 
 export {
   ItemTypeSalesChartConfig,
