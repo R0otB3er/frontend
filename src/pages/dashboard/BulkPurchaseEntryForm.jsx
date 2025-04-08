@@ -51,7 +51,7 @@ export function BulkPurchaseEntryForm() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleDateChange = (e) => {
+  const handleDateChange = (e) => { 
     const dateValue = e.target.value;
     setFormData(prev => ({
       ...prev,
