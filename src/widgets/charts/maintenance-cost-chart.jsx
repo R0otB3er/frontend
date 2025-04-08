@@ -28,7 +28,7 @@ const MaintenanceCostChartConfig = ({ data = [], type = "line" }) => {
         ...chartsConfig.xaxis,
         categories,
         title: {
-          text: "Maintenance Duration",
+          text: "",
         },
       },
       yaxis: {
