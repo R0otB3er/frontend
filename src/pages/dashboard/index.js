@@ -16,3 +16,4 @@ export * from "@/pages/dashboard/FeedingLogSearch";
 export * from "@/pages/dashboard/TicketSalesSearch";
 export * from "@/pages/dashboard/VendorReport";
 export * from "@/pages/dashboard/MaintenanceReport";
+export * from "@/pages/dashboard/MaintenanceRequest";

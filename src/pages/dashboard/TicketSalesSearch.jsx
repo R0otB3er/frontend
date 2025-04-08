@@ -48,17 +48,17 @@ export function TicketSalesSearch() {
 
   useEffect(() => {
     
-      fetch(`${import.meta.env.VITE_API_URL}/api/getTicketReportFormInfo`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+    fetch(`${import.meta.env.VITE_API_URL}/api/getTicketReportFormInfo`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Query Form Info Response Data:", data); //  Log the backend response
+        setDropdownData(data);
+        console.log(dropdownData);
       })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("Query Form Info Response Data:", data); //  Log the backend response
-          setDropdownData(data);
-          console.log(dropdownData);
-        })
-        .catch((err) => console.error("Error fetching feeding form info:", err));
+      .catch((err) => console.error("Error fetching feeding form info:", err));
   }, []);
 
 
