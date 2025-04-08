@@ -7,13 +7,14 @@ export function MaintenanceRequestForm() {
   const [formData, setFormData] = useState({
     Location_ID: "",
     request_desc: "",
+    start_date: new Date().toISOString().split('T')[0],
   });
 
   const [locationType, setLocationType] = useState("");
 
   const [errors, setErrors] = useState({});
   const [dropdownValues, setDropdownValues] = useState({
-    Location_type: ["vendor", "habitat", "attraction"],
+    Location_type: [],
     vendors: [],
     attractions: [],
     habitats: [],
@@ -27,8 +28,13 @@ export function MaintenanceRequestForm() {
       .then((res) => res.json())
       .then((data) => {
         console.log("Query Form Info Response Data:", data); //  Log the backend response
-        setDropdownValues(data);
-        console.log(dropdownData);
+        setDropdownValues({
+          Location_type: ["vendor", "habitat", "attraction"],
+          vendors: data.vendors,
+          attractions: data.attractions,
+          habitats: data.habitats,
+        });
+        console.log(dropdownValues);
       })
       .catch((err) => console.error("Error fetching feeding form info:", err));
   }, []);
@@ -57,7 +63,6 @@ export function MaintenanceRequestForm() {
 
   };
 
-  // ✅ Validate form before enabling submit button
   const isFormValid =
     Object.values(errors).every((err) => !err) &&
     formData.Location_ID.trim() !== "" &&
@@ -72,19 +77,17 @@ export function MaintenanceRequestForm() {
     }
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/getTicketReport`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/addMaintenanceRequest`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-  
+        const result = res.body;
       if (res.ok) {
-        const result = await res.json();
-        console.log(result);
-        setTicketResults(result);
+        alert("maintenance request submitted");
       } else {
         console.error(result.error);
-        alert("Failed to submit feeding log.");
+        alert("Failed to submit maintenance request.");
       }
     } catch (error) {
       console.error("❌ Submission error:", error);
@@ -99,7 +102,7 @@ export function MaintenanceRequestForm() {
       <Card className="w-full max-w-3xl shadow-lg rounded-lg p-6 bg-white">
         <CardHeader variant="gradient" color="gray" className="mb-6 p-6 rounded-t-lg">
           <Typography variant="h5" color="white" className="text-center">
-            Maintenance Entry Form
+            Maintenance Request Form
           </Typography>
         </CardHeader>
         <CardBody>
@@ -138,7 +141,7 @@ export function MaintenanceRequestForm() {
               )}
 
               {/* vendor Dropdown */}
-              {locationType === "vendors" && (
+              {locationType === "vendor" && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Vendors</label>
                   <select
@@ -185,12 +188,6 @@ export function MaintenanceRequestForm() {
 
             {/* Buttons */}
             <div className="flex justify-between mt-6">
-              <button
-                onClick={() => navigate("/dashboard/Maintenance_Query")}
-                className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700"
-              >
-                Back to Maintenance Query
-              </button>
               <button
                 type="submit"
                 className={`px-4 py-2 rounded-md text-white ${isFormValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`}
