@@ -25,7 +25,8 @@ import {
   FeedingLogSearch,
   TicketSalesSearch,
   VendorReport,
-  MaintenanceReport
+  MaintenanceReport,
+  MaintenanceRequestForm
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -115,6 +116,7 @@ export const routes = [
       { icon: <HomeIcon {...icon} />, name: "Maintenance Home", path: "dashboard", element: <Mthome /> },
       { icon: <UserCircleIcon {...icon} />, name: "Profile", path: "profile", element: <Mtprofile /> },
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance Entry", path: "Maintenance_Entry", element: <MtMaintenanceEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Request", path: "Maintenance_Request", element: <MaintenanceRequestForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <MtMaintenance_query /> },
     ],
   },
