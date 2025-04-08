@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 
 export default function TicketsPage() {
   const [selectedDate, setSelectedDate] = useState("");
-  const [quantity, setQuantity] = useState(1);
+  //const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
 
   const handleProceedToCheckout = () => {
-    if (!selectedDate || quantity < 1) {
-      alert("Please select a date and valid quantity.");
+    if (!selectedDate ) {
+      alert("Please select a date.");
       return;
     }
 
@@ -41,23 +41,7 @@ export default function TicketsPage() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Number of Tickets
-            </label>
-            <div className="flex items-center">
-              <Users className="h-5 w-5 text-gray-400 mr-2" />
-              <input
-                type="number"
-                value={quantity}
-                onChange={(e) =>
-                  setQuantity(Math.max(1, parseInt(e.target.value)))
-                }
-                min="1"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
-            </div>
-          </div>
+
         </div>
       </div>
 
@@ -67,7 +51,7 @@ export default function TicketsPage() {
           onClick={handleProceedToCheckout}
           className="px-6 py-3 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors"
         >
-          Proceed to Checkout
+          Proceed to Buy Tickets
         </button>
       </div>
 
