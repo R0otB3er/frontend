@@ -18,3 +18,4 @@ export * from "@/pages/dashboard/VendorReport";
 export * from "@/pages/dashboard/MaintenanceReport";
 export * from "@/pages/dashboard/MaintenanceRequest";
 export * from "@/pages/dashboard/MaintenanceRequestEdit";
+export * from "@/pages/dashboard/MaintenanceHistory"

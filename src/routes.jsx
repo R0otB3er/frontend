@@ -12,7 +12,7 @@ import {
   Home,
   Profile,
   FeedingLogEntryForm,
-  Adfeedinglog_query,
+  MaintenanceHistory,
   MaintenanceEntryForm,
   Maintenance_query,
   MedicalEntryForm,
@@ -27,7 +27,8 @@ import {
   VendorReport,
   MaintenanceReport,
   MaintenanceRequestForm,
-  MaintenanceEditForm
+  MaintenanceEditForm,
+  MaintenanceHistory
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -105,7 +106,7 @@ export const routes = [
       { icon: <HomeIcon {...icon} />, name: "dashboard", path: "dashboard", element: <Home /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Search", path: "Feeding_Log_Search", element: <FeedingLogSearch /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <Adfeedinglog_query /> },
+      //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <MaintenanceHistory /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "/dashboard/Medical_Entry", element: <MedicalEntryForm /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Medical Query", path: "/dashboard/Medical_Query", element: <Medical_query /> },
     ],
@@ -116,9 +117,10 @@ export const routes = [
     pages: [
       { icon: <HomeIcon {...icon} />, name: "Maintenance Home", path: "dashboard", element: <Mthome /> },
       { icon: <UserCircleIcon {...icon} />, name: "Profile", path: "profile", element: <Mtprofile /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Entry", path: "Maintenance_Entry", element: <MtMaintenanceEntryForm /> },
+      //{ icon: <TableCellsIcon {...icon} />, name: "Maintenance Entry", path: "Maintenance_Entry", element: <MtMaintenanceEntryForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance Request", path: "Maintenance_Request", element: <MaintenanceRequestForm /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <MtMaintenance_query /> },
+      //{ icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <MtMaintenance_query /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <MaintenanceHistory /> },
       { name: "Maintenance Edit", path: "Maintenance_Edit/:requestId", element: <MaintenanceEditForm />, hidden: true },
     ],
   },
