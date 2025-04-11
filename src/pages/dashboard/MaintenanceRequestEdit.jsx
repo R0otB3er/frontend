@@ -36,56 +36,57 @@ export function MaintenanceEditForm() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-
-        
-        
+  
         // Fetch dropdown options
         const formInfoRes = await fetch(`${import.meta.env.VITE_API_URL}/api/getMaintenanceEditFormInfo`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-          });
-          const formInfo = await formInfoRes.json();
-          setDropdownValues({
-            employees: formInfo.employees || [],
-            statuses: formInfo.statuses || []
-          });
-
-        fetch(`${import.meta.env.VITE_API_URL}/api/getMaintenanceInfo`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify( {requestId} ),
-        })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log("recived data: ",data);
-            setRequestData({
-            ...DEFAULT_FORM_VALUES,
-            ...data.request
-            });
-        })
-        .catch((err) => console.error("Error fetching form data:", err));
-        
-        // Safely set data with null checks
-        
-        
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
+        const formInfo = await formInfoRes.json();
+        setDropdownValues({
+          employees: formInfo.employees || [],
+          statuses: formInfo.statuses || []
+        });
+  
+        // Fetch maintenance request data
+        const maintenanceRes = await fetch(`${import.meta.env.VITE_API_URL}/api/getMaintenanceInfo`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ requestId }),
+        });
+        const maintenanceData = await maintenanceRes.json();
+        console.log(maintenanceData.request);
+        // Set requestData first
+        setRequestData({
+          ...DEFAULT_FORM_VALUES,
+          ...maintenanceData.request
+        });
+  
+        // Then set formData with the received data
         setFormData({
           ...DEFAULT_FORM_VALUES,
-          ...requestData,
+          ...maintenanceData.request,  // Use the fresh data directly
+          End_Date: formatDateForInput(maintenanceData.request.End_Date),
           RecentCheck: new Date().toISOString().split('T')[0]
         });
-
+  
       } catch (err) {
         console.error("Error fetching data:", err);
-        // Initialize with defaults if fetch fails
         setRequestData({ ...DEFAULT_FORM_VALUES });
         setFormData({ ...DEFAULT_FORM_VALUES });
       } finally {
         setIsLoading(false);
       }
     };
-
+  
     fetchData();
   }, [requestId]);
+
+  const formatDateForInput = (isoDateString) => {
+    if (!isoDateString) return "";
+    const date = new Date(isoDateString);
+    return date.toISOString().split('T')[0];
+  };
 
   const handleChange = (event, field) => {
     const value = event.target.value;
@@ -97,11 +98,11 @@ export function MaintenanceEditForm() {
     const dateValue = e.target.value || "";
     setFormData(prev => ({
       ...prev,
-      end_date: dateValue
+      End_Date: dateValue
     }));
     setErrors(prev => ({
       ...prev,
-      end_date: dateValue ? null : "This field cannot be empty."
+      End_Date: dateValue ? null : "This field cannot be empty."
     }));
   };
 
@@ -110,8 +111,8 @@ export function MaintenanceEditForm() {
   };
 
   const isFormValid = Object.values(errors).every(err => !err) && 
-    formData.Status.trim() && 
-    formData.Maintenance_EmployeeID.trim();
+    formData.Status && 
+    formData.Maintenance_EmployeeID;
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -120,12 +121,15 @@ export function MaintenanceEditForm() {
     try {
       const payload = {
         ...formData,
+        Maintenance_ID: requestId,
         Description: formData.Description || null,
         cost: formData.cost || null, // Handle empty cost
-        end_date: formData.end_date || null // Handle empty date
+        End_Date: formData.End_Date || null // Handle empty date
       };
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/updateMaintenanceRequest`, {
+      console.log(payload);
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/editMaintenanceRow`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -141,6 +145,32 @@ export function MaintenanceEditForm() {
     } catch (error) {
       console.error("Submission error:", error);
       alert("Submission failed. Please try again.");
+    }
+  };
+
+  const handleDelete = async () => {
+    // Confirm deletion with user
+    const confirmDelete = window.confirm("Are you sure you want to delete this maintenance request? This action cannot be undone.");
+    
+    if (!confirmDelete) return;
+  
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/deleteMaintenanceRow`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Maintenance_ID: requestId }),
+      });
+  
+      if (res.ok) {
+        alert("Maintenance request deleted successfully!");
+        navigate(-1); // Go back to previous page after deletion
+      } else {
+        const error = await res.json();
+        alert(error.message || "Deletion failed");
+      }
+    } catch (error) {
+      console.error("Deletion error:", error);
+      alert("Deletion failed. Please try again.");
     }
   };
 
@@ -237,7 +267,6 @@ export function MaintenanceEditForm() {
                   value={getSafeValue(formData, 'Description')}
                   onChange={(e) => handleChange(e, "Description")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600 min-h-[100px]"
-                  required
                 />
                 {errors.Description && (
                   <Typography className="text-red-500 text-xs">
@@ -263,7 +292,7 @@ export function MaintenanceEditForm() {
                 <label className="block text-sm font-medium text-gray-700">Completion Date</label>
                 <input
                   type="date"
-                  value={getSafeValue(formData, 'end_date')}
+                  value={getSafeValue(formData, 'End_Date')}
                   onChange={handleDateChange}
                   className="border px-3 py-2 w-full rounded-md shadow-sm"
                 />
@@ -272,13 +301,13 @@ export function MaintenanceEditForm() {
 
             {/* Buttons */}
             <div className="flex justify-between mt-6">
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="px-4 py-2 rounded-md text-white bg-gray-600 hover:bg-gray-700"
-              >
-                Cancel
-              </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="px-4 py-2 rounded-md text-white bg-red-600 hover:bg-red-700"
+            >
+              Delete Request
+            </button>
               <button
                 type="submit"
                 className={`px-4 py-2 rounded-md text-white ${
