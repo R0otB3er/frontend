@@ -5,7 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 
 // Default empty values for all fields
 const DEFAULT_FORM_VALUES = {
-  maintenance_locationID: "",
+  Maintenance_ID: "",
+  Location_Name: "",
+  Location_type: "",
   request_desc: "",
   End_Date: "",
   Description: "",
@@ -34,6 +36,8 @@ export function MaintenanceEditForm() {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+
+        
         
         // Fetch dropdown options
         const formInfoRes = await fetch(`${import.meta.env.VITE_API_URL}/api/getMaintenanceEditFormInfo`, {
@@ -46,23 +50,23 @@ export function MaintenanceEditForm() {
             statuses: formInfo.statuses || []
           });
 
-          fetch(`${import.meta.env.VITE_API_URL}/api/getMaintenanceInfo`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify( {requestId} ),
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              console.log("recived data: ",data);
-              const requestData = data;
-            })
-            .catch((err) => console.error("Error fetching form data:", err));
+        fetch(`${import.meta.env.VITE_API_URL}/api/getMaintenanceInfo`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify( {requestId} ),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            console.log("recived data: ",data);
+            setRequestData({
+            ...DEFAULT_FORM_VALUES,
+            ...data.request
+            });
+        })
+        .catch((err) => console.error("Error fetching form data:", err));
         
         // Safely set data with null checks
-        setRequestData({
-          ...DEFAULT_FORM_VALUES,
-          ...requestData
-        });
+        
         
         setFormData({
           ...DEFAULT_FORM_VALUES,
@@ -106,9 +110,8 @@ export function MaintenanceEditForm() {
   };
 
   const isFormValid = Object.values(errors).every(err => !err) && 
-    formData.Description.trim() && 
     formData.Status.trim() && 
-    formData.Maintenance_Employee.trim();
+    formData.Maintenance_EmployeeID.trim();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -117,7 +120,7 @@ export function MaintenanceEditForm() {
     try {
       const payload = {
         ...formData,
-        request_id: requestId,
+        Description: formData.Description || null,
         cost: formData.cost || null, // Handle empty cost
         end_date: formData.end_date || null // Handle empty date
       };
@@ -130,7 +133,7 @@ export function MaintenanceEditForm() {
 
       if (res.ok) {
         alert("Maintenance request updated successfully!");
-        navigate(-1);
+        //navigate(-1);
       } else {
         const error = await res.json();
         alert(error.message || "Update failed");
@@ -162,14 +165,14 @@ export function MaintenanceEditForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Non-editable Location ID */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Location ID</label>
+                <label className="block text-sm font-medium text-gray-700">{getSafeValue(requestData, 'Location_type')}</label>
                 <div className="border px-3 py-2 w-full rounded-md shadow-sm bg-gray-100 text-gray-700">
-                  {getSafeValue(requestData, 'maintenance_locationID')}
+                  {getSafeValue(requestData, 'Location_Name')}
                 </div>
                 <input 
                   type="hidden" 
-                  name="maintenance_locationID" 
-                  value={getSafeValue(formData, 'maintenance_locationID')} 
+                  name="Location_Name" 
+                  value={getSafeValue(formData, 'Location_Name')} 
                 />
               </div>
 
@@ -185,8 +188,8 @@ export function MaintenanceEditForm() {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Assigned Employee*</label>
                 <select
-                  value={getSafeValue(formData, 'Maintenance_Employee')}
-                  onChange={(e) => handleChange(e, "Maintenance_Employee")}
+                  value={getSafeValue(formData, 'Maintenance_EmployeeID')}
+                  onChange={(e) => handleChange(e, "Maintenance_EmployeeID")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
                   required
                 >
