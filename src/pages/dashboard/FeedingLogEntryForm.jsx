@@ -71,54 +71,75 @@ export function FeedingLogEntryForm() {
   const isFormValid =
     formData.Animal_ID && formData.Food_Type && formData.date && formData.time && formData.quantity && formData.Q_Unit;
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      if (!isFormValid) return alert("Please complete all fields.");
-    
-      const payload = {
-        animal_ID: formData.Animal_ID,
-        employee_ID: formData.Employee_ID,
-        date: formData.date,
-        time: formData.time,
-        foodtID: formData.Food_Type,
-        quantity: formData.quantity,
-        unittID: formData.Q_Unit,
-      };
-    
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/feeding/create`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-    
-        const result = await res.json();
-    
-        if (res.ok) {
-          alert("Feeding log submitted!");
-    
-          // Reset the form here
-          setFormData({
-            Animal_ID: "",
-            Employee_ID: "",
-            Food_Type: "",
-            date: "",
-            time: "",
-            quantity: "",
-            Q_Unit: "",
-          });
-    
-          setSelectedDate("");
-          setSelectedTime("");
-        } else {
-          console.error(result.error);
-          alert("Failed to submit feeding log.");
-        }
-      } catch (error) {
-        console.error("❌ Submission error:", error);
-        alert("Submission failed. Please try again.");
-      }
+const logCurrentDateTime = () => {
+  const now = new Date();
+  
+  // Format date as YYYY-MM-DD
+  const currentDate = now.toISOString().split('T')[0];
+  
+  // Format time as HH:MM (24-hour format)
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const currentTime = `${hours}:${minutes}`;
+  
+  // Update both the form data and selected date/time states
+  setSelectedDate(currentDate);
+  setSelectedTime(currentTime);
+  setFormData(prev => ({
+    ...prev,
+    date: currentDate,
+    time: currentTime
+  }));
+};
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!isFormValid) return alert("Please complete all fields.");
+  
+    const payload = {
+      animal_ID: formData.Animal_ID,
+      employee_ID: formData.Employee_ID,
+      date: formData.date,
+      time: formData.time,
+      foodtID: formData.Food_Type,
+      quantity: formData.quantity,
+      unittID: formData.Q_Unit,
     };
+  
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/feeding/create`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+  
+      const result = await res.json();
+  
+      if (res.ok) {
+        alert("Feeding log submitted!");
+  
+        // Reset the form here
+        setFormData({
+          Animal_ID: "",
+          Employee_ID: "",
+          Food_Type: "",
+          date: "",
+          time: "",
+          quantity: "",
+          Q_Unit: "",
+        });
+  
+        setSelectedDate("");
+        setSelectedTime("");
+      } else {
+        console.error(result.error);
+        alert("Failed to submit feeding log.");
+      }
+    } catch (error) {
+      console.error("❌ Submission error:", error);
+      alert("Submission failed. Please try again.");
+    }
+  };
 
   return (
     <div className="mt-12 flex flex-col items-center">
@@ -164,7 +185,7 @@ export function FeedingLogEntryForm() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Date & Time</label>
+              <label className="block text-sm font-medium text-gray-700">Date & Time</label>
                 <div className="flex space-x-2">
                   <input
                     type="date"
@@ -179,6 +200,14 @@ export function FeedingLogEntryForm() {
                     className="border px-3 py-2 w-1/2 rounded-md shadow-sm"
                   />
                 </div>
+                {/* Add this button */}
+                <button
+                  type="button"
+                  onClick={logCurrentDateTime}
+                  className="mt-2 px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  Log Current Date/Time
+                </button>
               </div>
 
               <div>

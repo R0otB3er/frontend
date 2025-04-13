@@ -308,6 +308,13 @@ export function MaintenanceEditForm() {
             >
               Delete Request
             </button>
+            <button
+              type="button"
+              onClick={() => navigate("/maintenance/Maintenance_History")}
+              className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700"
+            >
+              Back to History
+            </button>
               <button
                 type="submit"
                 className={`px-4 py-2 rounded-md text-white ${

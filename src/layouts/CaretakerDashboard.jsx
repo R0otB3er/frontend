@@ -17,7 +17,12 @@ export function CaretakerDashboard() {
   return (
     <div className="min-h-screen bg-blue-gray-50/50">
       <Sidenav
-        routes={routes.filter((r) => r.layout === "caretaker")}
+        routes={routes
+          .filter((r) => r.layout === "caretaker")
+          .map(group => ({
+            ...group,
+            pages: group.pages.filter(page => !page.hidden)
+          }))}
         brandName="Caretaker Dashboard"
       />
       <div className="p-4 xl:ml-80">
