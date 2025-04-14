@@ -11,7 +11,7 @@ import {
 import {
   Home,
   Profile,
-  FeedingLogEntryForm,
+  HabitatView,
   MaintenanceHistory,
   MaintenanceEntryForm,
   Maintenance_query,
@@ -29,7 +29,7 @@ import {
   MaintenanceRequestForm,
   MaintenanceEditForm,
   FeedingLogHistory,
-  FeedingLogEditForm
+  FeedingLogEditForm,
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -105,9 +105,10 @@ export const routes = [
     element: <CaretakerDashboard />,
     pages: [
       { icon: <HomeIcon {...icon} />, name: "dashboard", path: "dashboard", element: <Home /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "Feeding_Log_Entry", element: <HabitatView /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Search", path: "Feeding_Log_Search", element: <FeedingLogSearch /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log History", path: "Feeding_Log_History", element: <FeedingLogHistory /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Habitats", path: "Habitat_View", element: <HabitatView /> },
       { name: "Feeding Log Edit", path: "FeedingLog_Edit/:feedingId", element: <FeedingLogEditForm />, hidden: true },
       //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <MaintenanceHistory /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "/dashboard/Medical_Entry", element: <MedicalEntryForm /> },
