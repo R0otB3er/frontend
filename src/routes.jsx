@@ -30,6 +30,7 @@ import {
   MaintenanceEditForm,
   FeedingLogHistory,
   FeedingLogEditForm,
+  MerchStockView,
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -85,6 +86,7 @@ export const routes = [
       //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Search", path: "Feeding_Log_Search", element: <FeedingLogSearch /> },
       { icon: <TableCellsIcon {...icon} />, name: "Vendor Report", path: "Vendor_Sales", element: <VendorReport /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Merchandise Stock", path: "Merch_Stock", element: <MerchStockView /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <Adfeedinglog_query /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Maintenance Entry", path: "Maintenance_Entry", element: <MaintenanceEntryForm /> },
      // { icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <Maintenance_query /> },

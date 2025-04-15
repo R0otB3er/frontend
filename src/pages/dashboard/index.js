@@ -22,3 +22,4 @@ export * from "@/pages/dashboard/MaintenanceHistory";
 export * from "@/pages/dashboard/FeedingLogHistory";
 export * from "@/pages/dashboard/FeedingLogEdit";
 export * from "@/pages/dashboard/HabitatView";
+export * from "@/pages/dashboard/MerchStockView";

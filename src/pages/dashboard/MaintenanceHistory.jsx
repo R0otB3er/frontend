@@ -91,7 +91,7 @@ import {
                       </td>
                       <td className="py-3 px-5 border-b border-blue-gray-50">
                         <Typography variant="small" className="font-semibold text-blue-gray-600">
-                          {request.Location_type}
+                          {request.Location_ype}
                         </Typography>
                       </td>
                       <td className="py-3 px-5 border-b border-blue-gray-50">
