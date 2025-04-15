@@ -2,11 +2,13 @@ import React from "react";
 import { useCart } from "@/context/CartContext";
 import { Typography, Button, Card, CardBody } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom"; // ✅ Step 1
+import { useUserStore } from "@/user_managment/user_store";
+
 
 export default function CartPage() {
   const { cartItems, removeFromCart, updateQuantity } = useCart();
   const navigate = useNavigate(); // ✅ Step 2
-
+   const { loggedIn } = useUserStore(); // ✅ Add this line near the top
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const taxRate = 0.0825;
   const tax = subtotal * taxRate;
@@ -75,19 +77,26 @@ export default function CartPage() {
                   Total: ${total.toFixed(2)}
                 </Typography>
 
-                <Button
+               
+
+<Button
   color="green"
   className="mt-4"
   onClick={() => {
+    if (!loggedIn) {
+      alert("Please sign in to continue with your purchase.");
+      return;
+    }
+
     const orderDetails = {
       items: cartItems,
       subtotal,
-      discount: 0, // optional for now
+      discount: 0, // optional
       tax,
       total,
     };
     localStorage.setItem("shopOrder", JSON.stringify(orderDetails));
-    navigate("/ShopPayments");
+    navigate("/visitor/shoppayments"); // ✅ Route to visitor layout version
   }}
 >
   Proceed to Checkout

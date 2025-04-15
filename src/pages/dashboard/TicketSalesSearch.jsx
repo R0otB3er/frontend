@@ -305,7 +305,7 @@ export function TicketSalesSearch() {
           />
         )}
       </div>
-      {/* Table of results 
+       
       <Card className="mt-6 w-full max-w-4xl">
         <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
           <Typography variant="h6" color="white">
@@ -355,7 +355,7 @@ export function TicketSalesSearch() {
           )}
         </CardBody>
       </Card>
-      */}
+      
     </div>
   );
 }

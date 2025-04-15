@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import routes from "@/routes";
-import { Admin, CaretakerDashboard, MaintenanceDashboard, WebsiteLayout } from "@/layouts";
+import { Admin, CaretakerDashboard, MaintenanceDashboard, WebsiteLayout, VisitorLayout } from "@/layouts";
 
 function App() {
   return (
@@ -41,6 +41,15 @@ function App() {
             <Route key={path} path={path} element={element} />
           ))}
       </Route>
+
+      <Route path="/visitor/*" element={<VisitorLayout />}>
+  {routes
+    .find((r) => r.layout === "visitor")
+    .pages.map(({ path, element }) => (
+      <Route key={path} path={path.replace('/visitor/', '')} element={element} />
+    ))}
+</Route>
+
 
       {/* Auth Routes (standalone) */}
       {routes

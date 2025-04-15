@@ -59,7 +59,13 @@ export function SignIn() {
     console.log(data); 
 
     useUserStore.getState().setUserState(data.id, data.user_type);
-
+    if (data.user_type === "visitor") {
+      navigate("/visitor/dashboard");
+    } else {
+      navigate(`/${data.user_type}/dashboard`);
+    }
+    
+    
     /* ADD NAVIGATION WHEN DASHBOARDS ARE READY*/
     console.log(`navigating to /${data.user_type}/dashboard`);
     navigate(`/${data.user_type}/dashboard`);

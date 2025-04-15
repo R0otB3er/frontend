@@ -66,6 +66,7 @@ import SignUp from "@/pages/auth/sign-up";
 import WebsiteLayout from "@/layouts/WebsiteLayout";
 import CaretakerDashboard from "@/layouts/CaretakerDashboard";
 import MaintenanceDashboard from "@/layouts/MaintenanceDashboard";
+import VisitorLayout from "@/layouts/VisitorLayout";
 import { Admin } from "./layouts";
 
 const icon = {
@@ -136,6 +137,23 @@ export const routes = [
       { name: "Shop Payments", path: "/ShopPayments", element: <ShopPayments /> }
     ],
   },
+
+  {
+    layout: "visitor",
+    element: <VisitorLayout />,
+    pages: [
+      { name: "Home", path: "/visitor/dashboard", element: <HomePage /> },
+      { name: "Animals", path: "/visitor/animals", element: <AnimalsPage /> },
+      { name: "Tickets", path: "/visitor/tickets", element: <TicketsPage /> },
+      { name: "Attractions", path: "/visitor/attractions", element: <AttractionsPage /> },
+      { name: "Shop", path: "/visitor/shop", element: <ShopPage /> },
+      { name: "Tickets Orders", path: "/visitor/ticketsorders", element: <TicketsOrders /> },
+      { name: "Tickets Payments", path: "/visitor/ticketspayments", element: <TicketsPayments /> },
+      { name: "Cart", path: "/visitor/cart", element: <CartPage /> },
+      { name: "Shop Payments", path: "/visitor/ShopPayments", element: <ShopPayments /> }
+    ]
+  },
+  
   {
     title: "auth",
     layout: "standalone",
@@ -148,5 +166,4 @@ export const routes = [
 ];
 
 export default routes;
-
 
