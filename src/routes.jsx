@@ -11,8 +11,8 @@ import {
 import {
   Home,
   Profile,
-  FeedingLogEntryForm,
-  Adfeedinglog_query,
+  HabitatView,
+  MaintenanceHistory,
   MaintenanceEntryForm,
   Maintenance_query,
   MedicalEntryForm,
@@ -26,7 +26,11 @@ import {
   TicketSalesSearch,
   VendorReport,
   MaintenanceReport,
-  MaintenanceRequestForm
+  MaintenanceRequestForm,
+  MaintenanceEditForm,
+  FeedingLogHistory,
+  FeedingLogEditForm,
+  MerchStockView,
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -83,6 +87,7 @@ export const routes = [
       //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Search", path: "Feeding_Log_Search", element: <FeedingLogSearch /> },
       { icon: <TableCellsIcon {...icon} />, name: "Vendor Report", path: "Vendor_Sales", element: <VendorReport /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Merchandise Stock", path: "Merch_Stock", element: <MerchStockView /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <Adfeedinglog_query /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Maintenance Entry", path: "Maintenance_Entry", element: <MaintenanceEntryForm /> },
      // { icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <Maintenance_query /> },
@@ -103,9 +108,12 @@ export const routes = [
     element: <CaretakerDashboard />,
     pages: [
       { icon: <HomeIcon {...icon} />, name: "dashboard", path: "dashboard", element: <Home /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "Feeding_Log_Entry", element: <FeedingLogEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Entry", path: "Feeding_Log_Entry", element: <HabitatView /> },
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Search", path: "Feeding_Log_Search", element: <FeedingLogSearch /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <Adfeedinglog_query /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log History", path: "Feeding_Log_History", element: <FeedingLogHistory /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Habitats", path: "Habitat_View", element: <HabitatView /> },
+      { name: "Feeding Log Edit", path: "FeedingLog_Edit/:feedingId", element: <FeedingLogEditForm />, hidden: true },
+      //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <MaintenanceHistory /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "/dashboard/Medical_Entry", element: <MedicalEntryForm /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Medical Query", path: "/dashboard/Medical_Query", element: <Medical_query /> },
     ],
@@ -116,9 +124,11 @@ export const routes = [
     pages: [
       { icon: <HomeIcon {...icon} />, name: "Maintenance Home", path: "dashboard", element: <Mthome /> },
       { icon: <UserCircleIcon {...icon} />, name: "Profile", path: "profile", element: <Mtprofile /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Entry", path: "Maintenance_Entry", element: <MtMaintenanceEntryForm /> },
+      //{ icon: <TableCellsIcon {...icon} />, name: "Maintenance Entry", path: "Maintenance_Entry", element: <MtMaintenanceEntryForm /> },
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance Request", path: "Maintenance_Request", element: <MaintenanceRequestForm /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <MtMaintenance_query /> },
+      //{ icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <MtMaintenance_query /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Maintenance History", path: "Maintenance_History", element: <MaintenanceHistory /> },
+      { name: "Maintenance Edit", path: "Maintenance_Edit/:requestId", element: <MaintenanceEditForm />, hidden: true },
     ],
   },
   {

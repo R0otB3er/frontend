@@ -7,17 +7,19 @@ import {
   Button,
 } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
-import { useUserStore } from "@/user_managment/user_store"; // Correct path if needed
+import { useUserStore } from "@/user_managment/user_store"; // Adjust path if needed
 
 export default function TicketsPayments() {
   const navigate = useNavigate();
-  const { id: Visitor_ID } = useUserStore(); // ✅ Grab Visitor_ID from login
+  const { id: Visitor_ID } = useUserStore(); // ✅ Grab Visitor_ID from store
   const [order, setOrder] = useState(null);
 
   useEffect(() => {
     const savedOrder = localStorage.getItem("ticketOrder");
     if (savedOrder) {
-      setOrder(JSON.parse(savedOrder));
+      const parsed = JSON.parse(savedOrder);
+      console.log("📦 Loaded ticketOrder from localStorage:", parsed);
+      setOrder(parsed);
     } else {
       alert("No order found. Redirecting to tickets page.");
       navigate("/tickets");
@@ -27,24 +29,36 @@ export default function TicketsPayments() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log("👤 Visitor_ID from user store:", Visitor_ID);
+
+    const ticketsPayload = order.items.map((item) => [
+      item.person_typeID,
+      item.Attraction_ID,
+    ]);
+
+    console.log("🎟️ Final ticket payload (personTypeID, attractionID):", ticketsPayload);
+
     const payload = {
       Visitor_ID,
-      tickets: order.items.map((item) => [
-        item.person_typeID,
-        item.Attraction_ID,
-      ]),
+      tickets: ticketsPayload,
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/tickets/payment`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/tickets/payment`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
 
-      if (!res.ok) throw new Error("Failed to submit ticket payment");
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(`HTTP ${res.status}: ${errText}`);
+      }
 
-      alert("Payment successful! Thank you for your order.");
+      alert("✅ Payment successful! Thank you for your order.");
       localStorage.removeItem("ticketOrder");
       navigate("/");
     } catch (err) {
@@ -95,4 +109,3 @@ export default function TicketsPayments() {
     </div>
   );
 }
-
