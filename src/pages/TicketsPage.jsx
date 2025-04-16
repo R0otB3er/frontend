@@ -1,27 +1,31 @@
 import React, { useState } from "react";
-import { Calendar, Users } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useUserStore } from "@/user_managment/user_store"; // 👈 Import user info
 
 export default function TicketsPage() {
   const [selectedDate, setSelectedDate] = useState("");
-  //const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
+  const { loggedIn, user_type } = useUserStore(); // 👈 Get auth info
 
   const handleProceedToCheckout = () => {
-    if (!selectedDate ) {
+    if (!selectedDate) {
       alert("Please select a date.");
       return;
     }
 
-    // Directly navigate to Orders page
-    navigate("/ticketsorders");
+    // 👇 Route based on whether the user is signed in as a visitor
+    if (loggedIn && user_type === "visitor") {
+      navigate("/visitor/ticketsorders");
+    } else {
+      navigate("/ticketsorders");
+    }
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <h1 className="text-4xl font-bold mb-8">Purchase Tickets</h1>
 
-      {/* Date & Quantity */}
       <div className="mb-8 bg-green-50 p-6 rounded-lg">
         <h2 className="text-2xl font-semibold mb-4">Plan Your Visit</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -40,12 +44,9 @@ export default function TicketsPage() {
               />
             </div>
           </div>
-
-
         </div>
       </div>
 
-      {/* Proceed to Checkout */}
       <div className="mt-10 flex justify-end">
         <button
           onClick={handleProceedToCheckout}
@@ -55,7 +56,6 @@ export default function TicketsPage() {
         </button>
       </div>
 
-      {/* Info Section */}
       <div className="mt-12 bg-green-50 p-6 rounded-lg">
         <h2 className="text-2xl font-semibold mb-4">Important Information</h2>
         <ul className="space-y-2 text-gray-700">

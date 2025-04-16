@@ -1,75 +1,82 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
   CardBody,
   Typography,
   Button,
+  Select,
+  Option,
 } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
-
-const ticketItems = [
-  { id: "TICKET-1", name: "Adult Ticket", price: 20, type: "Ticket" },
-  { id: "TICKET-2", name: "Child Ticket", price: 10, type: "Ticket" },
-  { id: "TICKET-3", name: "Senior Ticket", price: 15, type: "Ticket" },
-  { id: "TICKET-4", name: "Veteran Ticket", price: 12, type: "Ticket" }, // 👈 Added
-];
-
-const taxRate = 0.0825;
-
-const membershipDiscounts = {
-  none: 0,
-  bronze: 0.05,
-  silver: 0.1,
-  gold: 0.15,
-};
+import { useCart } from "@/context/CartContext";
+import { useUserStore } from "@/user_managment/user_store";
 
 export default function TicketsOrder() {
   const navigate = useNavigate();
-  const [cart, setCart] = useState([]);
-  const [membershipLevel] = useState("silver");
+  const { addToCart, cartItems, updateQuantity } = useCart();
+  const { loggedIn } = useUserStore();
 
-  const handleAddToCart = (item) => {
-    const exists = cart.find((i) => i.id === item.id);
-    if (exists) {
-      setCart((prev) =>
-        prev.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-        )
-      );
-    } else {
-      setCart((prev) => [...prev, { ...item, quantity: 1 }]);
+  const [ticketPrice, setTicketPrice] = useState(0);
+  const [personTypeID, setPersonTypeID] = useState(null);
+  const [attractionID, setAttractionID] = useState(null);
+  const [personTypes, setPersonTypes] = useState([]);
+  const [attractions, setAttractions] = useState([]);
+
+  useEffect(() => {
+    const fetchFormInfo = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/tickets/form-info`);
+        const data = await res.json();
+        setPersonTypes(data.personTypes);
+        setAttractions(data.attractions);
+      } catch (err) {
+        console.error("Failed to fetch ticket form info:", err);
+      }
+    };
+
+    fetchFormInfo();
+  }, []);
+
+  const getTicketLabel = (id) => {
+    const type = personTypes.find((pt) => pt.PersonType_ID === id);
+    return type?.ticket_person || "Ticket";
+  };
+
+  const handleAddToCart = () => {
+    if (!personTypeID || !attractionID) {
+      alert("Please select both person type and attraction.");
+      return;
     }
+
+    const id = `ticket-${personTypeID}-${attractionID}`;
+    const name = `${getTicketLabel(personTypeID)} - ${attractions.find((a) => a.Attraction_ID === attractionID)?.Attraction_Name}`;
+    const price = personTypeID === 1 ? 20 : personTypeID === 2 ? 10 : 15; // You can also fetch from DB
+
+    addToCart({
+      id,
+      name,
+      price,
+      quantity: 1,
+      type: "Ticket",
+      person_typeID: personTypeID,
+      Attraction_ID: attractionID,
+    });
   };
 
-  const handleQuantityChange = (itemId, newQty) => {
-    setCart((prev) =>
-      prev.map((i) =>
-        i.id === itemId ? { ...i, quantity: Math.max(1, newQty) } : i
-      )
-    );
+  const handleQuantityChange = (id, quantity) => {
+    updateQuantity(id, quantity);
   };
 
-  const calculateSubtotal = () =>
-    cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-  const subtotal = calculateSubtotal();
-  const discount = subtotal * membershipDiscounts[membershipLevel];
-  const tax = (subtotal - discount) * taxRate;
-  const total = subtotal - discount + tax;
+  const ticketCart = cartItems.filter((item) => item.type === "Ticket");
+  const subtotal = ticketCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleCheckout = () => {
-    const orderDetails = {
-      type: "ticket",
-      membershipLevel,
-      items: cart,
-      subtotal,
-      discount,
-      tax,
-      total,
-    };
-    localStorage.setItem("ticketOrder", JSON.stringify(orderDetails));
-    navigate("/ticketspayments");
+    if (!loggedIn) {
+      alert("Please sign in to continue with your purchase.");
+      return;
+    }
+    navigate("/visitor/cart");
   };
 
   return (
@@ -78,35 +85,46 @@ export default function TicketsOrder() {
         Purchase Tickets
       </Typography>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        {ticketItems.map((item) => (
-          <Card key={item.id}>
-            <CardHeader floated={false} shadow={false} className="p-4">
-              <Typography variant="h6">{item.name}</Typography>
-              <Typography variant="small" color="gray">
-                ${item.price.toFixed(2)}
-              </Typography>
-            </CardHeader>
-            <CardBody className="pt-0">
-              <Button
-                onClick={() => handleAddToCart(item)}
-                color="green"
-                fullWidth
-              >
-                Add to Cart
-              </Button>
-            </CardBody>
-          </Card>
-        ))}
-      </div>
+      <Card className="mb-10">
+        <CardHeader floated={false} shadow={false} className="p-4">
+          <Typography variant="h6">Ticket Options</Typography>
+        </CardHeader>
+        <CardBody className="space-y-4">
+          <Select
+            label="Select Person Type"
+            onChange={(val) => setPersonTypeID(parseInt(val))}
+          >
+            {personTypes.map((pt) => (
+              <Option key={pt.PersonType_ID} value={pt.PersonType_ID.toString()}>
+                {pt.ticket_person}
+              </Option>
+            ))}
+          </Select>
+
+          <Select
+            label="Select Attraction"
+            onChange={(val) => setAttractionID(parseInt(val))}
+          >
+            {attractions.map((a) => (
+              <Option key={a.Attraction_ID} value={a.Attraction_ID.toString()}>
+                {a.Attraction_Name}
+              </Option>
+            ))}
+          </Select>
+
+          <Button onClick={handleAddToCart} color="green" fullWidth>
+            Add Ticket to Cart
+          </Button>
+        </CardBody>
+      </Card>
 
       <Card className="p-6">
         <Typography variant="h6" className="mb-4">
-          Your Cart
+          Your Ticket Cart
         </Typography>
 
-        {cart.length === 0 ? (
-          <Typography color="gray">No items in cart.</Typography>
+        {ticketCart.length === 0 ? (
+          <Typography color="gray">No tickets in cart.</Typography>
         ) : (
           <table className="w-full table-auto text-sm">
             <thead>
@@ -117,7 +135,7 @@ export default function TicketsOrder() {
               </tr>
             </thead>
             <tbody>
-              {cart.map((item) => (
+              {ticketCart.map((item) => (
                 <tr key={item.id}>
                   <td className="p-2">{item.name}</td>
                   <td className="p-2 text-center">
@@ -140,18 +158,13 @@ export default function TicketsOrder() {
           </table>
         )}
 
-        {cart.length > 0 && (
+        {ticketCart.length > 0 && (
           <div className="mt-6 space-y-2 text-right">
-            <Typography>Subtotal: ${subtotal.toFixed(2)}</Typography>
-            <Typography>
-              Discount ({membershipLevel}): -${discount.toFixed(2)}
-            </Typography>
-            <Typography>Tax: ${tax.toFixed(2)}</Typography>
             <Typography variant="h6" className="text-green-600">
-              Total: ${total.toFixed(2)}
+              Total: ${subtotal.toFixed(2)}
             </Typography>
             <Button onClick={handleCheckout} color="green" className="mt-4">
-              Proceed to Payment
+              Proceed to Checkout
             </Button>
           </div>
         )}
@@ -159,4 +172,3 @@ export default function TicketsOrder() {
     </div>
   );
 }
-
