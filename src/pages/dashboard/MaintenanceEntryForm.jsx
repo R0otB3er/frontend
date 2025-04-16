@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardBody, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
-import { getUniqueMaintenanceValues } from "@/data"; // ✅ Import function
 
 export function MaintenanceEntryForm() {
   const navigate = useNavigate();
