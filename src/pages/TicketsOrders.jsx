@@ -15,16 +15,17 @@ import { useUserStore } from "@/user_managment/user_store";
 export default function TicketsOrder() {
   const navigate = useNavigate();
   const { addToCart, cartItems, updateQuantity } = useCart();
-  const { loggedIn } = useUserStore();
+  // ⬇️ pull auth state at top
+  const { loggedIn, id, user_type } = useUserStore();
 
-  const [ticketPrice, setTicketPrice] = useState(0);
   const [personTypeID, setPersonTypeID] = useState(null);
   const [attractionID, setAttractionID] = useState(null);
   const [personTypes, setPersonTypes] = useState([]);
   const [attractions, setAttractions] = useState([]);
 
+  // Fetch dropdown data
   useEffect(() => {
-    const fetchFormInfo = async () => {
+    async function fetchFormInfo() {
       try {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/tickets/form-info`);
         const data = await res.json();
@@ -33,28 +34,29 @@ export default function TicketsOrder() {
       } catch (err) {
         console.error("Failed to fetch ticket form info:", err);
       }
-    };
-
+    }
     fetchFormInfo();
   }, []);
 
-  const getTicketLabel = (id) => {
-    const type = personTypes.find((pt) => pt.PersonType_ID === id);
-    return type?.ticket_person || "Ticket";
-  };
+  function getTicketLabel(id) {
+    const pt = personTypes.find((p) => p.PersonType_ID === id);
+    return pt?.ticket_person || "Ticket";
+  }
 
+  // Add one ticket variant to cart
   const handleAddToCart = () => {
     if (!personTypeID || !attractionID) {
       alert("Please select both person type and attraction.");
       return;
     }
-
-    const id = `ticket-${personTypeID}-${attractionID}`;
-    const name = `${getTicketLabel(personTypeID)} - ${attractions.find((a) => a.Attraction_ID === attractionID)?.Attraction_Name}`;
-    const price = personTypeID === 1 ? 20 : personTypeID === 2 ? 10 : 15; // You can also fetch from DB
+    const slug = `ticket-${personTypeID}-${attractionID}`;
+    const name = `${getTicketLabel(personTypeID)} — ${
+      attractions.find((a) => a.Attraction_ID === attractionID)?.Attraction_Name
+    }`;
+    const price = personTypeID === 1 ? 20 : personTypeID === 2 ? 10 : 15;
 
     addToCart({
-      id,
+      id: slug,
       name,
       price,
       quantity: 1,
@@ -64,15 +66,19 @@ export default function TicketsOrder() {
     });
   };
 
-  const handleQuantityChange = (id, quantity) => {
-    updateQuantity(id, quantity);
+  // Update shared-cart quantity
+  const handleQuantityChange = (slug, qty) => {
+    updateQuantity(slug, qty);
   };
 
-  const ticketCart = cartItems.filter((item) => item.type === "Ticket");
-  const subtotal = ticketCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const ticketCart = cartItems.filter((i) => i.type === "Ticket");
+  const subtotal = ticketCart.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
+  // ✅ guard exactly like CartPage
   const handleCheckout = () => {
-    if (!loggedIn) {
+    console.log("🧠 Auth check:", { loggedIn, id, user_type });
+    const isValidVisitor = loggedIn && user_type === "visitor";
+    if (!isValidVisitor) {
       alert("Please sign in to continue with your purchase.");
       return;
     }
