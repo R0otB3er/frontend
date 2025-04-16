@@ -6,4 +6,5 @@ export * from "@/pages/TicketsPage";
 export * from "@/pages/TicketsOrders";
 export * from "@/pages/TicketsPayments";
 export * from "@/pages/CartPage";
-export * from "@.pages/ShopPayments";
+export * from "@/pages/ShopPayments";
+export * from "@/pages/Payments";
