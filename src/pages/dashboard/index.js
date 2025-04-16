@@ -24,3 +24,4 @@ export * from "@/pages/dashboard/FeedingLogEdit";
 export * from "@/pages/dashboard/HabitatView";
 export * from "@/pages/dashboard/MerchStockView";
 export * from "@/pages/dashboard/LocationView";
+export * from "@/pages/dashboard/EditEmployee";

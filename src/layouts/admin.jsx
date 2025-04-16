@@ -44,11 +44,14 @@ export function Admin() {
   return (
     <div className="min-h-screen bg-blue-gray-50/50">
       <Sidenav
-        routes={adminRoutes}
-        brandImg={
-          sidenavType === "white" ? "/img/logo-ct.png" : "/img/logo-ct-dark.png"
-        }
-      />
+              routes={routes
+                .filter((r) => r.layout === "admin")
+                .map(group => ({
+                  ...group,
+                  pages: group.pages.filter(page => !page.hidden)
+                }))}
+              brandName="Admin Dashboard"
+            />
       <div className="p-4 xl:ml-80">
         <DashboardNavbar />
         {showAlerts.blue && notifications.length > 0 && (
