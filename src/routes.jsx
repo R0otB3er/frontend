@@ -32,7 +32,8 @@ import {
   FeedingLogEditForm,
   MerchStockView,
   LocationView,
-  EmployeeEditForm
+  EmployeeEditForm,
+  BulkPurchaseHistory
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -91,6 +92,7 @@ export const routes = [
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Search", path: "Feeding_Log_Search", element: <FeedingLogSearch /> },
       { icon: <TableCellsIcon {...icon} />, name: "Vendor Report", path: "Vendor_Sales", element: <VendorReport /> },
       { icon: <TableCellsIcon {...icon} />, name: "Merchandise Stock", path: "Merch_Stock", element: <MerchStockView /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase History", path: "Bulk_History", element: <BulkPurchaseHistory /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <Adfeedinglog_query /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Maintenance Entry", path: "Maintenance_Entry", element: <MaintenanceEntryForm /> },
      // { icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <Maintenance_query /> },
@@ -102,7 +104,7 @@ export const routes = [
       { icon: <TableCellsIcon {...icon} />, name: "Ticket Sales Search", path: "Ticket_Sales_Search", element: <TicketSalesSearch />,},
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance Report", path: "Maintenance_Log", element: <MaintenanceReport /> },
       { icon: <TableCellsIcon {...icon} />, name: "Employee Entry", path: "Employee_Entry", element: <EmployeeEntryForm /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Sign-in Query", path: "Sign_in_Query", element: <Signin_query /> },
+      //{ icon: <TableCellsIcon {...icon} />, name: "Sign-in Query", path: "Sign_in_Query", element: <Signin_query /> },
       { name: "Employee Edit", path: "Employee_Edit/:employeeId", element: <EmployeeEditForm />, hidden: true },
       //{ icon: <InformationCircleIcon {...icon} />, name: "Testing", path: "Testing", element: <TestingForm /> },
     ],

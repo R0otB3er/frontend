@@ -25,3 +25,4 @@ export * from "@/pages/dashboard/HabitatView";
 export * from "@/pages/dashboard/MerchStockView";
 export * from "@/pages/dashboard/LocationView";
 export * from "@/pages/dashboard/EditEmployee";
+export * from "@/pages/dashboard/BulkPurchaseHistory";
