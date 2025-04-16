@@ -8,7 +8,7 @@ import { useUserStore } from "@/user_managment/user_store";
 export default function CartPage() {
   const { cartItems, removeFromCart, updateQuantity } = useCart();
   const navigate = useNavigate(); // ✅ Step 2
-   const { loggedIn } = useUserStore(); // ✅ Add this line near the top
+  const { loggedIn, id, user_type } = useUserStore(); 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const taxRate = 0.0825;
   const tax = subtotal * taxRate;
@@ -79,11 +79,16 @@ export default function CartPage() {
 
                
 
-<Button
+                <Button
   color="green"
   className="mt-4"
   onClick={() => {
-    if (!loggedIn) {
+
+    console.log("🧠 Auth check:", { loggedIn, id, user_type });
+
+    const isValidVisitor = loggedIn && user_type === "visitor"; // ✅ Updated!
+
+    if (!isValidVisitor) {
       alert("Please sign in to continue with your purchase.");
       return;
     }
@@ -91,12 +96,13 @@ export default function CartPage() {
     const orderDetails = {
       items: cartItems,
       subtotal,
-      discount: 0, // optional
+      discount: 0,
       tax,
       total,
     };
+
     localStorage.setItem("shopOrder", JSON.stringify(orderDetails));
-    navigate("/visitor/shoppayments"); // ✅ Route to visitor layout version
+    navigate("/visitor/shoppayments");
   }}
 >
   Proceed to Checkout
