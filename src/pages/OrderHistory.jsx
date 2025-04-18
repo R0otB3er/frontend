@@ -16,9 +16,15 @@ export default function OrderHistory() {
         });
 
         const data = await response.json();
-        setOrders(data);
+        if (Array.isArray(data)) {
+          setOrders(data);
+        } else {
+          console.warn("⚠️ Unexpected order history format:", data);
+          setOrders([]);
+        }
       } catch (error) {
         console.error("Error fetching order history:", error);
+        setOrders([]);
       } finally {
         setLoading(false);
       }
@@ -48,12 +54,10 @@ export default function OrderHistory() {
                 Subtotal: ${order.subtotal} <br />
                 Tax (8.25%): ${order.tax} <br />
                 <strong>Total: ${order.total}</strong>
-                {order.discount > 0 && (
-                  <> (after {order.discount}% discount)</>
-                )}
+                {order.discount > 0 && <> (after {order.discount}% discount)</>}
               </p>
 
-              {order.tickets && (
+              {Array.isArray(order.tickets) && order.tickets.length > 0 && (
                 <>
                   <p className="mt-3 font-semibold">Tickets:</p>
                   <ul className="ml-4 list-disc">
@@ -66,7 +70,7 @@ export default function OrderHistory() {
                 </>
               )}
 
-              {order.merchandise && (
+              {Array.isArray(order.merchandise) && order.merchandise.length > 0 && (
                 <>
                   <p className="mt-3 font-semibold">Merchandise:</p>
                   <ul className="ml-4 list-disc">
@@ -85,3 +89,4 @@ export default function OrderHistory() {
     </div>
   );
 }
+
