@@ -15,13 +15,13 @@ import { useUserStore } from "@/user_managment/user_store";
 export default function TicketsOrder() {
   const navigate = useNavigate();
   const { addToCart, cartItems, updateQuantity } = useCart();
-  // ⬇️ pull auth state at top
   const { loggedIn, id, user_type } = useUserStore();
 
   const [personTypeID, setPersonTypeID] = useState(null);
   const [attractionID, setAttractionID] = useState(null);
   const [personTypes, setPersonTypes] = useState([]);
   const [attractions, setAttractions] = useState([]);
+  const [ticketPrices, setTicketPrices] = useState([]);
 
   // Fetch dropdown data
   useEffect(() => {
@@ -31,6 +31,7 @@ export default function TicketsOrder() {
         const data = await res.json();
         setPersonTypes(data.personTypes);
         setAttractions(data.attractions);
+        setTicketPrices(data.ticketPrices); // ✅ new
       } catch (err) {
         console.error("Failed to fetch ticket form info:", err);
       }
@@ -43,17 +44,23 @@ export default function TicketsOrder() {
     return pt?.ticket_person || "Ticket";
   }
 
-  // Add one ticket variant to cart
+  function getTicketPrice(personTypeID, attractionID) {
+    const match = ticketPrices.find(
+      (p) => p.PersonType_ID === personTypeID && p.Attraction_ID === attractionID
+    );
+    return match?.price ?? 0;
+  }
+
   const handleAddToCart = () => {
     if (!personTypeID || !attractionID) {
       alert("Please select both person type and attraction.");
       return;
     }
+
+    const price = getTicketPrice(personTypeID, attractionID);
     const slug = `ticket-${personTypeID}-${attractionID}`;
-    const name = `${getTicketLabel(personTypeID)} — ${
-      attractions.find((a) => a.Attraction_ID === attractionID)?.Attraction_Name
-    }`;
-    const price = personTypeID === 1 ? 20 : personTypeID === 2 ? 10 : 15;
+    const attractionName = attractions.find((a) => a.Attraction_ID === attractionID)?.Attraction_Name;
+    const name = `${getTicketLabel(personTypeID)} — ${attractionName}`;
 
     addToCart({
       id: slug,
@@ -66,17 +73,16 @@ export default function TicketsOrder() {
     });
   };
 
-  // Update shared-cart quantity
   const handleQuantityChange = (slug, qty) => {
     updateQuantity(slug, qty);
   };
 
   const ticketCart = cartItems.filter((i) => i.type === "Ticket");
   const subtotal = ticketCart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const tax = subtotal * 0.0825;
+  const finalTotal = subtotal + tax;
 
-  // ✅ guard exactly like CartPage
   const handleCheckout = () => {
-    console.log("🧠 Auth check:", { loggedIn, id, user_type });
     const isValidVisitor = loggedIn && user_type === "visitor";
     if (!isValidVisitor) {
       alert("Please sign in to continue with your purchase.");
@@ -166,8 +172,10 @@ export default function TicketsOrder() {
 
         {ticketCart.length > 0 && (
           <div className="mt-6 space-y-2 text-right">
+            <Typography color="gray">Subtotal: ${subtotal.toFixed(2)}</Typography>
+            <Typography color="gray">Tax (8.25%): ${tax.toFixed(2)}</Typography>
             <Typography variant="h6" className="text-green-600">
-              Total: ${subtotal.toFixed(2)}
+              Final Total: ${finalTotal.toFixed(2)}
             </Typography>
             <Button onClick={handleCheckout} color="green" className="mt-4">
               Proceed to Checkout
