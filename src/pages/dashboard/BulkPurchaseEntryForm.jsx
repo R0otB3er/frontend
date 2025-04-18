@@ -21,7 +21,7 @@ export function BulkPurchaseEntryForm() {
 
   useEffect(() => {
   
-    fetch(`${import.meta.env.VITE_API_URL}/api/getBulkPurchaseFormInfo`, {
+    fetch(`${import.meta.env.VITE_API_URL}/api/BulkPurchase/getBulkPurchaseFormInfo`, {
       method: "POST",
       headers: { "Content-Type": "application/json" }, 
     })
@@ -85,7 +85,7 @@ export function BulkPurchaseEntryForm() {
 
     const payload = { ...formData };
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/addBulkPurchase`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/BulkPurchase/addBulkPurchase`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

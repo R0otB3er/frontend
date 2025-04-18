@@ -62,11 +62,12 @@ export function SignIn() {
       // ✅ Redirect to appropriate layout
       if (data.user_type === "visitor") {
         navigate("/visitor/dashboard");
+      } else if(data.user_type === "manager"){
+        navigate(`/admin/dashboard`);
       } else {
         navigate(`/${data.user_type}/dashboard`);
       }
 
-      console.log(`navigating to /${data.user_type}/dashboard`);
       setShowAlerts((current) => ({ ...current, blue: true }));
     } catch (err) {
       console.error("Login error:", err);
