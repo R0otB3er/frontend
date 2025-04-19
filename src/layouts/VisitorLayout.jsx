@@ -1,6 +1,16 @@
 import React, { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { Menu, X, PawPrint, Ticket, Compass, ShoppingBag, ShoppingCart, LogOut } from "lucide-react";
+import {
+  Menu,
+  X,
+  PawPrint,
+  Ticket,
+  Compass,
+  ShoppingBag,
+  ShoppingCart,
+  LogOut,
+  Clock,
+} from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useUserStore } from "@/user_managment/user_store";
 
@@ -31,6 +41,7 @@ export function VisitorLayout() {
                 <NavLink to="/visitor/tickets" icon={<Ticket />} label="Tickets" />
                 <NavLink to="/visitor/attractions" icon={<Compass />} label="Attractions" />
                 <NavLink to="/visitor/shop" icon={<ShoppingBag />} label="Shop" />
+                <NavLink to="/visitor/order-history" icon={<Clock />} label="Order History" />
                 <button onClick={handleSignOut} className="hover:text-green-200 flex items-center space-x-1">
                   <LogOut className="h-5 w-5" />
                   <span>Sign Out</span>
@@ -63,6 +74,7 @@ export function VisitorLayout() {
               <MobileLink to="/visitor/tickets" icon={<Ticket />} label="Tickets" />
               <MobileLink to="/visitor/attractions" icon={<Compass />} label="Attractions" />
               <MobileLink to="/visitor/shop" icon={<ShoppingBag />} label="Shop" />
+              <MobileLink to="/visitor/order-history" icon={<Clock />} label="Order History" />
               <button onClick={handleSignOut} className="hover:text-green-200 flex items-center space-x-2 px-3 py-2 w-full">
                 <LogOut className="h-5 w-5" />
                 <span>Sign Out</span>
@@ -132,3 +144,4 @@ function MobileLink({ to, icon, label }) {
 VisitorLayout.displayName = "/src/layout/VisitorLayout.jsx";
 
 export default VisitorLayout;
+
