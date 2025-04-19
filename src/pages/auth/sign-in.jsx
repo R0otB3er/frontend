@@ -59,15 +59,8 @@ export function SignIn() {
       // ✅ Zustand store update (reactive)
       setUserState(data.id, data.user_type);
 
-      // ✅ Redirect to appropriate layout
-      if (data.user_type === "visitor") {
-        navigate("/visitor/dashboard");
-      } else if(data.user_type === "manager"){
-        navigate(`/admin/dashboard`);
-      } else {
-        navigate(`/${data.user_type}/dashboard`);
-      }
-
+      navigate(`/${data.user_type}/dashboard`);
+      
       setShowAlerts((current) => ({ ...current, blue: true }));
     } catch (err) {
       console.error("Login error:", err);

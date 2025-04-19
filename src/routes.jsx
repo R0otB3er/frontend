@@ -73,11 +73,14 @@ import SignUp from "@/pages/auth/sign-up";
 import RequireVisitorAuth from "@/pages/auth/RequireVisitorAuth";
 
 // Layouts
-import WebsiteLayout from "@/layouts/WebsiteLayout";
-import CaretakerDashboard from "@/layouts/CaretakerDashboard";
-import MaintenanceDashboard from "@/layouts/MaintenanceDashboard";
-import VisitorLayout from "@/layouts/VisitorLayout";
-import { Admin } from "./layouts";
+import { 
+  Admin,
+  WebsiteLayout,
+  CaretakerDashboard,
+  MaintenanceDashboard,
+  Manager,
+  VisitorLayout 
+} from "./layouts";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -109,6 +112,20 @@ export const routes = [
       //{ icon: <TableCellsIcon {...icon} />, name: "Sign-in Query", path: "Sign_in_Query", element: <Signin_query /> },
       { name: "Employee Edit", path: "Employee_Edit/:employeeId", element: <EmployeeEditForm />, hidden: true },
       //{ icon: <InformationCircleIcon {...icon} />, name: "Testing", path: "Testing", element: <TestingForm /> },
+    ],
+  },
+  {
+    layout: "manager",
+    element: <Manager />,
+    pages: [
+      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Search", path: "Feeding_Log_Search", element: <FeedingLogSearch /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Vendor Report", path: "Vendor_Sales", element: <VendorReport /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Merchandise Stock", path: "Merch_Stock", element: <MerchStockView /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase History", path: "Bulk_History", element: <BulkPurchaseHistory /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase Entry", path: "Bulk_Purchase_Entry", element: <BulkPurchaseEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Location View", path: "Location_View", element: <LocationView /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Ticket Sales Search", path: "Ticket_Sales_Search", element: <TicketSalesSearch />,},
+      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Report", path: "Maintenance_Log", element: <MaintenanceReport /> },
     ],
   },
   {

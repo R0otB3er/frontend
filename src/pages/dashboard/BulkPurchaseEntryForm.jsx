@@ -26,7 +26,7 @@ export function BulkPurchaseEntryForm() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("📦 Form Info Response Data:", data); //  Log the backend response
+        //console.log("📦 Form Info Response Data:", data); //  Log the backend response
         setDropdownValues(data);
       })
       .catch((err) => console.error("❌ Error fetching feeding form info:", err));
@@ -82,11 +82,12 @@ export function BulkPurchaseEntryForm() {
     }
 
     const payload = { ...formData };
+    console.log("Form submitted:", payload);
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/BulkPurchase/addBulkPurchase`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({payload}),
       });
 
       if (res.ok) {
