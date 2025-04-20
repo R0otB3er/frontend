@@ -103,11 +103,11 @@ const animals = [
   },
   {
     id: 12,
-    name: 'Ring-tailed Lemur',
+    name: 'Mountain Goat',
     category: 'Mammals',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-b6UKMEFhTrBFpGRuDtaQ_KygKRKt9x2_Aw&s',
-    description: 'Highly social primates native to Madagascar with striped tails.',
-    habitat: 'Dry Forests',
+    image: 'https://static4.depositphotos.com/1028880/391/i/950/depositphotos_3912659-stock-photo-goat-head.jpg',
+    description: 'Known for their thick white coats and agility on steep, rocky terrain.',
+    habitat: 'Dry Forests & Mountains',
     diet: 'Herbivore',
   },
 ];
