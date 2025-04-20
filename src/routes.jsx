@@ -34,7 +34,9 @@ import {
   LocationView,
   EmployeeEditForm,
   BulkPurchaseHistory,
-  AnimalEdit
+  AnimalEdit,
+  ClosureHistory,
+  EditClosure
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -154,7 +156,9 @@ export const routes = [
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance Request", path: "Maintenance_Request", element: <MaintenanceRequestForm /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <MtMaintenance_query /> },
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance History", path: "Maintenance_History", element: <MaintenanceHistory /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Closure History", path: "Closure_History", element: <ClosureHistory /> },
       { name: "Maintenance Edit", path: "Maintenance_Edit/:requestId", element: <MaintenanceEditForm />, hidden: true },
+      { name: "Closure Edit", path: "Closure_Edit/:closureId", element: <EditClosure />, hidden: true },
     ],
   },
   {
