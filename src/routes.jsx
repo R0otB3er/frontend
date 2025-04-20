@@ -83,7 +83,8 @@ import {
   CaretakerDashboard,
   MaintenanceDashboard,
   Manager,
-  VisitorLayout 
+  VisitorLayout,
+  ServiceDashboard, 
 } from "./layouts";
 
 const icon = {
@@ -163,6 +164,14 @@ export const routes = [
       { icon: <TableCellsIcon {...icon} />, name: "Closure History", path: "Closure_History", element: <ClosureHistory /> },
       { name: "Maintenance Edit", path: "Maintenance_Edit/:requestId", element: <MaintenanceEditForm />, hidden: true },
       { name: "Closure Edit", path: "Closure_Edit/:closureId", element: <EditClosure />, hidden: true },
+    ],
+  },
+  {
+    layout: "service",
+    element: <ServiceDashboard />,
+    pages: [
+      { icon: <HomeIcon {...icon} />, name: "Maintenance Home", path: "dashboard", element: <Mthome /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Request", path: "Maintenance_Request", element: <MaintenanceRequestForm /> },
     ],
   },
   {
