@@ -147,7 +147,7 @@ export const routes = [
       { name: "Feeding Log Edit", path: "FeedingLog_Edit/:feedingId", element: <FeedingLogEditForm />, hidden: true },
       { name: "Animal Info Edit", path: "animal_edit/:Animal_ID", element: <AnimalEdit />, hidden: true },
       //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <MaintenanceHistory /> },
-      //{ icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "/dashboard/Medical_Entry", element: <MedicalEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "Medical_Entry", element: <MedicalEntryForm /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Medical Query", path: "/dashboard/Medical_Query", element: <Medical_query /> },
     ],
   },
