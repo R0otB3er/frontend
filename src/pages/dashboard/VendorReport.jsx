@@ -70,16 +70,18 @@ export function VendorReport() {
       default:
         value = e.target.value;
     }
-
+  
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
-      if (field === "IsGeneral" && value === true) {
-        updated.Department = "";
-        updated.Attraction = "";
+  
+      // ✅ Reset Merchandise_ID if item_typeID is changed
+      if (field === "item_typeID") {
+        updated.Merchandise_ID = "";
       }
+  
       return updated;
     });
-  };
+  };  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,7 +100,8 @@ export function VendorReport() {
     });
   
     setIsLoading(true);
-    setShowCharts(false);
+    setShowCharts(true);
+
   
     const payload = { ...formData };
   
@@ -199,6 +202,8 @@ export function VendorReport() {
         </CardBody>
       </Card>
 
+      
+
       {isLoading && <Spinner className="mt-8 h-10 w-10 text-gray-700" />}
 
       {(reportData.vendorSales.length > 0 || reportData.itemSales.length > 0 || reportData.itemTypeSales.length > 0) && (
@@ -272,8 +277,18 @@ export function VendorReport() {
               </Typography>
             </div>
           </CardBody>
-        </Card>
+        </Card>       
       )}
+
+{!isLoading && showCharts &&
+  reportData.vendorSales.length === 0 &&
+  reportData.itemSales.length === 0 &&
+  reportData.itemTypeSales.length === 0 && (
+    <Typography className="text-center mt-10 text-gray-600 text-lg font-medium">
+      No report data found for the selected filters.
+    </Typography>
+)}
+
     </div>
   );
 }
