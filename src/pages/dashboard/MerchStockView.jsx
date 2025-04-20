@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardBody, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
+import { useUserStore } from "@/user_managment/user_store";
 
 export function MerchStockView() {
   const navigate = useNavigate();
   const [merchStock, setMerchStock] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState({});
+  const { user_type } = useUserStore();
 
   useEffect(() => { 
     const fetchData = async () => {
@@ -32,6 +34,20 @@ export function MerchStockView() {
 
     fetchData();
   }, []);
+
+  const handleRowClick = (merch_ID) => {
+    // Only navigate if user is admin
+    if (user_type === "admin") {
+      navigate(`/admin/Merchandise_Edit/${merch_ID}`);
+    }
+  };
+
+  const getRowClasses = () => {
+    // Add cursor pointer only for admin users
+    return user_type === "admin" 
+      ? "hover:bg-blue-gray-50 cursor-pointer" 
+      : "";
+  };
 
   if (isLoading) {
     return (
@@ -63,12 +79,14 @@ export function MerchStockView() {
               </tr>
             </thead>
             <tbody>
-              {merchStock.map((item) => {
+            {merchStock.map((item) => {
                 const profit = (parseFloat(item.price) - parseFloat(item.cost)).toFixed(2);
                 
                 return (
                   <tr 
-                    key={item.merch_ID} 
+                    key={item.merch_ID}
+                    onClick={() => handleRowClick(item.merch_ID)}
+                    className={getRowClasses()}
                   >
                     <td className="py-3 px-5 border-b border-blue-gray-50">
                       <Typography variant="small" className="font-semibold text-blue-gray-600">

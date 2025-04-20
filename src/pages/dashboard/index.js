@@ -29,3 +29,5 @@ export * from "@/pages/dashboard/BulkPurchaseHistory";
 export * from "@/pages/dashboard/AnimalEdit";
 export * from "@/pages/dashboard/ClosureHistory";
 export * from "./Closure_Edit";
+export * from "./AddMerchandise";
+export * from "./MerchEdit";

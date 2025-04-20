@@ -36,7 +36,9 @@ import {
   BulkPurchaseHistory,
   AnimalEdit,
   ClosureHistory,
-  EditClosure
+  EditClosure,
+  AddMerch,
+  MerchEdit
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -111,8 +113,10 @@ export const routes = [
       { icon: <TableCellsIcon {...icon} />, name: "Ticket Sales Search", path: "Ticket_Sales_Search", element: <TicketSalesSearch />,},
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance Report", path: "Maintenance_Log", element: <MaintenanceReport /> },
       { icon: <TableCellsIcon {...icon} />, name: "Employee Entry", path: "Employee_Entry", element: <EmployeeEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Create Merchandise", path: "create_Merch", element: <AddMerch /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Sign-in Query", path: "Sign_in_Query", element: <Signin_query /> },
       { name: "Employee Edit", path: "Employee_Edit/:employeeId", element: <EmployeeEditForm />, hidden: true },
+      { name: "Merchandise Edit", path: "Merchandise_Edit/:Merchandise_ID", element: <MerchEdit />, hidden: true },
       //{ icon: <InformationCircleIcon {...icon} />, name: "Testing", path: "Testing", element: <TestingForm /> },
     ],
   },
