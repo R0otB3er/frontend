@@ -202,33 +202,23 @@ export function MedicalEntryForm() {
               {/* Diagnosis Dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Diagnosis</label>
-                <select
+                <input
+                  type = "text"
                   value={formData.Diagnosis}
                   onChange={(e) => handleChange(e, "Diagnosis")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                  required
-                >
-                  <option value="">Select a Diagnosis</option>
-                  {dropdownData.Diagnoses.map((diag, index) => (
-                    <option key={index} value={diag}>{diag}</option>
-                  ))}
-                </select>
+                />
               </div>
 
               {/* Treatment Dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Treatment</label>
-                <select
+                <input
+                  type = "text"
                   value={formData.Treatment}
                   onChange={(e) => handleChange(e, "Treatment")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                  required
-                >
-                  <option value="">Select Treatment Status</option>
-                  <option value="Not Yet Started">Not Yet Started</option>
-                  <option value="Ongoing">Ongoing</option>
-                  <option value="Finished">Finished</option>
-                </select>
+                />
               </div>
             </div>
 
