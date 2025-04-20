@@ -1,97 +1,141 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardBody, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
-import { getUniqueMedicalValues } from "@/data";
-
+import { useUserStore } from "@/user_managment/user_store";
 
 export function MedicalEntryForm() {
   const navigate = useNavigate();
+  const employeeId = useUserStore(state => state.id); // Get employee ID from store
   const [formData, setFormData] = useState({
     Animal_ID: "",
+    Employee_ID: employeeId,
     Checkup_Date: "",
     Diagnosis: "",
     Treatment: "",
   });
 
-  const [errors, setErrors] = useState({});
-  const [dropdownValues, setDropdownValues] = useState({
-    animalIDs: [],
-    diagnoses: [],
+  const [dropdownData, setDropdownData] = useState({
+    Animals: [],
+    Diagnoses: [],
   });
 
   const [selectedDate, setSelectedDate] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState({ type: "", text: "" });
 
   useEffect(() => {
-    const { uniqueAnimalIDs, uniqueDiagnoses } = getUniqueMedicalValues();
-    console.log("Unique Medical Values:", uniqueAnimalIDs, uniqueDiagnoses); // Debugging
-    setDropdownValues({
-      animalIDs: uniqueAnimalIDs,
-      diagnoses: uniqueDiagnoses,
-    });
-  }, []);
+    // Fetch animals assigned to this employee
+    fetch(`${import.meta.env.VITE_API_URL}/api/animal/getAnimals`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ employee_ID: employeeId }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setDropdownData(prev => ({
+            ...prev,
+            Animals: data
+          }));
+        } else {
+          console.error("Unexpected response format:", data);
+        }
+      })
+      .catch((err) => console.error("Error fetching animals:", err));
 
-  // Handle input changes
-  const handleChange = (event, field) => {
-    const value = event.target.value;
-    let error = "";
-
-    if (!value.trim()) {
-      error = "This field cannot be empty.";
-    }
-
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [field]: error || null,
+    // Fetch diagnoses (assuming this is a separate endpoint)
+    // You may need to implement this endpoint or use a static list
+    // For now, we'll use a placeholder
+    setDropdownData(prev => ({
+      ...prev,
+      Diagnoses: [
+        "Mild fever",
+        "Injury",
+        "Infection",
+        "Parasites",
+        "Respiratory issue",
+        "Digestive problem"
+      ]
     }));
+  }, [employeeId]);
 
+  const handleChange = (e, field) => {
+    const value = e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Handle Date selection
-  const handleDateChange = (event) => {
-    const selected = event.target.value;
-    setSelectedDate(selected);
-    updateCheckupDate(selected);
-  };
-  
-  const updateCheckupDate = (date) => {
-    if (date && date.includes("-")) { // Ensure the format is correct
-      const formattedDate = formatDateToMMDDYYYY(date);
-      setFormData((prev) => ({ ...prev, Checkup_Date: formattedDate }));
-    }
-  };
-  
-  const formatDateToMMDDYYYY = (date) => {
-    const [year, month, day] = date.split("-");
-    return `${month}/${day}/${year}`;
+  const handleDateChange = (e) => {
+    const date = e.target.value;
+    setSelectedDate(date);
+    setFormData(prev => ({ ...prev, Checkup_Date: date }));
   };
 
-  // ✅ Validate form before enabling submit button
+  const logCurrentDate = () => {
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0];
+    setSelectedDate(currentDate);
+    setFormData(prev => ({ ...prev, Checkup_Date: currentDate }));
+  };
+
   const isFormValid =
-    Object.values(errors).every((err) => !err) &&
-    formData.Animal_ID.trim() !== "" &&
-    formData.Checkup_Date.trim() !== "" &&
-    formData.Diagnosis.trim() !== "" &&
-    formData.Treatment.trim() !== "";
+    formData.Animal_ID &&
+    formData.Checkup_Date &&
+    formData.Diagnosis &&
+    formData.Treatment;
 
-  // Handle form submission
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitMessage({ type: "", text: "" });
 
     if (!isFormValid) {
-      alert("Please fill out all fields correctly.");
+      setSubmitMessage({ type: "error", text: "Please complete all fields." });
       return;
     }
 
-    console.log("Form submitted:", formData);
-    setFormData({
-      Animal_ID: "",
-      Checkup_Date: "",
-      Diagnosis: "",
-      Treatment: "",
-    });
-    setSelectedDate("");
+    setIsSubmitting(true);
 
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/animalHealth/createMedicalRecord`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          Animal_ID: formData.Animal_ID,
+          Employee_ID: formData.Employee_ID,
+          Checkup_Date: formData.Checkup_Date,
+          Diagnosis: formData.Diagnosis,
+          Treatment: formData.Treatment
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to create medical record");
+      }
+
+      setSubmitMessage({
+        type: "success",
+        text: `Medical record created successfully! Record ID: ${result.Record_ID}`
+      });
+
+      // Reset form after successful submission
+      setFormData({
+        Animal_ID: "",
+        Employee_ID: employeeId,
+        Checkup_Date: "",
+        Diagnosis: "",
+        Treatment: "",
+      });
+      setSelectedDate("");
+    } catch (error) {
+      console.error("Submission error:", error);
+      setSubmitMessage({
+        type: "error",
+        text: error.message || "An error occurred while submitting the form"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -104,19 +148,32 @@ export function MedicalEntryForm() {
         </CardHeader>
         <CardBody>
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-            {/* Grid Layout for Fields */}
+            {/* Status Message */}
+            {submitMessage.text && (
+              <div className={`p-3 rounded-md ${
+                submitMessage.type === "success" 
+                  ? "bg-green-100 text-green-800" 
+                  : "bg-red-100 text-red-800"
+              }`}>
+                {submitMessage.text}
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Animal ID Dropdown */}
+              {/* Animal Dropdown */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">Animal ID</label>
+                <label className="block text-sm font-medium text-gray-700">Animal</label>
                 <select
                   value={formData.Animal_ID}
                   onChange={(e) => handleChange(e, "Animal_ID")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
+                  required
                 >
-                  <option value="" className="text-gray-400">Select an Animal ID</option>
-                  {dropdownValues.animalIDs.map((id) => (
-                    <option key={id} value={id}>{id}</option>
+                  <option value="">Select an Animal</option>
+                  {dropdownData.Animals.map((animal) => (
+                    <option key={animal.Animal_ID} value={animal.Animal_ID}>
+                      {animal.Animal_Name} (ID: {animal.Animal_ID})
+                    </option>
                   ))}
                 </select>
               </div>
@@ -124,59 +181,59 @@ export function MedicalEntryForm() {
               {/* Checkup Date */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Checkup Date</label>
-                <input
-                  type="date"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                  className="border px-3 py-2 w-full rounded-md shadow-sm"
-                />
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={handleDateChange}
+                    className="border px-3 py-2 w-full rounded-md shadow-sm"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={logCurrentDate}
+                    className="px-3 py-2 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 whitespace-nowrap"
+                  >
+                    Use Today
+                  </button>
+                </div>
               </div>
 
               {/* Diagnosis Dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Diagnosis</label>
-                <select
+                <input
+                  type = "text"
                   value={formData.Diagnosis}
                   onChange={(e) => handleChange(e, "Diagnosis")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                >
-                  <option value="" className="text-gray-400">Select a Diagnosis</option>
-                  {dropdownValues.diagnoses.map((diag) => (
-                    <option key={diag} value={diag}>{diag}</option>
-                  ))}
-                </select>
+                />
               </div>
 
               {/* Treatment Dropdown */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Treatment</label>
-                <select
+                <input
+                  type = "text"
                   value={formData.Treatment}
                   onChange={(e) => handleChange(e, "Treatment")}
                   className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
-                >
-                  <option value="" className="text-gray-400">Select Treatment Status</option>
-                  <option value="Not Yet Started">Not Yet Started</option>
-                  <option value="Ongoing">Ongoing</option>
-                  <option value="Finished">Finished</option>
-                </select>
+                />
               </div>
             </div>
 
             {/* Buttons */}
             <div className="flex justify-between mt-6">
               <button
-                onClick={() => navigate("/dashboard/Medical_Query")}
-                className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700"
-              >
-                Back to Medical Query
-              </button>
-              <button
                 type="submit"
-                className={`px-4 py-2 rounded-md text-white ${isFormValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`}
-                disabled={!isFormValid}
+                disabled={!isFormValid || isSubmitting}
+                className={`px-4 py-2 rounded-md text-white ${
+                  isFormValid && !isSubmitting 
+                    ? "bg-green-600 hover:bg-green-700" 
+                    : "bg-gray-400 cursor-not-allowed"
+                }`}
               >
-                Submit
+                {isSubmitting ? "Submitting..." : "Submit"}
               </button>
             </div>
           </form>

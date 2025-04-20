@@ -32,71 +32,105 @@ export function LocationView() {
   });
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [selectedRole, setSelectedRole] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        
-        // Fetch manager location data
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/manager/getManagerView`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ Manager_ID })
-        });
-        
-        const data = await response.json();
-        
-        // Group locations by their ID
-        const grouped = data.managerData.reduce((acc, location) => {
-          const locationName = location.Location_Name;
-          const locationType = location.Location_Type;
-          
-          if (!acc[locationName]) {
-            acc[locationName] = {
-              Department_ID: location.Department_ID, 
-              department_name: location.Department_Name,
-              Location_ID: location.Location_ID,
-              name: locationName,
-              type: locationType,
-              annualCost: location.Annual_Cost,
-              status: location.status_type,
-              employees: []
-            };
-          }
-        
-          // Only add employee if one exists
-          if (location.Employee_ID) {
-            acc[locationName].employees.push({
-              id: location.Employee_ID,
-              name: location.Employee_Name,
-              role: location.Role
-            });
-          }
-          
-          return acc;
-        }, {});
-        
-        setGroupedLocations(grouped);
-        
-        // Fetch available employees for dropdown
-        const employeesRes = await fetch(`${import.meta.env.VITE_API_URL}/api/HR/getSCEmployees`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
-        const employeesData = await employeesRes.json();
-        console.log("given employees: ", employeesData.employees);
-        setEmployeeOptions(employeesData.employees || []);
-        
-      } catch (err) {
-        console.error("Error fetching data:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchData();
   }, [Manager_ID]);
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Fetch manager location data
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/manager/getManagerView`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ Manager_ID })
+      });
+      
+      const data = await response.json();
+      
+      // Group locations by their ID
+      const grouped = data.managerData.reduce((acc, location) => {
+        const locationName = location.Location_Name;
+        const locationType = location.Location_Type;
+        
+        if (!acc[locationName]) {
+          acc[locationName] = {
+            Department_ID: location.Department_ID, 
+            department_name: location.Department_Name,
+            Location_ID: location.Location_ID,
+            name: locationName,
+            type: locationType,
+            annualCost: location.Annual_Cost,
+            status: location.status_type,
+            employees: []
+          };
+        }
+      
+        // Only add employee if one exists
+        if (location.Employee_ID) {
+          acc[locationName].employees.push({
+            id: location.Employee_ID,
+            name: location.Employee_Name,
+            role: location.Role
+          });
+        }
+        
+        return acc;
+      }, {});
+      
+      setGroupedLocations(grouped);
+      
+      // Fetch available employees for dropdown
+      const employeesRes = await fetch(`${import.meta.env.VITE_API_URL}/api/HR/getSCEmployees`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const employeesData = await employeesRes.json();
+      console.log("given employees: ", employeesData.employees);
+      setEmployeeOptions(employeesData.employees || []);
+      
+    } catch (err) {
+      console.error("Error fetching data:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteAssignment = async (employeeId, locationId) => {
+    if (!window.confirm("Are you sure you want to remove this employee from this location?")) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/HR/deleteWorksAt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          Employee_ID: employeeId,
+          Location_ID: locationId
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Employee successfully removed from location");
+        // Refresh the data
+        await fetchData();
+      } else {
+        alert(`Failed to remove employee: ${result.error || "Unknown error"}`);
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("An error occurred while removing the employee");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -111,16 +145,7 @@ export function LocationView() {
       if (response.ok) {
         alert("Worker assigned successfully!");
         setShowAddForm(false);
-        // Refresh the data
-        const updatedData = await fetch(`${import.meta.env.VITE_API_URL}/api/manager/getManagerView`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ Manager_ID }),
-        }).then(res => res.json());
-        setLocationData(updatedData.managerData || []);
-      } else {
-        const error = await response.json();
-        alert(`Error: ${error.message}`);
+        await fetchData();
       }
     } catch (error) {
       console.error("Submission error:", error);
@@ -198,6 +223,7 @@ export function LocationView() {
                     <tr>
                       <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">Assigned Workers</th>
                       <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">Role</th>
+                      <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -206,11 +232,21 @@ export function LocationView() {
                         <tr key={employee.id} className="even:bg-blue-gray-50/50">
                           <td className="p-4">{employee.name}</td>
                           <td className="p-4">{employee.role}</td>
+                          <td className="p-4">
+                            <Button
+                              color="red"
+                              size="sm"
+                              onClick={() => handleDeleteAssignment(employee.id, location.Location_ID)}
+                              disabled={isDeleting}
+                            >
+                              {isDeleting ? "Removing..." : "Remove"}
+                            </Button>
+                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr className="even:bg-blue-gray-50/50">
-                        <td colSpan="2" className="p-4 text-center">No workers assigned</td>
+                        <td colSpan="3" className="p-4 text-center">No workers assigned</td>
                       </tr>
                     )}
                   </tbody>
@@ -230,84 +266,84 @@ export function LocationView() {
       </Card>
 
       <Dialog open={showAddForm} handler={() => setShowAddForm(false)}>
-      <DialogHeader>Assign Worker to {currentLocation.name}</DialogHeader>
-      <DialogBody>
-        <form className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Location</label>
-            <input
-              type="text"
-              value={`${currentLocation.name} (${currentLocation.type})`}
-              readOnly
-              className="border px-3 py-2 w-full rounded-md shadow-sm bg-gray-100"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Select Role</label>
-            <select
-              value={selectedRole}
-              onChange={handleRoleChange}
-              className="border px-3 py-2 w-full rounded-md shadow-sm"
-              required
-            >
-              <option value="">Select Role</option>
-              <option value="caretaker">Caretaker</option>
-              <option value="service">Service</option>
-            </select>
-          </div>
-          
-          {selectedRole && (
+        <DialogHeader>Assign Worker to {currentLocation.name}</DialogHeader>
+        <DialogBody>
+          <form className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Select Employee</label>
+              <label className="block text-sm font-medium text-gray-700">Location</label>
+              <input
+                type="text"
+                value={`${currentLocation.name} (${currentLocation.type})`}
+                readOnly
+                className="border px-3 py-2 w-full rounded-md shadow-sm bg-gray-100"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Select Role</label>
               <select
-                name="Employee_ID"
-                value={newAssignment.Employee_ID}
-                onChange={handleInputChange}
+                value={selectedRole}
+                onChange={handleRoleChange}
                 className="border px-3 py-2 w-full rounded-md shadow-sm"
                 required
-                disabled={!selectedRole}
               >
-                <option value="">Select Employee</option>
-                {employeeOptions
-                  .filter(e => e.Role === selectedRole)
-                  .map(e => (
-                    <option key={e.Employee_ID} value={e.Employee_ID}>
-                      {`${e.first_name} ${e.last_name}`}
-                    </option>
-                  ))}
+                <option value="">Select Role</option>
+                <option value="caretaker">Caretaker</option>
+                <option value="service">Service</option>
               </select>
             </div>
-          )}
-          
-          <input type="hidden" name="Dept_ID" value={newAssignment.Dept_ID} />
-          <input type="hidden" name="Location_type" value={newAssignment.Location_type} />
-          <input type="hidden" name="Location_ID" value={newAssignment.Location_ID} />
-          <input type="hidden" name="Role" value={selectedRole} />
-        </form>
-      </DialogBody>
-      <DialogFooter>
-        <Button
-          variant="text"
-          color="red"
-          onClick={() => {
-            setShowAddForm(false);
-            setSelectedRole("");
-          }}
-          className="mr-1"
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="gradient"
-          color="green"
-          onClick={handleSubmit}
-          disabled={!newAssignment.Employee_ID || !selectedRole}
-        >
-          Assign Worker
-        </Button>
-      </DialogFooter>
-    </Dialog>
+            
+            {selectedRole && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Select Employee</label>
+                <select
+                  name="Employee_ID"
+                  value={newAssignment.Employee_ID}
+                  onChange={handleInputChange}
+                  className="border px-3 py-2 w-full rounded-md shadow-sm"
+                  required
+                  disabled={!selectedRole}
+                >
+                  <option value="">Select Employee</option>
+                  {employeeOptions
+                    .filter(e => e.Role === selectedRole)
+                    .map(e => (
+                      <option key={e.Employee_ID} value={e.Employee_ID}>
+                        {`${e.first_name} ${e.last_name}`}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
+            
+            <input type="hidden" name="Dept_ID" value={newAssignment.Dept_ID} />
+            <input type="hidden" name="Location_type" value={newAssignment.Location_type} />
+            <input type="hidden" name="Location_ID" value={newAssignment.Location_ID} />
+            <input type="hidden" name="Role" value={selectedRole} />
+          </form>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="text"
+            color="red"
+            onClick={() => {
+              setShowAddForm(false);
+              setSelectedRole("");
+            }}
+            className="mr-1"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="gradient"
+            color="green"
+            onClick={handleSubmit}
+            disabled={!newAssignment.Employee_ID || !selectedRole}
+          >
+            Assign Worker
+          </Button>
+        </DialogFooter>
+      </Dialog>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import routes from "@/routes";
-import { Admin, CaretakerDashboard, MaintenanceDashboard, WebsiteLayout, VisitorLayout, Manager } from "@/layouts";
+import { Admin, CaretakerDashboard, MaintenanceDashboard, WebsiteLayout, VisitorLayout, Manager, ServiceDashboard } from "@/layouts";
 
 function App() {
   return (
@@ -28,6 +28,15 @@ function App() {
       <Route path="/caretaker/*" element={<CaretakerDashboard />}>
         {routes
           .find((r) => r.layout === "caretaker")
+          .pages.map(({ path, element }) => (
+            <Route key={path} path={path} element={element} />
+          ))}
+      </Route>
+        
+      {/* Service Routes */}
+      <Route path="/service/*" element={<ServiceDashboard />}>
+        {routes
+          .find((r) => r.layout === "service")
           .pages.map(({ path, element }) => (
             <Route key={path} path={path} element={element} />
           ))}
