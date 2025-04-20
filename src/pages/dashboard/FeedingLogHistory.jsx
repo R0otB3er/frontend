@@ -42,10 +42,10 @@ import {
     }, []);
 
     const formatDateForOutput = (isoDateString) => {
-        if (!isoDateString) return "";
-        const date = new Date(isoDateString);
-        return date.toISOString().split('T')[0];
-      };
+      if (!isoDateString) return "";
+      const date = new Date(isoDateString);
+      return date.toISOString().split('T')[0];
+    };
   
     const handleRowClick = (logID) => {
       navigate(`/caretaker/FeedingLog_Edit/${logID}`);

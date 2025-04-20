@@ -37,6 +37,12 @@ import {
   
       fetchData();
     }, []);
+
+    const formatDateForOutput = (isoDateString) => {
+      if (!isoDateString) return "";
+      const date = new Date(isoDateString);
+      return date.toISOString().split('T')[0];
+    };
   
     const handleRowClick = (maintenanceId) => {
       navigate(`/maintenance/Maintenance_Edit/${maintenanceId}`);
@@ -62,7 +68,7 @@ import {
             <table className="w-full min-w-[640px] table-auto">
               <thead>
                 <tr>
-                  {["ID", "Location", "Location Type", "Department", "Status"].map((el) => (
+                  {["ID", "Location", "Department", "Start", "Status"].map((el) => (
                     <th key={el} className="border-b border-blue-gray-50 py-3 px-5 text-left">
                       <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
                         {el}
@@ -86,12 +92,7 @@ import {
                       </td>
                       <td className="py-3 px-5 border-b border-blue-gray-50">
                         <Typography variant="small" className="font-semibold text-blue-gray-600">
-                          {request.LOCATION}
-                        </Typography>
-                      </td>
-                      <td className="py-3 px-5 border-b border-blue-gray-50">
-                        <Typography variant="small" className="font-semibold text-blue-gray-600">
-                          {request.Location_ype}
+                          {request.Location}
                         </Typography>
                       </td>
                       <td className="py-3 px-5 border-b border-blue-gray-50">
@@ -101,7 +102,12 @@ import {
                       </td>
                       <td className="py-3 px-5 border-b border-blue-gray-50">
                         <Typography variant="small" className="font-semibold text-blue-gray-600">
-                          {request.status_types}
+                          {formatDateForOutput(request.Start_Date)}
+                        </Typography>
+                      </td>
+                      <td className="py-3 px-5 border-b border-blue-gray-50">
+                        <Typography variant="small" className="font-semibold text-blue-gray-600">
+                          {request.Status_Type}
                         </Typography>
                       </td>
                     </tr>

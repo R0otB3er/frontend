@@ -1,6 +1,13 @@
 import CurrencyInput from 'react-currency-input-field';
 import { useState, useEffect } from "react";
-import { Card, CardHeader, CardBody, Typography } from "@material-tailwind/react";
+import { Card, 
+  CardHeader, 
+  CardBody, 
+  Typography, 
+  Dialog, 
+  DialogHeader, 
+  DialogBody, 
+  DialogFooter } from "@material-tailwind/react";
 import { useNavigate, useParams } from "react-router-dom";
 
 // Default empty values for all fields
@@ -9,6 +16,7 @@ const DEFAULT_FORM_VALUES = {
   Location_Name: "",
   Location_type: "",
   request_desc: "",
+  maintenance_locationID: "",
   End_Date: "",
   Description: "",
   Status: "",
@@ -23,11 +31,17 @@ export function MaintenanceEditForm() {
   const [requestData, setRequestData] = useState({ ...DEFAULT_FORM_VALUES });
   const [formData, setFormData] = useState({ ...DEFAULT_FORM_VALUES });
   const [errors, setErrors] = useState({});
+  const [showAddForm, setShowAddForm] = useState(false);
   const [dropdownValues, setDropdownValues] = useState({
     employees: [],
     statuses: [],
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [closureForm, setClosureForm] = useState({
+    start_date: new Date().toISOString().split('T')[0],
+    description: "",
+  });
+
 
   // Safe value getter with fallback
   const getSafeValue = (data, key) => data[key] ?? DEFAULT_FORM_VALUES[key];
@@ -55,18 +69,18 @@ export function MaintenanceEditForm() {
           body: JSON.stringify({ requestId }),
         });
         const maintenanceData = await maintenanceRes.json();
-        console.log(maintenanceData.request);
+        console.log(maintenanceData.row);
         // Set requestData first
         setRequestData({
           ...DEFAULT_FORM_VALUES,
-          ...maintenanceData.request
+          ...maintenanceData.row
         });
   
         // Then set formData with the received data
         setFormData({
           ...DEFAULT_FORM_VALUES,
-          ...maintenanceData.request,  // Use the fresh data directly
-          End_Date: formatDateForInput(maintenanceData.request.End_Date),
+          ...maintenanceData.row,  // Use the fresh data directly
+          End_Date: formatDateForInput(maintenanceData.row.End_Date),
           RecentCheck: new Date().toISOString().split('T')[0]
         });
   
@@ -114,6 +128,10 @@ export function MaintenanceEditForm() {
     formData.Status && 
     formData.Maintenance_EmployeeID;
 
+    const isClosureFormValid = () => {
+      return closureForm.start_date && closureForm.description;
+    };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!isFormValid) return;
@@ -126,8 +144,6 @@ export function MaintenanceEditForm() {
         cost: formData.cost || null, // Handle empty cost
         End_Date: formData.End_Date || null // Handle empty date
       };
-
-      console.log(payload);
 
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/editMaintenanceRow`, {
         method: "POST",
@@ -172,6 +188,56 @@ export function MaintenanceEditForm() {
       console.error("Deletion error:", error);
       alert("Deletion failed. Please try again.");
     }
+  };
+
+  const handleClosureSubmit = async () => {
+    if (!isClosureFormValid()) {
+      alert("Please fill all required fields for the closure.");
+      return;
+    }
+
+    try {
+      const payload = {
+        start_date: closureForm.start_date,
+        location_ID: requestData.maintenance_locationID,
+        description: closureForm.description,
+        mnt_ID: requestId
+      };
+
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/closure/addClosure`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({payload}),
+      });
+
+      if (res.ok) {
+        const result = await res.json();
+        alert(`Closure created successfully with ID: ${result.closure_ID}`);
+        setShowAddForm(false);
+      } else {
+        const error = await res.json();
+        alert(error.error || "Failed to create closure");
+      }
+    } catch (error) {
+      console.error("Closure submission error:", error);
+      alert("Failed to create closure. Please try again.");
+    }
+  };
+
+  const handleClosureChange = (e) => {
+    const { name, value } = e.target;
+    setClosureForm(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleClosureDateChange = (e) => {
+    const { name, value } = e.target;
+    setClosureForm(prev => ({
+      ...prev,
+      [name]: value || ""
+    }));
   };
 
   if (isLoading) {
@@ -301,20 +367,20 @@ export function MaintenanceEditForm() {
 
             {/* Buttons */}
             <div className="flex justify-between mt-6">
-            <button
-              type="button"
-              onClick={handleDelete}
-              className="px-4 py-2 rounded-md text-white bg-red-600 hover:bg-red-700"
-            >
-              Delete Request
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/maintenance/Maintenance_History")}
-              className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700"
-            >
-              Back to History
-            </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="px-4 py-2 rounded-md text-white bg-red-600 hover:bg-red-700"
+              >
+                Delete Request
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/maintenance/Maintenance_History")}
+                className="px-4 py-2 rounded-md text-white bg-green-600 hover:bg-green-700"
+              >
+                Back to History
+              </button>
               <button
                 type="submit"
                 className={`px-4 py-2 rounded-md text-white ${
@@ -324,10 +390,90 @@ export function MaintenanceEditForm() {
               >
                 Update Request
               </button>
+              <button
+                type="button"
+                onClick={() => setShowAddForm(true)}
+                className={`px-4 py-2 rounded-md text-white ${
+                  isFormValid ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"
+                }`}
+              >
+                Create Closure
+              </button>
             </div>
           </form>
         </CardBody>
       </Card>
+
+      <Dialog open={showAddForm} handler={() => setShowAddForm(false)}>
+        <DialogHeader>Create New Closure</DialogHeader>
+        <DialogBody>
+          <form className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Location</label>
+              <input
+                type="text"
+                value={`${requestData.Location_Name} (${requestData.Location_type})`}
+                readOnly
+                className="border px-3 py-2 w-full rounded-md shadow-sm bg-gray-100"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Start Date*</label>
+              <input
+                type="date"
+                name="start_date"
+                value={closureForm.start_date}
+                onChange={handleClosureDateChange}
+                className="border px-3 py-2 w-full rounded-md shadow-sm"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Description*</label>
+              <textarea
+                name="description"
+                value={closureForm.description}
+                onChange={handleClosureChange}
+                className="border px-3 py-2 w-full rounded-md shadow-sm min-h-[100px]"
+                required
+              />
+            </div>
+          </form>
+        </DialogBody>
+        <DialogFooter>
+          <button
+            type="button"
+            variant="text"
+            color="red"
+            onClick={() => {
+              setShowAddForm(false);
+              setClosureForm({
+                start_date: new Date().toISOString().split('T')[0],
+                end_date: "",
+                status: 1,
+                description: "",
+              });
+            }}
+            className="px-4 py-2 rounded-md text-white bg-red-600 hover:bg-red-700"
+          >
+            Cancel
+          </button>
+          <button
+            type='button'
+            variant="gradient"
+            color="green"
+            onClick={handleClosureSubmit}
+            className={`px-4 py-2 rounded-md text-white ${
+              isFormValid ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"
+            }`}
+            disabled={!isClosureFormValid()}
+          >
+            Create Closure
+          </button>
+        </DialogFooter>
+      </Dialog>
     </div>
   );
 }

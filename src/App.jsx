@@ -1,11 +1,20 @@
 import React from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import routes from "@/routes";
-import { Admin, CaretakerDashboard, MaintenanceDashboard, WebsiteLayout, VisitorLayout } from "@/layouts";
+import { Admin, CaretakerDashboard, MaintenanceDashboard, WebsiteLayout, VisitorLayout, Manager } from "@/layouts";
 
 function App() {
   return (
     <Routes>
+      {/* Manager Routes */}
+      <Route path="/manager/*" element={<Manager />}>
+        {routes
+          .find((r) => r.layout === "manager")
+          .pages.map(({ path, element }) => (
+            <Route key={path} path={path} element={element} />
+          ))}
+      </Route>
+
       {/* Admin Routes */}
       <Route path="/admin/*" element={<Admin />}>
         {routes

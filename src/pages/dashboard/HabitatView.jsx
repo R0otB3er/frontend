@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardBody, Typography, Button, Dialog, DialogHeader, DialogBody, DialogFooter } from "@material-tailwind/react";
 import { useUserStore } from "@/user_managment/user_store";
+import { useNavigate } from 'react-router-dom';
 
 export function HabitatView() {
+  const navigate = useNavigate();
   const employeeId = useUserStore(state => state.id);
   const [habitatData, setHabitatData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,6 +32,7 @@ export function HabitatView() {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         const groupedByHabitat = data.caretakerData.reduce((acc, animal) => {
             const habitatKey = `${animal.Habitat_ID}|${animal.Habitat_Name}`;
   
@@ -61,7 +64,7 @@ export function HabitatView() {
     ])
     .then(([speciesData, wellnessData]) => {
         //console.log(speciesData);
-        console.log(wellnessData);
+        //console.log(wellnessData);
       setSpeciesOptions(speciesData.speciesData);
       setWellnessOptions(wellnessData.wellnessData);
     })
@@ -99,26 +102,35 @@ export function HabitatView() {
         alert("Animal added successfully!");
         setShowAddForm(false);
         // Refresh the data
-        const updatedData = await fetch(`${import.meta.env.VITE_API_URL}/api/animalCare/getCaretakerView`, {
+        fetch(`${import.meta.env.VITE_API_URL}/api/animalCare/getCaretakerView`, {
           method: "POST",
           headers: { "Content-Type": "application/json" }, 
           body: JSON.stringify({ Employee_ID: employeeId }),
-        }).then(res => res.json());
-        
-        const groupedByHabitat = data.caretakerData.reduce((acc, animal) => {
-            const habitatKey = `${animal.Habitat_ID}|${animal.Habitat_Name}`;
-  
-            if (!acc[habitatKey]) {
-              acc[habitatKey] = {
-                id: animal.Habitat_ID,
-                name: animal.Habitat_Name,
-                animals: []
-              };
-            }
-            
-            acc[habitatKey].animals.push(animal);
-        }, {});
-        setHabitatData(groupedByHabitat);
+        })
+        .then(res => res.json())
+        .then((data) => {
+          // Provide an empty object as initial value for the accumulator
+          const groupedByHabitat = data.caretakerData.reduce((acc, animal) => {
+              const habitatKey = `${animal.Habitat_ID}|${animal.Habitat_Name}`;
+    
+              if (!acc[habitatKey]) {
+                acc[habitatKey] = {
+                  id: animal.Habitat_ID,
+                  name: animal.Habitat_Name,
+                  animals: []
+                };
+              }
+              
+              acc[habitatKey].animals.push(animal);
+              return acc; // Don't forget to return the accumulator
+          }, {}); // <-- This empty object is the initial value
+          
+          setHabitatData(groupedByHabitat);
+        })
+        .catch(error => {
+          console.error("Error processing data:", error);
+          alert("Error processing animal data.");
+        });
       } else {
         const error = await response.json();
         alert(`Error: ${error.message}`);
@@ -159,19 +171,23 @@ export function HabitatView() {
                     <tr>
                       <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">Animal Name</th>
                       <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">Species</th>
-                      <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">Attraction</th>
                       <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">Diet Type</th>
                       <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">Wellness Status</th>
+                      <th className="border-b border-blue-gray-100 bg-blue-gray-50 p-4">Conservation Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {habitatInfo.animals.map((animal, index) => (
-                      <tr key={`${animal.Animal_ID}-${index}`} className="even:bg-blue-gray-50/50">
+                      <tr 
+                        key={`${animal.Animal_ID}-${index}`}
+                        className="even:bg-blue-gray-50/50 hover:bg-blue-gray-100 cursor-pointer"
+                        onClick={() => navigate(`/caretaker/animal_edit/${animal.Animal_ID}`)}
+                      >
                         <td className="p-4">{animal.Animal_Name}</td>
                         <td className="p-4">{animal.Species_Type}</td>
-                        <td className="p-4">{animal.Attraction_Name}</td>
                         <td className="p-4">{animal.Food_Type}</td>
                         <td className="p-4">{animal.wellness_Types}</td>
+                        <td className="p-4">{animal.Conservation_Type}</td>
                       </tr>
                     ))}
                   </tbody>

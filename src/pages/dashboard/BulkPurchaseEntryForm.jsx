@@ -10,7 +10,6 @@ export function BulkPurchaseEntryForm() {
     Bulk_cost: "",
     Amount_of_items: "",
     Date_purchased: "",
-    Producer: "",
   });
 
   const [errors, setErrors] = useState({}); 
@@ -27,7 +26,7 @@ export function BulkPurchaseEntryForm() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("📦 Form Info Response Data:", data); //  Log the backend response
+        //console.log("📦 Form Info Response Data:", data); //  Log the backend response
         setDropdownValues(data);
       })
       .catch((err) => console.error("❌ Error fetching feeding form info:", err));
@@ -71,8 +70,7 @@ export function BulkPurchaseEntryForm() {
     formData.Merchandise_ID.trim() !== "" &&
     formData.Bulk_cost.trim() !== "" &&
     formData.Amount_of_items.trim() !== "" &&
-    formData.Date_purchased.trim() !== "" &&
-    formData.Producer.trim() !== "";
+    formData.Date_purchased.trim() !== "";
 
   // Handle form submission
   const handleSubmit = async (event) => {
@@ -84,11 +82,12 @@ export function BulkPurchaseEntryForm() {
     }
 
     const payload = { ...formData };
+    console.log("Form submitted:", payload);
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/BulkPurchase/addBulkPurchase`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({payload}),
       });
 
       if (res.ok) {
@@ -183,17 +182,6 @@ export function BulkPurchaseEntryForm() {
                   value={formData.Date_purchased}
                   onChange={handleDateChange}
                   className="border px-3 py-2 w-full rounded-md shadow-sm"
-                />
-              </div>
-
-              {/* Producer input*/}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Producer</label>
-                <input
-                  type = "text"
-                  value={formData.Producer}
-                  onChange={(e) => handleChange(e, "Producer")}
-                  className="border px-3 py-2 w-full rounded-md shadow-sm bg-white text-gray-600"
                 />
               </div>
             </div>

@@ -25,6 +25,7 @@ export function MaintenanceDashboard() {
 
   const handleNotificationClick = (notification) => {
     // First send the API call to mark as seen
+    console.log("sending", notification.maintenance_messageID)
     fetch(`${import.meta.env.VITE_API_URL}/api/seenMaintenanceNotification`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

@@ -33,7 +33,10 @@ import {
   MerchStockView,
   LocationView,
   EmployeeEditForm,
-  BulkPurchaseHistory
+  BulkPurchaseHistory,
+  AnimalEdit,
+  ClosureHistory,
+  EditClosure
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -72,11 +75,14 @@ import SignUp from "@/pages/auth/sign-up";
 import RequireVisitorAuth from "@/pages/auth/RequireVisitorAuth";
 
 // Layouts
-import WebsiteLayout from "@/layouts/WebsiteLayout";
-import CaretakerDashboard from "@/layouts/CaretakerDashboard";
-import MaintenanceDashboard from "@/layouts/MaintenanceDashboard";
-import VisitorLayout from "@/layouts/VisitorLayout";
-import { Admin } from "./layouts";
+import { 
+  Admin,
+  WebsiteLayout,
+  CaretakerDashboard,
+  MaintenanceDashboard,
+  Manager,
+  VisitorLayout 
+} from "./layouts";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -111,6 +117,20 @@ export const routes = [
     ],
   },
   {
+    layout: "manager",
+    element: <Manager />,
+    pages: [
+      { icon: <TableCellsIcon {...icon} />, name: "Feeding Log Search", path: "Feeding_Log_Search", element: <FeedingLogSearch /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Vendor Report", path: "Vendor_Sales", element: <VendorReport /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Merchandise Stock", path: "Merch_Stock", element: <MerchStockView /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase History", path: "Bulk_History", element: <BulkPurchaseHistory /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase Entry", path: "Bulk_Purchase_Entry", element: <BulkPurchaseEntryForm /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Location View", path: "Location_View", element: <LocationView /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Ticket Sales Search", path: "Ticket_Sales_Search", element: <TicketSalesSearch />,},
+      { icon: <TableCellsIcon {...icon} />, name: "Maintenance Report", path: "Maintenance_Log", element: <MaintenanceReport /> },
+    ],
+  },
+  {
     layout: "caretaker",
     element: <CaretakerDashboard />,
     pages: [
@@ -120,6 +140,7 @@ export const routes = [
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log History", path: "Feeding_Log_History", element: <FeedingLogHistory /> },
       { icon: <TableCellsIcon {...icon} />, name: "Habitats", path: "Habitat_View", element: <HabitatView /> },
       { name: "Feeding Log Edit", path: "FeedingLog_Edit/:feedingId", element: <FeedingLogEditForm />, hidden: true },
+      { name: "Animal Info Edit", path: "animal_edit/:Animal_ID", element: <AnimalEdit />, hidden: true },
       //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <MaintenanceHistory /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "/dashboard/Medical_Entry", element: <MedicalEntryForm /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Medical Query", path: "/dashboard/Medical_Query", element: <Medical_query /> },
@@ -135,7 +156,9 @@ export const routes = [
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance Request", path: "Maintenance_Request", element: <MaintenanceRequestForm /> },
       //{ icon: <TableCellsIcon {...icon} />, name: "Maintenance Query", path: "Maintenance_Query", element: <MtMaintenance_query /> },
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance History", path: "Maintenance_History", element: <MaintenanceHistory /> },
+      { icon: <TableCellsIcon {...icon} />, name: "Closure History", path: "Closure_History", element: <ClosureHistory /> },
       { name: "Maintenance Edit", path: "Maintenance_Edit/:requestId", element: <MaintenanceEditForm />, hidden: true },
+      { name: "Closure Edit", path: "Closure_Edit/:closureId", element: <EditClosure />, hidden: true },
     ],
   },
   {
