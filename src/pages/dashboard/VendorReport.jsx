@@ -8,12 +8,10 @@ import {
 } from "@material-tailwind/react";
 import { StatisticsChart } from "@/widgets/charts";
 import {
-  DepartmentSalesChartConfig,
-  ItemTypeSalesChartConfig,
-  VendorSalesChartConfig,
-  MerchSalesChartConfig
+  TopVendorsChart,
+  TopMerchItemsOverTimeChart,
+  ItemTypeStackedChart,
 } from "@/widgets/charts/vendor-sales-charts";
-
 
 export function VendorReport() {
   const [formData, setFormData] = useState({
@@ -55,7 +53,6 @@ export function VendorReport() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log("Query Form Info Response Data:", data);
         setDropdownData(data)
       })
       .catch((err) => console.error("Error fetching form data:", err));
@@ -63,41 +60,23 @@ export function VendorReport() {
 
   const handleChange = (e, field) => {
     let value;
-    
-    // Handle different input types
     switch (e.target.type) {
       case 'checkbox':
         value = e.target.checked;
         break;
       case 'date':
-        value = e.target.value; // This will be in YYYY-MM-DD format
+        value = e.target.value;
         break;
       default:
         value = e.target.value;
     }
-  
+
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
-      
-      // Reset dependent fields when parent changes
       if (field === "IsGeneral" && value === true) {
         updated.Department = "";
         updated.Attraction = "";
       }
-      
-      // Additional logic for date validation if needed
-      if (field === "start_date" || field === "end_date") {
-        // Ensure end date is not before start date
-        if (field === "end_date" && updated.start_date && value < updated.start_date) {
-          // You could set some error state here or adjust the value
-          console.warn("End date cannot be before start date");
-        }
-        
-        if (field === "start_date" && updated.end_date && value > updated.end_date) {
-          console.warn("Start date cannot be after end date");
-        }
-      }
-      
       return updated;
     });
   };
@@ -109,23 +88,30 @@ export function VendorReport() {
       return;
     }
   
+    
+    // ✅ Clear previous chart + table data before request
+    setReportData({
+      deptSales: [],
+      vendorSales: [],
+      itemSales: [],
+      itemTypeSales: [],
+    });
+  
     setIsLoading(true);
     setShowCharts(false);
   
     const payload = { ...formData };
-
+  
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/getVendMerchReport`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
+  
       if (res.ok) {
         const result = await res.json();
-        console.log("retrived report info:", result)
-        setReportData(result);
-        console.log("SAMPLE ITEM DATA:", result.itemSales[0]);
+        setReportData(result); // ✅ Always set chart state with latest data
       } else {
         console.error(res.error);
         alert("Failed to generate report.");
@@ -137,13 +123,10 @@ export function VendorReport() {
       setIsLoading(false);
     }
   };
-
-
-
+  
 
   return (
     <div className="mt-12 flex flex-col items-center">
-      {/* Form Card */}
       <Card className="w-full max-w-3xl shadow-lg rounded-lg p-6 bg-white">
         <CardHeader variant="gradient" color="gray" className="mb-6 p-6 rounded-t-lg">
           <Typography variant="h5" color="white" className="text-center">
@@ -153,69 +136,52 @@ export function VendorReport() {
         <CardBody>
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SelectField
-              label="Departments"
-              value={formData.Department_ID}
-              onChange={(e) => handleChange(e, "Department_ID")}
-              defaultLabel="All Departments"
-              options={dropdownData.Departments.map((d) => ({
-                value: d.Department_ID,
-                label: d.Department_name,
-              }))}
+              <SelectField
+                label="Departments"
+                value={formData.Department_ID}
+                onChange={(e) => handleChange(e, "Department_ID")}
+                defaultLabel="All Departments"
+                options={dropdownData.Departments.map((d) => ({
+                  value: d.Department_ID,
+                  label: d.Department_name,
+                }))}
               />
-
-<SelectField
-  label="Vendors"
-  value={formData.Vendor_ID}
-  onChange={(e) => handleChange(e, "Vendor_ID")}
-  defaultLabel="All Vendors"
-  disabled={!formData.Department_ID} // Disable if no department selected
-  options={dropdownData.Vendors
-    .filter((v) => v.Dept_ID == formData.Department_ID)
-    .map((v) => ({
-      value: v.Vendor_ID,
-      label: v.name,
-    }))}
-/>
-
 
               <SelectField
-              label="Merchandise Types"
-              value={formData.item_typeID}
-              onChange={(e) => handleChange(e, "item_typeID")}
-              defaultLabel="All Merchandise Type"
-              options={dropdownData.ItemTypes.map((i) => ({
-                value: i.item_typeID,
-                label: i.item_types,
-              }))}
+                label="Vendors"
+                value={formData.Vendor_ID}
+                onChange={(e) => handleChange(e, "Vendor_ID")}
+                defaultLabel="All Vendors"
+                disabled={!formData.Department_ID}
+                options={dropdownData.Vendors
+                  .filter((v) => v.Dept_ID == formData.Department_ID)
+                  .map((v) => ({ value: v.Vendor_ID, label: v.name }))}
               />
 
-<SelectField
-  label="Specific Merchandise"
-  value={formData.Merchandise_ID}
-  onChange={(e) => handleChange(e, "Merchandise_ID")}
-  defaultLabel="All Merchandise"
-  disabled={!formData.item_typeID} // Disable if no item type selected
-  options={dropdownData.Merchandise
-    .filter((m) => m.Item_Type == formData.item_typeID)
-    .map((m) => ({
-      value: m.Merchandise_ID,
-      label: m.Item_Name,
-    }))}
-/>
+              <SelectField
+                label="Merchandise Types"
+                value={formData.item_typeID}
+                onChange={(e) => handleChange(e, "item_typeID")}
+                defaultLabel="All Merchandise Type"
+                options={dropdownData.ItemTypes.map((i) => ({
+                  value: i.item_typeID,
+                  label: i.item_types,
+                }))}
+              />
 
-              <InputField
-                label="Start Date"
-                type="date"
-                value={formData.start_date}
-                onChange={(e) => handleChange(e, "start_date")}
+              <SelectField
+                label="Specific Merchandise"
+                value={formData.Merchandise_ID}
+                onChange={(e) => handleChange(e, "Merchandise_ID")}
+                defaultLabel="All Merchandise"
+                disabled={!formData.item_typeID}
+                options={dropdownData.Merchandise
+                  .filter((m) => m.Item_Type == formData.item_typeID)
+                  .map((m) => ({ value: m.Merchandise_ID, label: m.Item_Name }))}
               />
-              <InputField
-                label="End Date"
-                type="date"
-                value={formData.end_date}
-                onChange={(e) => handleChange(e, "end_date")}
-              />
+
+              <InputField label="Start Date" type="date" value={formData.start_date} onChange={(e) => handleChange(e, "start_date")} />
+              <InputField label="End Date" type="date" value={formData.end_date} onChange={(e) => handleChange(e, "end_date")} />
             </div>
 
             <div className="flex justify-end mt-6">
@@ -233,105 +199,81 @@ export function VendorReport() {
         </CardBody>
       </Card>
 
-      {/* Spinner */}
       {isLoading && <Spinner className="mt-8 h-10 w-10 text-gray-700" />}
 
-      {/* Chart and Table */}
-      {(reportData.deptSales.length > 0 ||
-  reportData.vendorSales.length > 0 ||
-  reportData.itemTypeSales.length > 0 ||
-  reportData.itemSales.length > 0) && (
-  <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
-    {reportData.deptSales.length > 0 && (
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <StatisticsChart
-          color="white"
-          chart={DepartmentSalesChartConfig({ data: reportData.deptSales })}
-        />
-      </div>
-    )}
+      {(reportData.vendorSales.length > 0 || reportData.itemSales.length > 0 || reportData.itemTypeSales.length > 0) && (
+        <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+          {reportData.vendorSales.length > 0 && (
+            <div className="bg-white rounded-lg shadow-md p-4">
+              <StatisticsChart color="white" chart={TopVendorsChart({ data: reportData.vendorSales })} />
+            </div>
+          )}
 
-    {reportData.vendorSales.length > 0 && (
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <StatisticsChart
-          color="white"
-          chart={VendorSalesChartConfig({ data: reportData.vendorSales })}
-        />
-      </div>
-    )}
+          {reportData.itemSales.length > 0 && (
+            <div className="bg-white rounded-lg shadow-md p-4">
+              <StatisticsChart
+                color="white"
+                chart={TopMerchItemsOverTimeChart({
+                  data: reportData.itemSales,
+                  selectedDepartment: formData.Department_ID || "all",
+                  selectedItemType: formData.item_typeID || "all",
+                  selectedMerchItem: formData.Merchandise_ID || "all",
+                })}
+              />
+            </div>
+          )}
 
-    {reportData.itemTypeSales.length > 0 && (
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <StatisticsChart
-          color="white"
-          chart={ItemTypeSalesChartConfig({ data: reportData.itemTypeSales })}
-        />
-      </div>
-    )}
+          {reportData.itemTypeSales.length > 0 && (
+            <div className="bg-white rounded-lg shadow-md p-4">
+              <StatisticsChart color="white" chart={ItemTypeStackedChart({ data: reportData.itemTypeSales })} />
+            </div>
+          )}
+        </div>
+      )}
 
-{reportData.itemSales.length > 0 && (
-  <div className="bg-white rounded-lg shadow-md p-4">
-    <StatisticsChart
-      color="white"
-      chart={MerchSalesChartConfig({
-        data: reportData.itemSales,
-        selectedDepartment: formData.Department_ID || "all",
-        selectedItemType: formData.item_typeID || "all",
-        selectedMerchItem: formData.Merchandise_ID || "all"
-      })}
-    />
-  </div>
-)}
+      {reportData.itemSales.length > 0 && (
+        <Card className="mt-6 w-full max-w-6xl">
+          <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
+            <Typography variant="h6" color="white">
+              Sales Report Table
+            </Typography>
+          </CardHeader>
+          <CardBody className="overflow-x-auto">
+            <table className="min-w-full table-auto">
+              <thead>
+                <tr>
+                  {["Date", "Item Name", "Sales ($)"].map((head) => (
+                    <th
+                      key={head}
+                      className="px-4 py-2 text-left text-sm font-semibold text-blue-gray-500"
+                    >
+                      {head}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {reportData.itemSales.map((row, idx) => (
+                  <tr key={idx} className="border-t">
+                    <td className="px-4 py-2">{new Date(row.sale_date).toLocaleDateString()}</td>
+                    <td className="px-4 py-2">{row.Item_Name}</td>
+                    <td className="px-4 py-2">${parseFloat(row.total_sales).toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-  </div>
-)}
-
-{reportData.itemSales.length > 0 && (
-  <Card className="mt-6 w-full max-w-6xl">
-    <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
-      <Typography variant="h6" color="white">
-        Sales Report Table
-      </Typography>
-    </CardHeader>
-    <CardBody className="overflow-x-auto">
-      <table className="min-w-full table-auto">
-        <thead>
-          <tr>
-            {["Date", "Item Name", "Sales ($)"].map((head) => (
-              <th
-                key={head}
-                className="px-4 py-2 text-left text-sm font-semibold text-blue-gray-500"
-              >
-                {head}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {reportData.itemSales.map((row, idx) => (
-            <tr key={idx} className="border-t">
-              <td className="px-4 py-2">
-                {new Date(row.sale_date).toLocaleDateString()}
-              </td>
-              <td className="px-4 py-2">{row.Item_Name}</td>
-              <td className="px-4 py-2">${parseFloat(row.total_sales).toFixed(2)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="mt-4 text-right pr-4">
-        <Typography variant="h6" className="text-green-700">
-          Total Revenue: $
-          {reportData.itemSales
-            .reduce((sum, row) => sum + parseFloat(row.total_sales || 0), 0)
-            .toLocaleString(undefined, { minimumFractionDigits: 2 })}
-        </Typography>
-      </div>
-    </CardBody>
-  </Card>
-)}
-
+            <div className="mt-4 text-right pr-4">
+              <Typography variant="h6" className="text-green-700">
+                Total Revenue: $
+                {reportData.itemSales
+                  .reduce((sum, row) => sum + parseFloat(row.total_sales || 0), 0)
+                  .toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </Typography>
+            </div>
+          </CardBody>
+        </Card>
+      )}
     </div>
   );
 }
@@ -358,8 +300,6 @@ function SelectField({ label, value, onChange, options, defaultLabel, disabled =
     </div>
   );
 }
-
-
 
 function InputField({ label, ...props }) {
   return (

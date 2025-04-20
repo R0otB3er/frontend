@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -45,48 +44,59 @@ export function MaintenanceReport() {
     formData.endDate &&
     new Date(formData.startDate) <= new Date(formData.endDate);
 
-    useEffect(() => {
-        async function fetchDropdownData() {
-          try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/maintenance/form-info`, {
+  useEffect(() => {
+    async function fetchDropdownData() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/maintenance/form-info`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
 
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-            });
-      
-            const data = await res.json();
-            setDropdownData({
-              departments: data.departments || [],
-              vendors: data.vendors || [],
-              attractions: data.attractions || [],
-              habitats: data.habitats || [],
-              workers: data.workers || [],
-            });
-          } catch (err) {
-            console.error("Error fetching dropdown data:", err);
-          }
-        }
-      
-        fetchDropdownData();
-      }, []);
-      
+        const data = await res.json();
+        setDropdownData({
+          departments: data.departments || [],
+          vendors: data.vendors || [],
+          attractions: data.attractions || [],
+          habitats: data.habitats || [],
+          workers: data.workers || [],
+        });
+      } catch (err) {
+        console.error("Error fetching dropdown data:", err);
+      }
+    }
+
+    fetchDropdownData();
+  }, []);
 
   const handleChange = (e, field) => {
     const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+  
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("✅ Submit handler triggered");
     if (!isFormValid) return alert("Please enter a valid date range.");
   
     setIsLoading(true);
     setShowCharts(false);
   
+    // ✅ Only include fields that matter
     const payload = {
-      ...formData,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      includeVendor: formData.includeVendor,
+      includeAttraction: formData.includeAttraction,
+      includeHabitat: formData.includeHabitat,
+      vendorID: formData.includeVendor ? formData.vendorID : null,
+      attractionID: formData.includeAttraction ? formData.attractionID : null,
+      habitatID: formData.includeHabitat ? formData.habitatID : null,
+      workerID: formData.workerID || null,
+      departmentID: formData.departmentID || null, // ✅ Always send null if unselected
     };
+  
+    console.log("📤 Payload:", payload);
   
     fetch(`${import.meta.env.VITE_API_URL}/api/maintenance/report`, {
       method: "POST",
@@ -99,15 +109,13 @@ export function MaintenanceReport() {
       })
       .then((result) => {
         console.log("✅ Report Data Received:", result);
-        console.log("✅ Backend returned:", result);
         const { costData, durationData } = result;
   
         setCostData(Array.isArray(costData) ? costData : []);
         setDurationData(Array.isArray(durationData) ? durationData : []);
-
-        const total = result.costData.reduce((acc, row) => acc + parseFloat(row.cost || 0), 0);
+  
+        const total = (costData || []).reduce((acc, row) => acc + parseFloat(row.cost || 0), 0);
         setTotalCost(total);
-
         setShowCharts(true);
       })
       .catch((error) => {
@@ -117,10 +125,9 @@ export function MaintenanceReport() {
       .finally(() => {
         setIsLoading(false);
       });
-      console.log("🔗 API endpoint:", `${import.meta.env.VITE_API_URL}/api/maintenance/report`);
-
   };
   
+
   const costChartConfig = MaintenanceCostChartConfig.getConfig({
     data: costData,
     type: "line",
@@ -172,6 +179,7 @@ export function MaintenanceReport() {
                   ))}
                 </select>
               </div>
+
               <div className="col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Checkbox
@@ -234,6 +242,7 @@ export function MaintenanceReport() {
                   </select>
                 </div>
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700">Start Date</label>
                 <input
@@ -292,47 +301,50 @@ export function MaintenanceReport() {
           </div>
 
           <Card className="mt-6 w-full max-w-6xl">
-  <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
-    <Typography variant="h6" color="white">
-      Maintenance Cost Breakdown
-    </Typography>
-  </CardHeader>
-  <CardBody className="overflow-x-auto">
-    <table className="min-w-full table-auto">
-      <thead>
-        <tr>
-          <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Start Date</th>
-          <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">End Date</th>
-          <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Location</th>
-          <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Cost</th>
+            <CardHeader variant="gradient" color="gray" className="mb-4 p-4">
+              <Typography variant="h6" color="white">
+                Maintenance Cost Breakdown
+              </Typography>
+            </CardHeader>
+            <CardBody className="overflow-x-auto">
+              <table className="min-w-full table-auto">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Start Date</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">End Date</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Location</th>
+                    <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Cost</th>
+                  </tr>
+                </thead>
+                <tbody>
+  {costData.length === 0 ? (
+    <tr>
+      <td colSpan="4" className="px-4 py-4 text-center text-gray-500">
+        No report data found for the selected filters.
+      </td>
+    </tr>
+  ) : (
+    <>
+      {costData.map((row, idx) => (
+        <tr key={idx} className="border-t">
+          <td className="px-4 py-2">{new Date(row.Start_Date).toLocaleDateString()}</td>
+          <td className="px-4 py-2">{new Date(row.End_Date).toLocaleDateString()}</td>
+          <td className="px-4 py-2">{row.Location || "N/A"}</td>
+          <td className="px-4 py-2">${parseFloat(row.cost).toFixed(2)}</td>
         </tr>
-      </thead>
-      <tbody>
-        {costData.map((row, idx) => (
-          <tr key={idx} className="border-t">
-            <td className="px-4 py-2">{new Date(row.Start_Date).toLocaleDateString()}</td>
-            <td className="px-4 py-2">{new Date(row.End_Date).toLocaleDateString()}</td>
-            <td className="px-4 py-2">{row.Location || "N/A"}</td>
-            <td className="px-4 py-2">${parseFloat(row.cost).toFixed(2)}</td>
-          </tr>
-          
-        )) 
-        }
-        <tr className="border-t font-semibold">
-  <td className="px-4 py-2"></td>
-  <td className="px-4 py-2"></td>
-  <td className="px-4 py-2"></td>
-  <td className="px-4 py-2 text-right">Total Cost:</td>
-  <td className="px-4 py-2">${totalCost.toFixed(2)}</td>
-</tr>
-
-        
-      </tbody>
-      
-    </table>
-  </CardBody>
-</Card>
-
+      ))}
+      <tr className="border-t font-semibold">
+        <td className="px-4 py-2"></td>
+        <td className="px-4 py-2"></td>
+        <td className="px-4 py-2 text-right">Total Cost:</td>
+        <td className="px-4 py-2">${totalCost.toFixed(2)}</td>
+      </tr>
+    </>
+  )}
+</tbody>
+              </table>
+            </CardBody>
+          </Card>
         </>
       )}
     </div>
