@@ -39,7 +39,8 @@ import {
   EditClosure,
   AddMerch,
   MerchEdit,
-  MedicalHistory
+  MedicalHistory,
+  MedicalEditForm
 } from "@/pages/dashboard";
 
 // Caretaker Pages
@@ -110,7 +111,7 @@ export const routes = [
       //{ icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "Medical_Entry", element: <MedicalEntryForm /> },
      // { icon: <TableCellsIcon {...icon} />, name: "Medical Query", path: "Medical_Query", element: <Medical_query /> },
       { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase Entry", path: "Bulk_Purchase_Entry", element: <BulkPurchaseEntryForm /> },
-      { icon: <TableCellsIcon {...icon} />, name: "Location View", path: "Location_View", element: <LocationView /> },
+      //{ icon: <TableCellsIcon {...icon} />, name: "Location View", path: "Location_View", element: <LocationView /> },
      // { icon: <TableCellsIcon {...icon} />, name: "Bulk Purchase Query", path: "Bulk_Purchase_Query", element: <Adbulkpurchase_query /> },
       { icon: <TableCellsIcon {...icon} />, name: "Ticket Sales Search", path: "Ticket_Sales_Search", element: <TicketSalesSearch />,},
       { icon: <TableCellsIcon {...icon} />, name: "Maintenance Report", path: "Maintenance_Log", element: <MaintenanceReport /> },
@@ -146,6 +147,7 @@ export const routes = [
       { icon: <TableCellsIcon {...icon} />, name: "Feeding Log History", path: "Feeding_Log_History", element: <FeedingLogHistory /> },
       { icon: <TableCellsIcon {...icon} />, name: "Habitats", path: "Habitat_View", element: <HabitatView /> },
       { name: "Feeding Log Edit", path: "FeedingLog_Edit/:feedingId", element: <FeedingLogEditForm />, hidden: true },
+      { name: "Medical Log Edit", path: "Medical_Edit/:recordId", element: <MedicalEditForm />, hidden: true },
       { name: "Animal Info Edit", path: "animal_edit/:Animal_ID", element: <AnimalEdit />, hidden: true },
       //{ icon: <TableCellsIcon {...icon} />, name: "Feeding Log Query", path: "Feeding_Log_Query", element: <MaintenanceHistory /> },
       { icon: <TableCellsIcon {...icon} />, name: "Medical Entry", path: "Medical_Entry", element: <MedicalEntryForm /> },

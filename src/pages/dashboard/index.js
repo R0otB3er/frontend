@@ -32,3 +32,4 @@ export * from "./Closure_Edit";
 export * from "./AddMerchandise";
 export * from "./MerchEdit";
 export * from "./MedicalHistory";
+export * from "./MedicalEdit";

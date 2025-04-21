@@ -199,7 +199,7 @@ export function MedicalEntryForm() {
                 </div>
               </div>
 
-              {/* Diagnosis Dropdown */}
+              {/* Diagnosis  */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Diagnosis</label>
                 <input
@@ -210,7 +210,7 @@ export function MedicalEntryForm() {
                 />
               </div>
 
-              {/* Treatment Dropdown */}
+              {/* Treatment  */}
               <div>
                 <label className="block text-sm font-medium text-gray-700">Treatment</label>
                 <input

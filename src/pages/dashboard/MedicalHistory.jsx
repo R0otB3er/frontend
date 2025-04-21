@@ -45,10 +45,6 @@ export function MedicalHistory() {
     return date.toISOString().split('T')[0];
   };
 
-  const handleAddNewRecord = () => {
-    navigate("/dashboard/Medical_Entry");
-  };
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -64,13 +60,6 @@ export function MedicalHistory() {
           <Typography variant="h6" color="white">
             Medical Records
           </Typography>
-          <Button 
-            color="green" 
-            size="sm"
-            onClick={handleAddNewRecord}
-          >
-            Add New Record
-          </Button>
         </CardHeader>
         <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
           {medicalRecords.length === 0 ? (
@@ -83,7 +72,7 @@ export function MedicalHistory() {
             <table className="w-full min-w-[640px] table-auto">
               <thead>
                 <tr>
-                  {["Record ID", "Animal ID", "Checkup Date", "Diagnosis", "Treatment", "Actions"].map((el) => (
+                  {["Record ID", "Animal Name", "Checkup Date", "Diagnosis", "Treatment"].map((el) => (
                     <th key={el} className="border-b border-blue-gray-50 py-3 px-5 text-left">
                       <Typography variant="small" className="text-[11px] font-bold uppercase text-blue-gray-400">
                         {el}
@@ -94,7 +83,10 @@ export function MedicalHistory() {
               </thead>
               <tbody>
                 {medicalRecords.map((record) => (
-                  <tr key={record.Record_ID}>
+                  <tr key={record.Record_ID}
+                    onClick={() => navigate(`/caretaker/Medical_Edit/${record.Record_ID}`)}
+                    className="hover:bg-blue-gray-50 cursor-pointer"
+                    >
                     <td className="py-3 px-5 border-b border-blue-gray-50">
                       <Typography variant="small" className="font-semibold text-blue-gray-600">
                         {record.Record_ID}
@@ -102,7 +94,7 @@ export function MedicalHistory() {
                     </td>
                     <td className="py-3 px-5 border-b border-blue-gray-50">
                       <Typography variant="small" className="font-semibold text-blue-gray-600">
-                        {record.Animal_ID}
+                        {record.Animal_Name}
                       </Typography>
                     </td>
                     <td className="py-3 px-5 border-b border-blue-gray-50">
@@ -119,15 +111,6 @@ export function MedicalHistory() {
                       <Typography variant="small" className="font-semibold text-blue-gray-600">
                         {record.Treatment}
                       </Typography>
-                    </td>
-                    <td className="py-3 px-5 border-b border-blue-gray-50">
-                      <Button
-                        color="blue"
-                        size="sm"
-                        onClick={() => navigate(`/dashboard/Medical_Edit/${record.Record_ID}`)}
-                      >
-                        View/Edit
-                      </Button>
                     </td>
                   </tr>
                 ))}
