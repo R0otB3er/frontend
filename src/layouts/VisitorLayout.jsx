@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   LogOut,
   Clock,
+  Pencil,
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useUserStore } from "@/user_managment/user_store";
@@ -42,6 +43,19 @@ export function VisitorLayout() {
                 <NavLink to="/visitor/attractions" icon={<Compass />} label="Attractions" />
                 <NavLink to="/visitor/shop" icon={<ShoppingBag />} label="Shop" />
                 <NavLink to="/visitor/order-history" icon={<Clock />} label="Order History" />
+                <Link to="/visitor/edit-profile" className="relative group">
+  <div className="h-10 w-10 rounded-full border-2 border-white bg-white overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-green-400">
+  <img
+  src="/img/placeholder-user-white-outline.png"
+  alt="Visitor Avatar"
+  className="w-10 h-10 rounded-full object-cover"
+/>
+    <div className="absolute bottom-0 right-0 bg-gray-600 rounded-full p-0.5">
+      <Pencil className="h-3 w-3 text-white" />
+    </div>
+  </div>
+</Link>
+
                 <button onClick={handleSignOut} className="hover:text-green-200 flex items-center space-x-1">
                   <LogOut className="h-5 w-5" />
                   <span>Sign Out</span>
@@ -75,6 +89,20 @@ export function VisitorLayout() {
               <MobileLink to="/visitor/attractions" icon={<Compass />} label="Attractions" />
               <MobileLink to="/visitor/shop" icon={<ShoppingBag />} label="Shop" />
               <MobileLink to="/visitor/order-history" icon={<Clock />} label="Order History" />
+              <Link to="/visitor/edit-profile" className="relative group">
+  <div className="h-10 w-10 rounded-full border-2 border-white bg-white overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-green-400">
+  <img
+  src="/img/placeholder-user-white-outline.png"
+  alt="Visitor Avatar"
+  className="w-10 h-10 rounded-full object-cover"
+/>
+    <div className="absolute bottom-0 right-0 bg-gray-600 rounded-full p-0.5">
+      <Pencil className="h-3 w-3 text-white" />
+    </div>
+  </div>
+</Link>
+
+
               <button onClick={handleSignOut} className="hover:text-green-200 flex items-center space-x-2 px-3 py-2 w-full">
                 <LogOut className="h-5 w-5" />
                 <span>Sign Out</span>

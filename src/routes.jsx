@@ -72,6 +72,8 @@ import TicketsPayments from "@/pages/TicketsPayments";
 import CartPage from "@/pages/CartPage";
 import ShopPayments from "@/pages/ShopPayments";
 import OrderHistory from "@/pages/OrderHistory";
+import EditVisitorProfile from "@/pages/EditVisitorProfile";
+
 
 // Auth Pages
 import SignIn from "@/pages/auth/sign-in";
@@ -211,9 +213,11 @@ export const routes = [
       { name: "Tickets Payments", path: "/visitor/ticketspayments", element: <TicketsPayments /> },
       { name: "Cart", path: "/visitor/cart", element: <CartPage /> },
       { name: "Shop Payments", path: "/visitor/shoppayments", element: <ShopPayments /> },
-      { name: "Order History", path: "/visitor/order-history", element: <OrderHistory /> }, 
+      { name: "Order History", path: "/visitor/order-history", element: <OrderHistory /> },
+      { name: "Edit Profile", path: "/visitor/edit-profile", element: <EditVisitorProfile /> },
     ]
   }
+  
   
   ,
   

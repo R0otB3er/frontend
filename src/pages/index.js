@@ -9,3 +9,4 @@ export * from "@/pages/CartPage";
 export * from "@/pages/ShopPayments";
 export * from "@/pages/Payments";
 export * from "@/pages/OrderHistory";
+export * from "@/pages/EditVisitorProfile";
