@@ -1,329 +1,184 @@
 import { chartsConfig } from "@/configs";
 
-const DepartmentChartConfig = ({ 
-  data = [], 
-  title = "Department Sales",
-  description = "Sales by department over time",
-  color = "blue",
-  type = "line"  // Default to line chart for multiple series
-}) => {
-  // Group data by department
-  const departments = [...new Set(data.map(item => item.department_name))];
-  
-  // Create series for each department
-  const series = departments.map(dept => {
-    const deptData = data.filter(item => item.department_name === dept);
-    return {
-      name: dept,
-      data: deptData.map(item => item.tickets_sold)
-    };
-  });
+const formatLabel = (num) => {
+  if (num >= 1000) return (num / 1000).toFixed(1) + "k";
+  return num;
+};
 
-  // Get unique dates (x-axis categories)
-  const dates = [...new Set(data.map(item => item.sale_date))];
-  const categories = dates.map(date => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  });
+const groupBy = (array, key) =>
+  array.reduce((acc, obj) => {
+    const prop = obj[key];
+    if (!acc[prop]) acc[prop] = [];
+    acc[prop].push(obj);
+    return acc;
+  }, {});
 
-  // Generate distinct colors for each department
-  const departmentColors = [
-    "#388e3c",  // green
-    "#d32f2f",  // red
-    "#1976d2",  // blue
-    "#ffa000",  // amber
-    "#7b1fa2",  // purple
+const PersonTypeSalesBarChart = (data = []) => {
+  const grouped = groupBy(data, "ticket_person");
+  const categories = Object.keys(grouped);
+  const series = [
+    {
+      name: "Tickets Sold",
+      data: categories.map((key) =>
+        grouped[key].reduce((sum, row) => sum + (row.tickets_sold || 0), 0)
+      ),
+    },
   ];
 
   return {
-    type: type,
-    height: 300,  // Slightly taller to accommodate legend
-    series: series,
+    type: "bar",
+    height: 300,
+    series,
     options: {
       ...chartsConfig,
-      colors: departmentColors,
-      plotOptions: {
-        bar: {
-          columnWidth: "16%",
-          borderRadius: 5,
-        },
+      colors: ["#2196f3", "#4caf50", "#f44336", "#ff9800"],
+      chart: {
+        type: "bar",
+        stacked: false,
       },
       xaxis: {
-        ...chartsConfig.xaxis,
-        categories: categories,
+        categories,
+        title: { text: "Person Type" },
+        labels: {
+          style: { fontSize: "12px" },
+        },
       },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'center',
+      yaxis: {
+        title: { text: "Tickets Sold" },
+        labels: {
+          formatter: formatLabel,
+        },
+      },
+      plotOptions: {
+        bar: {
+          columnWidth: "45%",
+          borderRadius: 6,
+        },
+      },
+      title: {
+        text: "Ticket Sales by Person Type",
+        align: "left",
       },
     },
   };
 };
 
-const AttractionChartConfig = ({ 
-  data = [], 
-  title = "Attraction Sales",
-  description = "Sales by attraction over time",
-  color = "blue",
-  type = "line"  // Default to line chart for multiple series
-}) => {
-  // Group data by department
-  const attractions = [...new Set(data.map(item => item.Attraction_Name))];
-  
-  // Create series for each department
-  const series = attractions.map(att => {
-    const attData = data.filter(item => item.Attraction_Name === att);
-    return {
-      name: att,
-      data: attData.map(item => item.tickets_sold)
-    };
-  });
-
-  // Get unique dates (x-axis categories)
-  const dates = [...new Set(data.map(item => item.sale_date))];
-  const categories = dates.map(date => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  });
-
-  // Generate distinct colors for each department
-  const departmentColors = [
-    "#388e3c",  // green
-    "#d32f2f",  // red
-    "#1976d2",  // blue
-    "#ffa000",  // amber
-    "#7b1fa2",  // purple
+const MembershipSalesBarChart = (data = []) => {
+  const grouped = groupBy(data, "membership_type");
+  const categories = Object.keys(grouped);
+  const series = [
+    {
+      name: "Tickets Sold",
+      data: categories.map((key) =>
+        grouped[key].reduce((sum, row) => sum + (row.tickets_sold || 0), 0)
+      ),
+    },
   ];
 
   return {
-    type: type,
-    height: 300,  // Slightly taller to accommodate legend
-    series: series,
+    type: "bar",
+    height: 300,
+    series,
     options: {
       ...chartsConfig,
-      colors: departmentColors,
-      plotOptions: {
-        bar: {
-          columnWidth: "16%",
-          borderRadius: 5,
-        },
+      colors: ["#9c27b0", "#03a9f4", "#8bc34a", "#ff9800"],
+      chart: {
+        type: "bar",
+        stacked: false,
       },
       xaxis: {
-        ...chartsConfig.xaxis,
-        categories: categories,
+        categories,
+        title: { text: "Membership Type" },
+        labels: {
+          style: { fontSize: "12px" },
+        },
       },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'center',
+      yaxis: {
+        title: { text: "Tickets Sold" },
+        labels: {
+          formatter: formatLabel,
+        },
+      },
+      plotOptions: {
+        bar: {
+          columnWidth: "45%",
+          borderRadius: 6,
+        },
+      },
+      title: {
+        text: "Ticket Sales by Membership Type",
+        align: "left",
       },
     },
   };
 };
 
-const GeneralChartConfig = ({ 
-  data = [], 
-  title = "General Ticket Sales",
-  description = "Sales of general admission over time",
-  color = "blue",
-  type = "line"  // Default to line chart for multiple series
-}) => {
-  // Group data by department
-  const attractions = [...new Set(data.map(item => item.Attraction_Name))];
-  
-  // Create series for each department
-  const series = attractions.map(att => {
-    const attData = data.filter(item => item.Attraction_Name === att);
-    return {
-      name: att,
-      data: attData.map(item => item.tickets_sold)
-    };
-  });
+const TotalSalesOverTimeChart = (data = []) => {
+  const byDate = {};
 
-  // Get unique dates (x-axis categories)
-  const dates = [...new Set(data.map(item => item.sale_date))];
-  const categories = dates.map(date => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+  data.forEach((row) => {
+    const rawDate = row.sale_date || row.date || row.Bought_Date;
+    const parsedDate = new Date(rawDate);
+
+    // Skip invalid dates
+    if (isNaN(parsedDate)) return;
+
+    const formatted = parsedDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
+
+    byDate[formatted] = (byDate[formatted] || 0) + (row.tickets_sold || row.ticketsSold || 0);
   });
 
-  // Generate distinct colors for each department
-  const departmentColors = [
-    "#388e3c",  // green
-    "#d32f2f",  // red
-    "#1976d2",  // blue
-    "#ffa000",  // amber
-    "#7b1fa2",  // purple
+  const sortedDates = Object.keys(byDate).sort(
+    (a, b) => new Date(a) - new Date(b)
+  );
+
+  const series = [
+    {
+      name: "Total Tickets Sold",
+      data: sortedDates.map((d) => byDate[d]),
+    },
   ];
 
   return {
-    type: type,
-    height: 300,  // Slightly taller to accommodate legend
-    series: series,
+    type: "line",
+    height: 300,
+    series,
     options: {
       ...chartsConfig,
-      colors: departmentColors,
-      plotOptions: {
-        bar: {
-          columnWidth: "16%",
-          borderRadius: 5,
-        },
+      colors: ["#673ab7"],
+      stroke: {
+        width: 3,
+        curve: "smooth",
       },
       xaxis: {
-        ...chartsConfig.xaxis,
-        categories: categories,
+        categories: sortedDates,
+        title: { text: "Date" },
+        labels: {
+          rotate: -45,
+        },
       },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'center',
+      yaxis: {
+        title: { text: "Tickets Sold" },
+        labels: {
+          formatter: (val) => (val >= 1000 ? `${(val / 1000).toFixed(1)}k` : val),
+        },
+      },
+      title: {
+        text: "Ticket Sales Over Time",
+        align: "left",
       },
     },
   };
 };
 
-const PersonTypeChartConfig = ({ 
-  data = [], 
-  title = "Sales by Person Type",
-  description = "Sales by type of visitor over time",
-  color = "blue",
-  type = "line"  // Default to line chart for multiple series
-}) => {
-  // Group data by department
-  const pTypes = [...new Set(data.map(item => item.ticket_person))];
-  
-  // Create series for each department
-  const series = pTypes.map(pt => {
-    const ptData = data.filter(item => item.ticket_person === pt);
-    return {
-      name: pt,
-      data: ptData.map(item => item.tickets_sold)
-    };
-  });
-
-  // Get unique dates (x-axis categories)
-  const dates = [...new Set(data.map(item => item.sale_date))];
-  const categories = dates.map(date => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  });
-
-  // Generate distinct colors for each department
-  const departmentColors = [
-    "#388e3c",  // green
-    "#d32f2f",  // red
-    "#1976d2",  // blue
-    "#ffa000",  // amber
-    "#7b1fa2",  // purple
-  ];
-
-  return {
-    type: type,
-    height: 300,  // Slightly taller to accommodate legend
-    series: series,
-    options: {
-      ...chartsConfig,
-      colors: departmentColors,
-      plotOptions: {
-        bar: {
-          columnWidth: "16%",
-          borderRadius: 5,
-        },
-      },
-      xaxis: {
-        ...chartsConfig.xaxis,
-        categories: categories,
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'center',
-      },
-    },
-  };
-};
-
-const MemTypeChartConfig = ({ 
-  data = [], 
-  title = "Sales by Membership Type",
-  description = "Sales by type of member over time",
-  color = "blue",
-  type = "line"  // Default to line chart for multiple series
-}) => {
-  // Group data by department
-  const memTypes = [...new Set(data.map(item => item.membership_Type))];
-  
-  // Create series for each department
-  const series = memTypes.map(mt => {
-    const mtData = data.filter(item => item.membership_Type === mt);
-    return {
-      name: mt,
-      data: mtData.map(item => item.tickets_sold)
-    };
-  });
-
-  // Get unique dates (x-axis categories)
-  const dates = [...new Set(data.map(item => item.sale_date))];
-  const categories = dates.map(date => {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  });
-
-  // Generate distinct colors for each department
-  const departmentColors = [
-    "#388e3c",  // green
-    "#d32f2f",  // red
-    "#1976d2",  // blue
-    "#ffa000",  // amber
-    "#7b1fa2",  // purple
-  ];
-
-  return {
-    type: type,
-    height: 300,  // Slightly taller to accommodate legend
-    series: series,
-    options: {
-      ...chartsConfig,
-      colors: departmentColors,
-      plotOptions: {
-        bar: {
-          columnWidth: "16%",
-          borderRadius: 5,
-        },
-      },
-      xaxis: {
-        ...chartsConfig.xaxis,
-        categories: categories,
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'center',
-      },
-    },
-  };
-};
 
 export {
-  DepartmentChartConfig,
-  AttractionChartConfig,
-  GeneralChartConfig,
-  PersonTypeChartConfig,
-  MemTypeChartConfig
+  PersonTypeSalesBarChart,
+  TotalSalesOverTimeChart,
+  MembershipSalesBarChart,
 };
+
