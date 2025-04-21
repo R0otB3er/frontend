@@ -43,22 +43,11 @@ import {
   MedicalEditForm
 } from "@/pages/dashboard";
 
-// Caretaker Pages
-import {
-  Cthome,
-  Ctprofile,
-  CtFeedingLogEntryForm,
-  Ctfeedinglog_query,
-  CtMedicalEntryForm,
-  CtMedical_query,
-} from "@/pages/Ctdashboard";
 
 // Maintenance Pages
 import {
   Mthome,
-  Mtprofile,
-  MtMaintenance_query,
-  MtMaintenanceEntryForm,
+
 } from "@/pages/Mtdashboard";
 
 // Public Pages

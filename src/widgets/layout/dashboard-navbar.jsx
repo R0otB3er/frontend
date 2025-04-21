@@ -127,12 +127,7 @@ export function DashboardNavbar() {
                 </div>
               </MenuItem>
               <MenuItem className="flex items-center gap-4">
-                <Avatar
-                  src="https://demos.creative-tim.com/material-dashboard/assets/img/small-logos/logo-spotify.svg"
-                  alt="item-1"
-                  size="sm"
-                  variant="circular"
-                />
+                
                 <div>
                   <Typography
                     variant="small"
