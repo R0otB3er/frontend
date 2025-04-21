@@ -91,7 +91,14 @@ export function BulkPurchaseEntryForm() {
       });
 
       if (res.ok) {
-        console.log("Form submitted:", payload);
+        //console.log("Form submitted:", payload);
+        alert("Bulk Purchase successfully submitted");
+        setFormData({
+          Merchandise_ID: "",
+          Bulk_cost: "",
+          Amount_of_items: "",
+          Date_purchased: "",
+        });
       } else {
         console.error(res.error);
         alert("Failed to generate report.");
