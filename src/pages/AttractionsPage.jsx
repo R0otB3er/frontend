@@ -4,6 +4,55 @@ import { Clock, MapPin, Calendar } from "lucide-react";
 export default function AttractionsPage() {
   const [attractions, setAttractions] = useState([]);
 
+  // 🎯 Hardcoded descriptions & schedules
+  const attractionDetails = {
+    301: {
+      description: "A scenic overlook where guests can observe majestic lions lounging in the sun.",
+      schedule: "Daily, 9:00 AM – 9:00 PM",
+    },
+    302: {
+      description: "Watch elephants splash and play in their naturalistic habitat with cascading waterfalls.",
+      schedule: "Mon–Fri, 10:00 AM – 4:00 PM",
+    },
+    303: {
+      description: "A rugged trail showcasing powerful grizzly bears in a forest environment.",
+      schedule: "Weekends only, 11:00 AM – 3:00 PM",
+    },
+    304: {
+      description: "A peaceful bamboo garden home to playful pandas and calming ambiance.",
+      schedule: "Daily, 10:00 AM – 4:30 PM",
+    },
+    305: {
+      description: "See adorable penguins waddle, swim, and slide in their icy habitat.",
+      schedule: "Daily, 9:30 AM – 4:00 PM",
+    },
+    306: {
+      description: "General exhibits and park experiences spanning across multiple habitats.",
+      schedule: "Daily, 9:00 AM – 6:00 PM",
+    },
+    307: {
+      description: "Interactive zone with educational exhibits and hands-on fun for kids.",
+      schedule: "Weekdays, 10:00 AM – 2:00 PM",
+    },
+  };
+
+  function isAttractionOpenNow(scheduleStr) {
+    if (!scheduleStr || !scheduleStr.includes("–")) return false;
+  
+    const [startStr, endStr] = scheduleStr.match(/\d{1,2}:\d{2} [APM]{2}/g) || [];
+  
+    if (!startStr || !endStr) return false;
+  
+    const now = new Date();
+  
+    const today = now.toLocaleDateString("en-US");
+    const start = new Date(`${today} ${startStr}`);
+    const end = new Date(`${today} ${endStr}`);
+  
+    return now >= start && now <= end;
+  }
+  
+
   useEffect(() => {
     async function fetchAttractions() {
       try {
@@ -14,13 +63,15 @@ export default function AttractionsPage() {
 
         const data = await res.json();
 
-        // Add dynamic image paths
-        const withImages = data.map((a) => ({
+        // Inject image, description, and schedule
+        const withDetails = data.map((a) => ({
           ...a,
           image: `/img/attractions/${a.id}.webp`,
+          description: attractionDetails[a.id]?.description || "No description available.",
+          schedule: attractionDetails[a.id]?.schedule || "Schedule not available.",
         }));
 
-        setAttractions(withImages);
+        setAttractions(withDetails);
       } catch (err) {
         console.error("Failed to fetch attractions:", err);
       }
@@ -44,21 +95,32 @@ export default function AttractionsPage() {
               />
               <div className="p-6">
                 <h2 className="text-2xl font-semibold mb-4">{attraction.name}</h2>
-                <p className="text-gray-600 mb-6">{attraction.description || "No description available."}</p>
+                <p className="text-gray-600 mb-6">{attraction.description}</p>
 
                 <div className="space-y-3">
-                  <div className="flex items-center text-gray-700">
-                    <Clock className="h-5 w-5 mr-2" />
-                    <span>Duration: {attraction.duration}</span>
-                  </div>
-                  <div className="flex items-center text-gray-700">
-                    <MapPin className="h-5 w-5 mr-2" />
-                    <span>Location: {attraction.location}</span>
-                  </div>
                   <div className="flex items-center text-gray-700">
                     <Calendar className="h-5 w-5 mr-2" />
                     <span>Schedule: {attraction.schedule}</span>
                   </div>
+                  <div className="flex items-center text-gray-700">
+  <span
+    className={`ml-1 font-medium ${
+      ["maintenance in progress", "pending"].includes(attraction.status?.toLowerCase()) || !isAttractionOpenNow(attraction.schedule)
+        ? "text-red-600"
+        : "text-green-600"
+    }`}
+  >
+    Status:{" "}
+    {["maintenance in progress", "pending"].includes(attraction.status?.toLowerCase())
+      ? "Closed for Maintenance"
+      : isAttractionOpenNow(attraction.schedule)
+      ? "Open"
+      : "Closed"}
+  </span>
+</div>
+
+
+
                 </div>
               </div>
             </div>
@@ -73,7 +135,9 @@ export default function AttractionsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <h3 className="font-semibold mb-2">Best Time to Visit</h3>
-            <p className="text-gray-600">Morning shows are typically less crowded. Plan your visit early for the best experience.</p>
+            <p className="text-gray-600">
+              Morning shows are typically less crowded. Plan your visit early for the best experience.
+            </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">What to Bring</h3>
