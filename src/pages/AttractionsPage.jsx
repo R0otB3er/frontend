@@ -4,11 +4,11 @@ import { Clock, MapPin, Calendar } from "lucide-react";
 export default function AttractionsPage() {
   const [attractions, setAttractions] = useState([]);
 
-  // 🎯 Hardcoded descriptions & schedules
+ 
   const attractionDetails = {
     301: {
       description: "A scenic overlook where guests can observe majestic lions lounging in the sun.",
-      schedule: "Daily, 9:00 AM – 9:00 PM",
+      schedule: "Daily, 9:00 AM – 11:30 PM",
     },
     302: {
       description: "Watch elephants splash and play in their naturalistic habitat with cascading waterfalls.",
